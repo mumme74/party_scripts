@@ -84,11 +84,11 @@ def create_name_cards(template, persons, font1, font2 = ''):
     if not font2:
       font2 = font1
 
-    font1 = load_font(font1, 48)
-    font2 = load_font(font2, 30)
+    font1 = load_font(font1, 32)
+    font2 = load_font(font2, 24)
 
-    w, h = new_size = (800, 600)
-    
+    w, h = new_size = (600, 400)
+
     try:
         img = Image.open(template)
         img = img.resize(size=new_size)
@@ -100,10 +100,11 @@ def create_name_cards(template, persons, font1, font2 = ''):
         card = Image.new(mode='RGB', size=new_size, color=(255,255,255,255))
         card.paste(img)
         img_draw = ImageDraw.Draw(card)
+        img_draw.rectangle([(0,0),(w-1,h-1)], outline=(0,0,0))
         name = f'{p.fname} {p.lname}'
         dept = f'{p.dept.desc}'
         _, _, w1, h1 = img_draw.textbbox((0,0), name, font1)
         _, _, w2, h2 = img_draw.textbbox((0,0), dept, font2)
-        img_draw.text(((w-w1)//2, 400), name, font=font1, fill=(0,0,0))
-        img_draw.text(((w-w2)//2, 480), dept, font=font2, fill=(0,0,0))
+        img_draw.text(((w-w1)//2, 270), name, font=font1, fill=(0,0,0))
+        img_draw.text(((w-w2)//2, 330), dept, font=font2, fill=(0,0,0))
         card.save(prj_dir / 'outdata' / f'{i}.png')
