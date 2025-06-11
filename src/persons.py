@@ -50,5 +50,27 @@ class Person:
         self.special_meals = data[keys['special_meals']].strip()
         self.mail = data[keys['mail']].strip()
         self.registered_date = data[keys['date']].strip()
-    
 
+    # for comparisons
+    def __eq__(self, o):
+        return self.dept == o.dept and \
+               self.fname == o.fname and \
+               self.lname == o.lname
+    
+    def __le__(self, o):
+        if self.dept > o.dept:
+            return True
+        elif self.dept == o.dept:
+            if self.fname == o.fname:
+                return self.lname < o.lname
+            return self.fname < o.fname
+        return False
+    
+    def __gt__(self, o):
+        if self.dept > o.dept:
+            return True
+        elif self.dept == o.dept:
+            if self.fname == o.fname:
+                return self.lname > o.lname
+            return self.fname > o.fname
+        return False

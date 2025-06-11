@@ -48,3 +48,12 @@ class Dept:
            key == self.desc.lower():
             return True
         return False
+    
+    def __eq__(self, o):
+        return self.desc == o.desc
+    
+    def __lt__(self, o):
+        return self.desc < o.desc
+
+    def __gt__(self, o):
+        return self.desc > o.desc

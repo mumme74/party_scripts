@@ -31,7 +31,7 @@ def create_namecard_docx():
     #place images in a table for formating 4 on each page
     tbl = doc.add_table(1, 2)
     cells = tbl.rows[0].cells
-    for i, png in enumerate(sorted(all_png_files())):
+    for i, png in enumerate(sorted(all_png_files(), key=lambda f: int(f.stem))):
         # format the cell and its paragraph
         cell = cells[i % 2]
         cell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
