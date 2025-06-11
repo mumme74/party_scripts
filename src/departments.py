@@ -4,8 +4,7 @@ import json
 class AllDepartments:
     def __init__(self, synonym_json):
         # singleton
-        if hasattr(AllDepartments, '_instance'):
-            raise Exception('AllDepartments instaciated more then once')
+        assert not hasattr(AllDepartments, '_instance')
         AllDepartments._instance = self
 
         self.departments = [Dept('unk', 'Unknown', [])]

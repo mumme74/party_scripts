@@ -4,8 +4,7 @@ from .read_data import read_data
 
 class AllPersons:
     def __init__(self, tsv):
-        if hasattr(AllPersons, '_instance'):
-            raise Exception('AllPersons already instanciated')
+        assert not hasattr(AllPersons, '_instance')
         AllPersons._instance = self
 
         self.tsv = tsv
@@ -31,7 +30,7 @@ class AllPersons:
         "Return count of all departments"
         deps = Counter()
         for p in self.persons:
-            deps.update((p.dept,))
+            deps.update((p.dept.key,))
         return deps
     
     def special_meals(self):
@@ -50,6 +49,7 @@ class Person:
         self.special_meals = data[keys['special_meals']].strip()
         self.mail = data[keys['mail']].strip()
         self.registered_date = data[keys['date']].strip()
+        self.is_placed = False
 
     # for comparisons
     def __eq__(self, o):

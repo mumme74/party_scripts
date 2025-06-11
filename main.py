@@ -1,6 +1,7 @@
 from src.read_data import read_data
 from src.departments import AllDepartments
 from src.persons import AllPersons
+from src.tables import AllTables
 from src.namecard import create_name_cards
 from src.namecards_docx import create_namecard_docx
 from pathlib import Path
@@ -19,6 +20,10 @@ parser.add_argument('--departments', type=str, help='Path to all departments and
                     default=rootdir / 'templates/dept_synonyms.json', nargs='?')
 parser.add_argument('--create-namecards', type=bool, help='Create new namecards',
                     default=True, nargs='?')
+parser.add_argument('--place-at-tables', type=bool, default=True, nargs='?',
+                    help='Wheather we should place people at their tables')
+parser.add_argument('--tables', type=str, help='The path to the source data file for each table',
+                    default=rootdir / 'indata/tables.tsv', nargs='?')
 args = parser.parse_args()
 
 # init singletons
@@ -31,4 +36,6 @@ if args.create_namecards:
     create_namecard_docx()
 
 
-    
+if args.place_at_tables:
+    tables = AllTables(args.tables)
+    tables.place_persons()
