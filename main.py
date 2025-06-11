@@ -1,6 +1,7 @@
 from src.read_data import read_data
 from src.departments import AllDepartments
 from src.persons import AllPersons
+from src.namecard import create_name_cards
 from pathlib import Path
 from argparse import ArgumentParser
 import sys
@@ -22,3 +23,4 @@ args = parser.parse_args()
 depts = AllDepartments(args.departments)
 persons = AllPersons(args.tsv)
 
+create_name_cards(args.template, persons.persons, "Lucida Handwriting STD")
