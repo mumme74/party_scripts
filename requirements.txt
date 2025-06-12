@@ -1,0 +1,6 @@
+Faker==37.3.0
+lxml==5.4.0
+pillow==11.2.1
+python-docx==1.1.2
+typing_extensions==4.14.0
+tzdata==2025.2
