@@ -46,7 +46,9 @@ class Person:
         self.lname = data[keys['last_name']].strip()
         self._dept_str = data[keys['department']].strip()
         self.dept = AllDepartments.ref().get_department(self._dept_str)
-        self.special_meals = data[keys['special_meals']].strip()
+        self.special_meals = data[keys['special_meals']].strip().replace('.','')
+        if self.special_meals.lower() in ['-', '--', 'nej', 'nope','no','none','inga']:
+            self.special_meals = ''
         self.mail = data[keys['mail']].strip()
         self.registered_date = data[keys['date']].strip()
         self.is_placed = False

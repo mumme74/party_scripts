@@ -5,6 +5,7 @@ from src.tables import AllTables
 from src.namecard import create_name_cards
 from src.namecards_docx import create_namecard_docx
 from src.tables_docx import create_table_report
+from src.special_foods import create_special_foods_report
 from pathlib import Path
 from argparse import ArgumentParser
 
@@ -27,6 +28,8 @@ parser.add_argument('--tables', type=str, help='The path to the source data file
                     default=rootdir / 'indata/tables.tsv', nargs='?')
 parser.add_argument('--table-signs-template-docx', type=bool, help='The path to the template file for eah table',
                     default=rootdir / 'templates/table_sign_default.docx', nargs='?')
+parser.add_argument('--special-foods', type=bool, help='Produce a list with all special foods',
+                    default=True, nargs='?')
 args = parser.parse_args()
 
 # init singletons
@@ -43,3 +46,6 @@ if args.place_at_tables:
     tables = AllTables(args.tables)
     tables.place_persons()
     create_table_report(args.table_signs_template_docx)
+
+if args.special_foods:
+    create_special_foods_report()
