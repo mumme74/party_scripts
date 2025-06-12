@@ -36,16 +36,19 @@ args = parser.parse_args()
 depts = AllDepartments(args.departments)
 persons = AllPersons(args.tsv)
 
-# create new namecard images
-if args.create_namecards:
-    create_name_cards(args.template, persons.persons, "Lucida Handwriting STD")
-    create_namecard_docx()
-
-
 if args.place_at_tables:
     tables = AllTables(args.tables)
     tables.place_persons()
     create_table_report(args.table_signs_template_docx)
+
+# create new namecard images
+if args.create_namecards:
+    if args.place_at_tables:
+        pers = [p for t in AllTables.ref().tables for p in t.persons]
+    else:
+        pers = sorted(persons.persons)
+    create_name_cards(args.template, pers, "Lucida Handwriting STD")
+    create_namecard_docx()
 
 if args.special_foods:
     create_special_foods_report()

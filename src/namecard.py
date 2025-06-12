@@ -95,7 +95,7 @@ def create_name_cards(template, persons, font1, font2 = ''):
     except FileNotFoundError:
         raise Exception(f'Name card template {template} was not found')
     
-    for i, p in enumerate(sorted(persons)):
+    for i, p in enumerate(persons):
         # create a new image to draw onto
         card = Image.new(mode='RGB', size=new_size, color=(255,255,255,255))
         card.paste(img)
