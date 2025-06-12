@@ -18,9 +18,9 @@ def create_special_foods_report():
     # set margins
     for sec in doc.sections:
         sec.top_margin    = Cm(1.5)
-        sec.left_margin   = Cm(1.5)
+        sec.left_margin   = Cm(2.5)
         sec.bottom_margin = Cm(1.5)
-        sec.right_margin  = Cm(1.5)
+        sec.right_margin  = Cm(2.5)
         sec.page_height = A4_h
         sec.page_width = A4_w
 

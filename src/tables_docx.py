@@ -18,14 +18,16 @@ def create_table_report(template_path):
     # set margins
     for sec in doc.sections:
         sec.top_margin    = Cm(1.5)
-        sec.left_margin   = Cm(1.5)
+        sec.left_margin   = Cm(2.5)
         sec.bottom_margin = Cm(1.5)
-        sec.right_margin  = Cm(1.5)
+        sec.right_margin  = Cm(2.5)
         sec.page_height = A4_h
         sec.page_width = A4_w
 
 
-    for tbl in AllTables.ref().tables:
+    for i, tbl in enumerate(AllTables.ref().tables):
+        if i > 0:
+            doc.add_page_break()
         doc.add_heading('Bordsplacering', 0)
         doc.add_paragraph()
         heading = f'{tbl.id} \t{", ".join(tbl.departments())}'
@@ -43,6 +45,5 @@ def create_table_report(template_path):
 
         doc.add_paragraph()
         doc.add_paragraph(f'Lediga platser: {tbl.free_seats()} av {tbl.num_seats}')
-        doc.add_page_break()
 
     doc.save(prj_dir / 'outdata' / 'table_placements.docx')
