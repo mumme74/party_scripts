@@ -30,11 +30,18 @@ class AllTables:
                 return t
         return None
     
+    def total_num_seats(self):
+        return sum([s.num_seats for s in self.tables])
+    
     def place_persons(self):
         "Try to seat all persons at tables with their department"
         all_pers = AllPersons.ref()
         persons = sorted(all_pers.persons)
         deps = all_pers.departments().most_common() # sort largest table first
+
+        if len(persons) > self.total_num_seats():
+            print(f'*** Det finns inte tillräckligt med platser, för alla personer!')
+            exit(1)
 
         # find a table for this
         table, pla = None, 1
@@ -51,7 +58,7 @@ class AllTables:
                             table = self.find_table_to(n - placed)
                             if table: break
 
-                    if table.place_person(p):
+                    if table and table.place_person(p):
                         placed += 1
                         pla += 1
                 table = None

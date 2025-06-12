@@ -36,6 +36,11 @@ args = parser.parse_args()
 depts = AllDepartments(args.departments)
 persons = AllPersons(args.tsv)
 
+# debug print how many for each dept.
+for dep, v in persons.departments().most_common():
+    print(f'{dep.upper()}: {v}')
+print()
+
 if args.place_at_tables:
     tables = AllTables(args.tables)
     tables.place_persons()
