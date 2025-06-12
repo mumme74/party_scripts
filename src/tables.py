@@ -13,7 +13,7 @@ class AllTables:
         self.tsv = table_tsv
         self.tables = []
         self.is_placed = False
-        keys = {'ID':0, 'num_seats':1}
+        keys = {'ID':0, 'num_seats':1, 'prio_dept':2}
 
         for row in read_data(table_tsv):
             self.tables.append(Table(row, keys))
@@ -42,6 +42,12 @@ class AllTables:
         if len(persons) > self.total_num_seats():
             print(f'*** Det finns inte tillräckligt med platser, för alla personer!')
             exit(1)
+
+        # first place prioritized tables
+        for table in [t for t in self.tables if t.prio_dept]:
+            for p in persons:
+                if not p.is_placed and p.dept in table.prio_dept:
+                    table.place_person(p)
 
         # find a table for this
         table, pla = None, 1
@@ -76,6 +82,14 @@ class Table:
         self.id = row[keys['ID']]
         self.num_seats = int(row[keys['num_seats']])
         self.persons = []
+        self.prio_dept = []
+        if len(row) >= keys['prio_dept'] + 1:
+            for dept in row[keys['prio_dept']].split(' '):
+                dep = AllDepartments.ref().get_department(dept)
+                if dep.key == 'unk':
+                    print(f'**** {dept} is not among registered departments')
+                    exit(1)
+                self.prio_dept.append(dep)
 
     def departments(self):
         "Return how many persons from each department at this table"
