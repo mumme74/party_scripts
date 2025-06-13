@@ -80,12 +80,13 @@ def load_font(fontfamily, fontsize, font_download = True):
     raise OSError(f"Could not locate font: {fontfamily}, make sure it is installed in your system or select another font.")
 
 
-def create_name_cards(template, persons, font1, font2 = ''):
-    if not font2:
-        font2 = font1
+def create_name_cards(template, persons, font_1, font_2 = ''):
+    if not font_2:
+        font_2 = font_1
 
-    font1 = load_font(font1, 32)
-    font2 = load_font(font2, 24)
+    font1 = load_font(font_1, 32)
+    font2 = load_font(font_2, 24)
+    font3 = load_font(font_1, 10)
 
     w, h = new_size = (600, 400)
 
@@ -93,7 +94,8 @@ def create_name_cards(template, persons, font1, font2 = ''):
         img = Image.open(template)
         img = img.resize(size=new_size)
     except FileNotFoundError:
-        raise Exception(f'Name card template {template} was not found')
+        print(f'*** Name card template {template} was not found')
+        exit(1)
     
     for i, p in enumerate(persons):
         # create a new image to draw onto
@@ -107,4 +109,5 @@ def create_name_cards(template, persons, font1, font2 = ''):
         _, _, w2, h2 = img_draw.textbbox((0,0), dept, font2)
         img_draw.text(((w-w1)//2, 270), name, font=font1, fill=(0,0,0))
         img_draw.text(((w-w2)//2, 330), dept, font=font2, fill=(0,0,0))
+        img_draw.text((13,3), p.placed_at_table(), font=font3, fill="#999999")
         card.save(prj_dir / 'outdata' / f'{i}.png')

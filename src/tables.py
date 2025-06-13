@@ -46,7 +46,7 @@ class AllTables:
         # first place prioritized tables
         for table in [t for t in self.tables if t.prio_dept]:
             for p in persons:
-                if not p.is_placed and p.dept in table.prio_dept:
+                if not p.placed_at_tbl and p.dept in table.prio_dept:
                     table.place_person(p)
 
         # find a table for this
@@ -57,7 +57,7 @@ class AllTables:
             for dep, num in deps: 
                 placed = 0
                 for p in filter(lambda p: p.dept.key == dep and \
-                                not p.is_placed, persons):
+                                not p.placed_at_tbl, persons):
                     # possibly change table
                     if not table or table.free_seats() == 0:
                         for n in range(num, 0, -1):
@@ -71,10 +71,12 @@ class AllTables:
             
         # sanity check
         for p in persons:
-            assert p.is_placed
+            assert p.placed_at_tbl
 
         for t in self.tables:
             print(t.id, t.departments())
+
+        self.is_placed = True
 
 
 class Table:
@@ -104,9 +106,9 @@ class Table:
     
     def place_person(self, person) -> bool:
         "Try to place person at this table, will fail if full"
-        assert person.is_placed == False
+        assert person.placed_at_tbl == None
         if self.num_seats - len(self.persons) > 0:
             self.persons.append(person)
-            person.is_placed = True
+            person.placed_at_tbl = self
             return True
         return False

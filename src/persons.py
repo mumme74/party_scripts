@@ -51,7 +51,13 @@ class Person:
             self.special_meals = ''
         self.mail = data[keys['mail']].strip()
         self.registered_date = data[keys['date']].strip()
-        self.is_placed = False
+        self.placed_at_tbl = None
+
+    def placed_at_table(self):
+        if self.placed_at_table:
+            return self.placed_at_tbl.id
+        return ""
+
 
     # for comparisons
     def __eq__(self, o):
