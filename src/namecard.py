@@ -79,10 +79,17 @@ def load_font(fontfamily, fontsize, font_download = True):
             return load_font(fontfamily, fontsize, False)
     raise OSError(f"Could not locate font: {fontfamily}, make sure it is installed in your system or select another font.")
 
+def clear_old_cards():
+    for file in (prj_dir/'outdata').iterdir():
+        if file.suffix == '.png' and file.stem.isnumeric():
+            os.remove(prj_dir / 'outdata' / file)
+
 
 def create_name_cards(template, persons, font_1, font_2 = ''):
     if not font_2:
         font_2 = font_1
+
+    clear_old_cards()
 
     font1 = load_font(font_1, 32)
     font2 = load_font(font_2, 24)
