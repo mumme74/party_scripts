@@ -13,76 +13,76 @@ dir_path = Path(__file__).absolute().parent
 # search paths to find fonts
 fontsuffixes = ['','.ttf','.TTF','.otf','.OTF']
 
-fontpaths = [dir_path / "fonts/", '']
+fontpaths = [prj_dir / "fonts/", '']
 if platform == 'darwin': # apple
-  fontpaths += ['~/Library/Fonts/', 
-               '/System/Library/Fonts/Supplemental/',
-               '/Library/Fonts/']
+    fontpaths += ['~/Library/Fonts/', 
+                  '/System/Library/Fonts/Supplemental/',
+                  '/Library/Fonts/']
 elif platform in ('linux', 'linux2'):
-  fontpaths += ['~/.local/fonts/', 
-               '/usr/share/fonts/',
-               '/usr/local/share/fonts/',
-               '/usr/share/fonts/truetype/'] 
+    fontpaths += ['~/.local/fonts/', 
+                  '/usr/share/fonts/',
+                  '/usr/local/share/fonts/',
+                  '/usr/share/fonts/truetype/'] 
 elif platform == 'win32':
-  fontpaths += [f'C:\\Users\\{os.getusername()}\\AppData\\Local\\Microsoft\\Windows\\Fonts\\',
-                'C:\\Windows\\Fonts\\']
+    fontpaths += [f'C:\\Users\\{os.getusername()}\\AppData\\Local\\Microsoft\\Windows\\Fonts\\',
+                  'C:\\Windows\\Fonts\\']
 else:
-  print(f'Unsupported os: {platform}, may not work correctly')
+    print(f'Unsupported os: {platform}, may not work correctly')
 
 
 # last resort try to download font and unpack
 def dl_font(fontname):
-  print(f"Font {fontname} not found, downloading it.")
-  font = fontname.lower().replace(' ','-')
-  params = urllib.request.Request(
-    url=f"https://font.download/dl/font/{font}.zip",
-    headers={
-      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
-      "Accept-Encoding": "gzip, deflate, br, zstd",
-      "Accept-Language": "en-US,en;q=0.9",
-      "Sec-Ch-Ua": "\"Google Chrome\";v=\"123\", \"Not:A-Brand\";v=\"8\", \"Chromium\";v=\"123\"",
-      "Referer":"https://www.google.com/",
-      "Sec-Ch-Ua-Platform": "\"Windows\"",
-      "Sec-Fetch-Mode": "navigate",
-      "Sec-Fetch-Site": "cross-site",
-      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"
-    }
-  )
+    print(f"Font {fontname} not found, downloading it.")
+    font = fontname.lower().replace(' ','-')
+    params = urllib.request.Request(
+        url=f"https://font.download/dl/font/{font}.zip",
+        headers={
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+            "Accept-Encoding": "gzip, deflate, br, zstd",
+            "Accept-Language": "en-US,en;q=0.9",
+            "Sec-Ch-Ua": "\"Google Chrome\";v=\"123\", \"Not:A-Brand\";v=\"8\", \"Chromium\";v=\"123\"",
+            "Referer":"https://www.google.com/",
+            "Sec-Ch-Ua-Platform": "\"Windows\"",
+            "Sec-Fetch-Mode": "navigate",
+            "Sec-Fetch-Site": "cross-site",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"
+        }
+    )
 
-  try:
-    with urllib.request.urlopen(params) as resp:
-      with zipfile.ZipFile(BytesIO(resp.read())) as z:
-        for name in z.namelist():
-          n = Path(name)
-          if n.suffix.lower() in (".ttf", ".otf") and \
-            not name.startswith('.'):
-            z.extract(name, dir_path / "fonts/")
-            # take a copy of first font to requested fontname
-            if not os.path.exists(dir_path / f"fonts/{fontname}{n.suffix}"):
-              z.getinfo(name).filename = f"{fontname}{n.suffix}"
-              z.extract(name, dir_path / "fonts/")
-  except (urllib.error.HTTPError, 
-          urllib.error.URLError) as e:
-    raise OSError(f"Error fetching font '{fontname}'\n{e}")
+    try:
+        with urllib.request.urlopen(params) as resp, \
+             zipfile.ZipFile(BytesIO(resp.read())) as z:
+            for name in z.namelist():
+                n = Path(name)
+                if n.suffix.lower() in (".ttf", ".otf") and \
+                   not name.startswith('.'):
+                    z.extract(name, prj_dir / "fonts/")
+                    # take a copy of first font to requested fontname
+                    if not os.path.exists(prj_dir / f"fonts/{fontname}{n.suffix}"):
+                        z.getinfo(name).filename = f"{fontname}{n.suffix}"
+                        z.extract(name, prj_dir / "fonts/")
+    except (urllib.error.HTTPError, 
+            urllib.error.URLError) as e:
+        raise OSError(f"Error fetching font '{fontname}'\n{e}")
 
 
 def load_font(fontfamily, fontsize, font_download = True):
-  for path in fontpaths:
-    for suf in fontsuffixes:
-      font = os.path.join(path, f"{fontfamily}{suf}")
-      try:
-        return ImageFont.truetype(font, fontsize)
-      except OSError as e:
-        pass
-  if font_download:
-    dl_font(fontfamily)
-    return load_font(fontfamily, fontsize, False)
-  raise OSError(f"Could not locate font: {fontfamily}, make sure it is installed in your system or select another font.")
+    for path in fontpaths:
+        for suf in fontsuffixes:
+            font = os.path.join(path, f"{fontfamily}{suf}")
+            try:
+                return ImageFont.truetype(font, fontsize)
+            except OSError as e:
+                pass
+        if font_download:
+            dl_font(fontfamily)
+            return load_font(fontfamily, fontsize, False)
+    raise OSError(f"Could not locate font: {fontfamily}, make sure it is installed in your system or select another font.")
 
 
 def create_name_cards(template, persons, font1, font2 = ''):
     if not font2:
-      font2 = font1
+        font2 = font1
 
     font1 = load_font(font1, 32)
     font2 = load_font(font2, 24)
