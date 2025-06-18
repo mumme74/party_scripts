@@ -66,5 +66,18 @@ class TestJSON(unittest.TestCase):
             {'col1':'row3vlu1','col2':'row3vlu2','col3':'row3vlu3','col4':'row3vlu4'}
         ])
 
+# ----------------------------------
+class TestXLSX(unittest.TestCase):
+    def test_open_json(self):
+        path = file_dir / "test.xlsx"
+        rows = read_data(path)
+        self.assertEqual(len(rows), 3)
+        self.assertCountEqual(rows,[
+            {'col1':'row1vlu1','col2':'row1vlu2','col3':'row1vlu3','Col4':None},
+            {'col1':'row2vlu1','col2':'row2vlu2','col3':'row2vlu3','Col4':None},
+            {'col1':'row3vlu1','col2':'row3vlu2','col3':'row3vlu3','Col4':'row3vlu4'}
+        ])
+
+
 if __name__ == "__main__":
     unittest.main()

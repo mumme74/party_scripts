@@ -4,7 +4,9 @@ from pathlib import Path
 
 import openpyxl.utils
 import openpyxl.utils.exceptions
-from .exceptions import *
+from .exceptions import ReadFileException, \
+                        ReadFileNotFound, \
+                        ReadFileUnhandledFormat
 
 def read_data(path: Path) -> list:
     """The root function to read files
@@ -34,7 +36,7 @@ def _route_to_reader(path: Path, file):
         case '.csv': return _read_csv(path, file, ';')
         case '.tsv': return _read_csv(path, file, '\t')
         case '.json': return _read_json(path, file)
-        case '.xslx': return _read_xlsx(path, file)
+        case '.xlsx': return _read_xlsx(path, file)
         case _: raise ReadFileUnhandledFormat(path, f'{path.suffix} is not handled')
 
 def _read_csv(path, file, delimiter):
@@ -66,10 +68,19 @@ def _read_xlsx(path, file):
     try:
         frm = openpyxl.load_workbook(path)
         book = frm.active
+        hdrs = [c.internal_value for r in book.iter_rows(1,1) 
+                for c in r if c.internal_value]
+        def col_from_idx(i):
+            return hdrs[i] if i < len(hdrs) else f'Col{i+1}'
+       
         rows = []
-        for row in book.iter_rows(1, book.max_row):
-            for col in book.iter_cols(1, book.max_column):
-                rows.append(col[row].value)
+        # read in all the rows
+        for row in book.iter_rows(2, book.max_row):
+            r = {col_from_idx(i):v.internal_value 
+                    for i,v in enumerate(row)}
+            if len(r.keys()) < 2:
+                raise csv.Error('Bad format')
+            rows.append(r)
         return rows
     except openpyxl.utils.exceptions.InvalidFileException as e:
         raise ReadFileException(path, f'{e}')
