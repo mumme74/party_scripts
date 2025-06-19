@@ -88,7 +88,7 @@ class Table:
         if len(row) >= keys['prio_dept'] + 1:
             for dept in row[keys['prio_dept']].split(' '):
                 dep = AllDepartments.ref().get_department(dept)
-                if dep.key == 'unk':
+                if dep.id == 'unk':
                     print(f'**** {dept} is not among registered departments')
                     exit(1)
                 self.prio_dept.append(dep)

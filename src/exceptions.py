@@ -23,6 +23,9 @@ class ReadFileUnhandledFormat(ReadFileException):
     """When trying to open an unhandled format"""
     pass
 
+class InputDataBadFormat(ReadFileException):
+    """When input has wrong format"""
+
 class DuplicatePersonException(AppException):
     """When a person is included twice
 
