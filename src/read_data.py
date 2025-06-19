@@ -10,9 +10,9 @@ from .exceptions import ReadFileException, \
                         DataRetrivalError
 
 class DataRow:
-    def __init__(self, owner):
+    def __init__(self, owner, data=()):
         self.owner = owner
-        self.data = ()
+        self.data = tuple(data)
 
     def __getitem__(self, col):
         try:

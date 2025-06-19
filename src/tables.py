@@ -2,25 +2,34 @@ from pathlib import Path
 from .read_data import read_data
 from .departments import AllDepartments
 from .persons import AllPersons
+from .exceptions import DataRetrivalError
 from collections import Counter
 
-
 class AllTables:
-    def __init__(self, table_tsv):
+    def __init__(self, project):
         assert not hasattr(AllTables, '_instance')
         AllTables._instance = self
 
-        self.tsv = table_tsv
+        self.project = project
+        self.settings = project.settings['tables']
+        self.data_file = self.settings['file']
         self.tables = []
         self.is_placed = False
-        keys = {'ID':0, 'num_seats':1, 'prio_dept':2}
 
-        for row in read_data(table_tsv):
-            self.tables.append(Table(row, keys))
+        for row in read_data(self.data_file):
+            self.tables.append(Table(row, self.settings['hdrs']))
 
     @classmethod
     def ref(cls):
+        if not hasattr(cls, '_instance'):
+            from .project import Project
+            cls._instance = AllTables(Project.ref().settings)
         return cls._instance
+    
+    @classmethod
+    def reset(cls):
+        if hasattr(cls, '_instance'):
+            del cls._instance
     
     def find_table_to(self, num_pers):
         tbls = sorted([(t, t.free_seats()) for t in self.tables], 
@@ -40,8 +49,7 @@ class AllTables:
         deps = all_pers.departments().most_common() # sort largest table first
 
         if len(persons) > self.total_num_seats():
-            print(f'*** Det finns inte tillräckligt med platser, för alla personer!')
-            exit(1)
+            raise DataRetrivalError(f'*** Det finns inte tillräckligt med platser, för alla personer!')
 
         # first place prioritized tables
         for table in [t for t in self.tables if t.prio_dept]:
@@ -56,7 +64,7 @@ class AllTables:
             # loop from department level trying to keep them together
             for dep, num in deps: 
                 placed = 0
-                for p in filter(lambda p: p.dept.key == dep and \
+                for p in filter(lambda p: p.dept.id == dep and \
                                 not p.placed_at_tbl, persons):
                     # possibly change table
                     if not table or table.free_seats() == 0:
@@ -78,10 +86,9 @@ class AllTables:
 
         self.is_placed = True
 
-
 class Table:
     def __init__(self, row, keys):
-        self.id = row[keys['ID']]
+        self.id = row[keys['id']]
         self.num_seats = int(row[keys['num_seats']])
         self.persons = []
         self.prio_dept = []
@@ -89,15 +96,14 @@ class Table:
             for dept in row[keys['prio_dept']].split(' '):
                 dep = AllDepartments.ref().get_department(dept)
                 if dep.id == 'unk':
-                    print(f'**** {dept} is not among registered departments')
-                    exit(1)
+                    raise DataRetrivalError(f'**** {dept} is not among registered departments')
                 self.prio_dept.append(dep)
 
     def departments(self):
         "Return how many persons from each department at this table"
         cnt = Counter()
         for p in self.persons:
-            cnt.update((p.dept.desc,))
+            cnt.update((p.dept.name,))
         return cnt
     
     def free_seats(self):

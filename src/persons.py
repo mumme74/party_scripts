@@ -1,56 +1,71 @@
 from collections import Counter
+from datetime import datetime
 from .departments import AllDepartments
 from .read_data import read_data
+from .exceptions import DuplicatePersonException
 
 class AllPersons:
-    def __init__(self, tsv):
+    def __init__(self, project):
         assert not hasattr(AllPersons, '_instance')
         AllPersons._instance = self
 
-        self.tsv = tsv
+        self.unique_check = set()
         self.persons = []
-        keys = {
-            'date':0, 'mail':1, 'first_name':2, 'last_name': 3, 
-            'department':4, 'special_meals':5
-        }
 
-        for row in read_data(tsv):
-            self.add(row, keys)
+        self.project = project
+        self.settings = project.settings['persons']
+
+        for row in read_data(self.settings['file']):
+            self.add(row)
 
     @classmethod
     def ref(cls):
+        if not hasattr(cls, '_instance'):
+            from .project import Project
+            cls._instance = AllPersons(Project.ref().settings)
         return cls._instance
     
-    def add(self, data, keys):
+    @classmethod
+    def reset(cls):
+        if hasattr(cls, '_instance'):
+            del cls._instance
+
+    def add(self, data):
         "Add a new person"
-        p = Person(data, keys)
+        p = Person(data, self.settings['hdrs'], 
+                   self.settings['nope_expressions'])
+        if (p.fname, p.lname, p.email) in self.unique_check:
+            raise DuplicatePersonException(p, f'Duplicate entry of person {p.fname} {p.lname}  {p.email}')
+        self.unique_check.add( (p.fname, p.lname, p.email))
         self.persons.append(p)
     
     def departments(self):
         "Return count of all departments"
         deps = Counter()
         for p in self.persons:
-            deps.update((p.dept.key,))
+            deps.update((p.dept.id,))
         return deps
     
-    def special_meals(self):
-        "Return all special meals"
-        meals = Counter()
+    def special_foods(self):
+        "Return all special foods"
+        foods = Counter()
         for p in self.persons:
-            meals.update((p.special_meals,))
-        return meals
+            foods.update((p.special_foods,))
+        return foods
 
 class Person:
-    def __init__(self, data, keys):
-        self.fname = data[keys['first_name']].strip()
-        self.lname = data[keys['last_name']].strip()
-        self._dept_str = data[keys['department']].strip()
+    def __init__(self, data, keys, no_exprs):
+        self.fname = data[keys['fname']].strip()
+        self.lname = data[keys['lname']].strip()
+        self._dept_str = data[keys['dept']].strip()
         self.dept = AllDepartments.ref().get_department(self._dept_str)
-        self.special_meals = data[keys['special_meals']].strip().replace('.','')
-        if self.special_meals.lower() in ['-', '--', 'nej', 'nope','no','none','inga']:
-            self.special_meals = ''
-        self.mail = data[keys['mail']].strip()
-        self.registered_date = data[keys['date']].strip()
+        self.special_foods = data[keys['special_foods']].strip().replace('.','')
+        if self.special_foods.lower() in no_exprs:
+            self.special_foods = ''
+        self.email = data[keys['email']].strip()
+        self.registered_date = datetime.strptime(
+            data[keys['date']].strip(),
+            '%Y-%m-%d %H.%M.%S')
         self.placed_at_tbl = None
 
     def placed_at_table(self):

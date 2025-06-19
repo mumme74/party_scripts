@@ -10,9 +10,9 @@ from .persons import AllPersons
 A4_h = Cm(29.7)
 A4_w = Cm(21.0)
 
-prj_dir = Path(__file__).parent.parent
+def create_special_foods_report(project):
+    output_dir = Path(project.settings['output_folder'])
 
-def create_special_foods_report():
     doc = Document()
 
     # set margins
@@ -27,20 +27,21 @@ def create_special_foods_report():
     doc.add_heading('Specialkost', 0)
     doc_tbl = doc.add_table(0, 3)
 
-    persons = [p for p in sorted(AllPersons.ref().persons) if p.special_meals]
+    persons = [p for p in sorted(AllPersons.ref().persons) 
+               if p.special_foods]
 
     for i, p in enumerate(persons):
         row = doc_tbl.add_row()
         row.cells[0].width = Cm(1)
         row.cells[0].paragraphs[0].add_run(f'{i+1}')
-        row.cells[1].paragraphs[0].add_run(f'{p.fname} {p.lname}  ').bold = True
-        row.cells[2].paragraphs[0].add_run(f'{p.special_meals}').bold = True
+        row.cells[1].paragraphs[0].add_run(f'{p.fname} {p.lname}').bold = True
+        row.cells[2].paragraphs[0].add_run(f'{p.special_foods}').bold = True
 
     doc.add_page_break()
 
     doc.add_heading('Specialkost vid resp. bord')
     for tbl in AllTables.ref().tables:
-        if 0 == any(p.special_meals != '' for p in tbl.persons):
+        if 0 == any(p.special_foods != '' for p in tbl.persons):
             continue
         heading = f'{tbl.id} \t{", ".join(tbl.departments())}'
         pr = doc.add_heading(heading, level=1)
@@ -48,17 +49,15 @@ def create_special_foods_report():
         doc_tbl = doc.add_table(0, 3)
 
         for i, p in enumerate(tbl.persons):
-            if not p.special_meals:
+            if not p.special_foods:
                 continue
             row = doc_tbl.add_row()
             row.cells[0].width = Cm(1)
             row.cells[0].paragraphs[0].add_run(f'{i+1}')
             row.cells[1].paragraphs[0].add_run(f'{p.fname} {p.lname}  ').bold = True
-            row.cells[2].paragraphs[0].add_run(f'{p.special_meals}').italic = True
+            row.cells[2].paragraphs[0].add_run(f'{p.special_foods}').italic = True
 
         
         doc.add_paragraph()
 
-
-
-    doc.save(prj_dir / 'outdata' / 'special_foods.docx')
+    doc.save(output_dir / 'special_foods.docx')

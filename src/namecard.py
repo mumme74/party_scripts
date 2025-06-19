@@ -6,8 +6,6 @@ import urllib.error, urllib.request
 import configparser, os, zipfile
 
 prj_dir = Path(__file__).parent.parent
-
-
 dir_path = Path(__file__).absolute().parent
 
 # search paths to find fonts
@@ -85,7 +83,10 @@ def clear_old_cards():
             os.remove(prj_dir / 'outdata' / file)
 
 
-def create_name_cards(template, persons, font_1, font_2 = ''):
+def create_name_cards(project, template, persons, font_1, font_2 = ''):
+    sett = project.settings['templates']['namecard']
+    template = sett['file']
+
     if not font_2:
         font_2 = font_1
 
@@ -111,7 +112,7 @@ def create_name_cards(template, persons, font_1, font_2 = ''):
         img_draw = ImageDraw.Draw(card)
         img_draw.rectangle([(0,0),(w-1,h-1)], outline=(0,0,0))
         name = f'{p.fname} {p.lname}'
-        dept = f'{p.dept.desc}'
+        dept = f'{p.dept.name}'
         _, _, w1, h1 = img_draw.textbbox((0,0), name, font1)
         _, _, w2, h2 = img_draw.textbbox((0,0), dept, font2)
         img_draw.text(((w-w1)//2, 270), name, font=font1, fill=(0,0,0))

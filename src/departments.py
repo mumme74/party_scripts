@@ -3,33 +3,34 @@ from .read_data import read_data
 from .exceptions import InputDataBadFormat, \
                         DataRetrivalError
 
-def_hdrs = {
-    'id': 'ID',
-    'name':'Name',
-    'syn': 'Synonyms'
-}
-
 class AllDepartments:
-    def __init__(self, data_file, hdrs=def_hdrs):
+    def __init__(self, project):
         # singleton
         assert not hasattr(AllDepartments, '_instance')
         AllDepartments._instance = self
 
         # default self.departments include unknown
+        self.project = project
+        dept = project.settings['departments']
         self.departments = [Dept('unk', 'Unknown', [])]
-        self.data_file = data_file
+        self.data_file = dept['file']
         try:
-            for row in read_data(data_file):
-                key = row[hdrs['id']]
-                name = row[hdrs['name']]
-                syn = [row[k] for k in row.keys() 
-                    if k not in ['id', 'name'] and row[k]]
+            for row in read_data(self.data_file):
+                key = row[dept['hdrs']['id']]
+                name = row[dept['hdrs']['name']]
+                syn = row[dept['hdrs']['syn']]
+                if not isinstance(syn, (list, tuple)):
+                    syn = [row[k] for k in row.keys() 
+                        if k not in ['id', 'name'] and row[k]]
                 self.departments.append(Dept(key, name, syn))
         except (KeyError, DataRetrivalError) as e:
-            raise InputDataBadFormat(data_file, f'Input data, bad format {e}')
-        
+            raise InputDataBadFormat(self.data_file, f'Input data, bad format {e}')
+
     @classmethod
     def ref(cls):
+        if not hasattr(cls, '_instance'):
+            from .project import Project
+            cls._instance = AllDepartments(Project.ref().settings)
         return cls._instance
     
     @classmethod

@@ -6,6 +6,8 @@ from src.namecard import create_name_cards
 from src.namecards_docx import create_namecard_docx
 from src.tables_docx import create_table_report
 from src.special_foods import create_special_foods_report
+from src.project import Project
+from src.exceptions import *
 from pathlib import Path
 from argparse import ArgumentParser
 
@@ -16,10 +18,10 @@ rootdir = Path(__file__).parent
 parser = ArgumentParser(prog='Skapa bordsplacerings brickor')
 parser.add_argument('--tsv', type=str, help='Path to the source data file for persons', 
                     default=rootdir / 'indata/party.tsv', nargs='?')
-parser.add_argument('--template', type=str, help='Path to the template to build each card from',
+parser.add_argument('--namecard_template', type=str, help='Path to the template to build each card from',
                     default=rootdir / 'templates/default.png', nargs='?')
 parser.add_argument('--departments', type=str, help='Path to all departments and their synonyms',
-                    default=rootdir / 'templates/dept_synonyms.json', nargs='?')
+                    default=rootdir / 'indata/departments.json', nargs='?')
 parser.add_argument('--create-namecards', type=bool, help='Create new namecards',
                     default=True, nargs='?')
 parser.add_argument('--place-at-tables', type=bool, default=True, nargs='?',
@@ -30,30 +32,62 @@ parser.add_argument('--table-signs-template-docx', type=bool, help='The path to 
                     default=rootdir / 'templates/table_sign_default.docx', nargs='?')
 parser.add_argument('--special-foods', type=bool, help='Produce a list with all special foods',
                     default=True, nargs='?')
+parser.add_argument('project', type=str, help='Path to projectfile',
+                    default='', nargs='?')
 args = parser.parse_args()
 
-# init singletons
-depts = AllDepartments(args.departments)
-persons = AllPersons(args.tsv)
-
-# debug print how many for each dept.
-for dep, v in persons.departments().most_common():
-    print(f'{dep.upper()}: {v}')
-print()
-
-if args.place_at_tables:
-    tables = AllTables(args.tables)
-    tables.place_persons()
-    create_table_report(args.table_signs_template_docx)
-
-# create new namecard images
-if args.create_namecards:
+def place_at_tables(project):
     if args.place_at_tables:
-        pers = [p for t in AllTables.ref().tables for p in t.persons]
-    else:
-        pers = sorted(persons.persons)
-    create_name_cards(args.template, pers, "Lucida Handwriting STD")
-    create_namecard_docx()
+        project.tables.place_persons()
+        create_table_report(project)
 
-if args.special_foods:
-    create_special_foods_report()
+def namecards(project):
+    if args.create_namecards:
+        if args.place_at_tables:
+            pers = [p for t in project.tables.tables for p in t.persons]
+        else:
+            pers = sorted(project.persons)
+        create_name_cards(project, args.namecard_template, pers, "Lucida Handwriting STD")
+        create_namecard_docx(project)
+
+def special_foods(project):
+    if args.special_foods:
+        create_special_foods_report(project)
+
+def dbg_print_dept(project):
+    # debug print how many for each dept.
+    deps = project.persons.departments()
+    for dep, v in deps.most_common():
+        print(f'{dep.upper()}: {v}')
+    print()
+
+def switches(project):
+    s = project.settings
+    s['persons']['file'] = args.tsv
+    s['templates']['namecard']['file'] = args.namecard_template
+    s['departments']['file'] = args.departments
+    s['tables']['file'] = args.tables
+    project.reload()
+
+def main():
+    project = Project()
+    try:
+        if args.project:
+            project.open_project(args.project.settings)
+        else:
+            switches(project)
+
+        dbg_print_dept(project)
+        place_at_tables(project)
+        namecards(project)
+        special_foods(project)
+
+    except (ReadFileException) as e:
+        print(f'**File error: {e.file}\n{e}')
+    except IOError as e:
+        print(f'**IO Error: {e}')
+    except AppException as e:
+        print(f'**Error: {e}')
+
+if __name__ == '__main__':
+    main()

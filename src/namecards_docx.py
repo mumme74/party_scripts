@@ -8,14 +8,13 @@ from docx.enum.table import WD_ALIGN_VERTICAL
 A4_h = Cm(29.7)
 A4_w = Cm(21.0)
 
-prj_dir = Path(__file__).parent.parent
+def create_namecard_docx(project):
+    output_dir = Path(project.settings['output_folder'])
 
-def all_png_files():
-  return [fn for fn in (prj_dir/'outdata').iterdir() 
-            if fn.suffix == '.png']
-
-def create_namecard_docx():
     # Create a new document
+    def all_png_files():
+        return [fn for fn in output_dir.iterdir() 
+                    if fn.suffix == '.png']
     doc = Document()
 
     # set margins
@@ -45,12 +44,9 @@ def create_namecard_docx():
         format.space_before = Cm(0.0)
         format.space_after = Cm(0.3)
         # add new image
-        pic = p.add_run().add_picture(str(prj_dir / 'outdata' / png), width=Pt(300))
+        pic = p.add_run().add_picture(str(output_dir / png), width=Pt(300))
         if (i+1) % 2 == 0: # add new row each 2nd cell
             cells = tbl.add_row().cells
         
     # Save the document
-    doc.save(prj_dir / 'outdata' / 'namecards.docx')
-
-if __name__ == "__main__":
-    create_namecard_docx()
+    doc.save(output_dir / 'namecards.docx')
