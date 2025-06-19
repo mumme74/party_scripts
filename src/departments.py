@@ -1,6 +1,7 @@
 from pathlib import Path
 from .read_data import read_data
-from .exceptions import InputDataBadFormat
+from .exceptions import InputDataBadFormat, \
+                        DataRetrivalError
 
 def_hdrs = {
     'id': 'ID',
@@ -24,7 +25,7 @@ class AllDepartments:
                 syn = [row[k] for k in row.keys() 
                     if k not in ['id', 'name'] and row[k]]
                 self.departments.append(Dept(key, name, syn))
-        except KeyError as e:
+        except (KeyError, DataRetrivalError) as e:
             raise InputDataBadFormat(data_file, f'Input data, bad format {e}')
         
     @classmethod

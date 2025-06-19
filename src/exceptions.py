@@ -25,6 +25,11 @@ class ReadFileUnhandledFormat(ReadFileException):
 
 class InputDataBadFormat(ReadFileException):
     """When input has wrong format"""
+    pass
+
+class DataRetrivalError(AppException):
+    """When trying to get an invalid value"""
+    pass
 
 class DuplicatePersonException(AppException):
     """When a person is included twice
