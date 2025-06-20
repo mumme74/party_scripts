@@ -57,7 +57,7 @@ class Person:
             '%Y-%m-%d %H.%M.%S')
         self.placed_at_tbl = None
 
-    def placed_at_table(self):
+    def table_id(self):
         if self.placed_at_table:
             return self.placed_at_tbl.id
         return ""

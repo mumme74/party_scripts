@@ -5,9 +5,6 @@ from .exceptions import InputDataBadFormat, \
 
 class AllDepartments:
     def __init__(self, project):
-        # singleton
-        assert not hasattr(AllDepartments, '_instance')
-        AllDepartments._instance = self
 
         # default self.departments include unknown
         self.project = project

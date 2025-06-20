@@ -3,6 +3,7 @@ import unittest
 from pathlib import Path
 from src.departments import Dept, AllDepartments
 from src.exceptions import InputDataBadFormat
+from mocks import *
 
 file_dir = Path(__file__).parent / "data"
 test_data = file_dir / "test_departments.xlsx"
@@ -10,7 +11,9 @@ test_data = file_dir / "test_departments.xlsx"
 class TestDept(unittest.TestCase):
     def setUp(self):
         super().setUp()
-        self.dep = Dept("keY","DeSc",["SynOnymS","syn"])
+        self.project = MockProject()
+        self.project.departments = \
+            self.dep = Dept("keY","DeSc",["SynOnymS","syn"])
     
     def test_constructor(self):
         self.assertEqual(self.dep.id,"key")
@@ -51,21 +54,23 @@ class TestDept(unittest.TestCase):
 class TestAllDepartments(unittest.TestCase):
     def setUp(self):
         super().setUp()
-        AllDepartments.reset()
+        self.project = MockProject()
+        self.departments = AllDepartments(self.project)
 
     def test_constructor_default(self):
-        dep = AllDepartments(test_data)
+        dep = AllDepartments(self.project)
         self.assertEqual(len(dep.departments), 5)
         for i,d in enumerate(['unk','prod','maint','adm','sale']):
             self.assertEqual(dep.departments[i], d)
 
     def test_constructor_headers(self):
-        hdrs = {'id':'fail','name':'no_name','syn':'other'}
+        self.project.settings['departments']['hdrs'] =\
+            {'id':'fail','name':'no_name','syn':'other'}
         self.assertRaises(InputDataBadFormat,
-                          lambda: AllDepartments(test_data, hdrs))
+                          lambda: AllDepartments(self.project))
 
     def test_get_department(self):
-        dep = AllDepartments(test_data)
+        dep = AllDepartments(self.project)
         self.assertEqual("prod", dep.get_department("Production").id)
         self.assertEqual("prod", dep.get_department("fActorY WoRker").id)
         self.assertEqual("unk", dep.get_department("Dont_find").id)
