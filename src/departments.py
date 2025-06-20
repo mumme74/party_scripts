@@ -25,18 +25,6 @@ class AllDepartments:
                 self.departments.append(Dept(key, name, syn))
         except (KeyError, DataRetrivalError) as e:
             raise InputDataBadFormat(self.data_file, f'Input data, bad format {e}')
-
-    @classmethod
-    def ref(cls):
-        if not hasattr(cls, '_instance'):
-            from .project import Project
-            cls._instance = AllDepartments(Project.ref().settings)
-        return cls._instance
-    
-    @classmethod
-    def reset(cls):
-        if hasattr(cls, '_instance'):
-            del cls._instance
     
     def get_department(self, str):
         for d in self.departments:

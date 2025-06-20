@@ -66,12 +66,6 @@ class Project:
         self.departments = None
         self.tables = None
         self.persons = None
-    
-    @classmethod
-    def ref(cls):
-        if not cls._instance:
-            cls._instance = Project()
-        return cls._instance
 
     def open_project(self, prj_file):
         try:

@@ -17,19 +17,7 @@ class AllTables:
         self.is_placed = False
 
         for row in read_data(self.data_file):
-            self.tables.append(Table(row, self.settings['hdrs']))
-
-    @classmethod
-    def ref(cls):
-        if not hasattr(cls, '_instance'):
-            from .project import Project
-            cls._instance = AllTables(Project.ref().settings)
-        return cls._instance
-    
-    @classmethod
-    def reset(cls):
-        if hasattr(cls, '_instance'):
-            del cls._instance
+            self.tables.append(Table(row, self.project))
     
     def find_table_to(self, num_pers):
         tbls = sorted([(t, t.free_seats()) for t in self.tables], 
@@ -44,7 +32,7 @@ class AllTables:
     
     def place_persons(self):
         "Try to seat all persons at tables with their department"
-        all_pers = AllPersons.ref()
+        all_pers = self.project.persons
         persons = sorted(all_pers.persons)
         deps = all_pers.departments().most_common() # sort largest table first
 
@@ -87,14 +75,15 @@ class AllTables:
         self.is_placed = True
 
 class Table:
-    def __init__(self, row, keys):
+    def __init__(self, row, project):
+        keys = project.settings['tables']['hdrs']
         self.id = row[keys['id']]
         self.num_seats = int(row[keys['num_seats']])
         self.persons = []
         self.prio_dept = []
         if len(row) >= keys['prio_dept'] + 1:
             for dept in row[keys['prio_dept']].split(' '):
-                dep = AllDepartments.ref().get_department(dept)
+                dep = project.departments.get_department(dept)
                 if dep.id == 'unk':
                     raise DataRetrivalError(f'**** {dept} is not among registered departments')
                 self.prio_dept.append(dep)

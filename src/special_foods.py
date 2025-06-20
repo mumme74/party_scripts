@@ -27,7 +27,7 @@ def create_special_foods_report(project):
     doc.add_heading('Specialkost', 0)
     doc_tbl = doc.add_table(0, 3)
 
-    persons = [p for p in sorted(AllPersons.ref().persons) 
+    persons = [p for p in sorted(project.persons.persons) 
                if p.special_foods]
 
     for i, p in enumerate(persons):
@@ -40,7 +40,7 @@ def create_special_foods_report(project):
     doc.add_page_break()
 
     doc.add_heading('Specialkost vid resp. bord')
-    for tbl in AllTables.ref().tables:
+    for tbl in project.tables.tables:
         if 0 == any(p.special_foods != '' for p in tbl.persons):
             continue
         heading = f'{tbl.id} \t{", ".join(tbl.departments())}'

@@ -18,22 +18,9 @@ class AllPersons:
         for row in read_data(self.settings['file']):
             self.add(row)
 
-    @classmethod
-    def ref(cls):
-        if not hasattr(cls, '_instance'):
-            from .project import Project
-            cls._instance = AllPersons(Project.ref().settings)
-        return cls._instance
-    
-    @classmethod
-    def reset(cls):
-        if hasattr(cls, '_instance'):
-            del cls._instance
-
     def add(self, data):
         "Add a new person"
-        p = Person(data, self.settings['hdrs'], 
-                   self.settings['nope_expressions'])
+        p = Person(data, self.project)
         if (p.fname, p.lname, p.email) in self.unique_check:
             raise DuplicatePersonException(p, f'Duplicate entry of person {p.fname} {p.lname}  {p.email}')
         self.unique_check.add( (p.fname, p.lname, p.email))
@@ -54,11 +41,13 @@ class AllPersons:
         return foods
 
 class Person:
-    def __init__(self, data, keys, no_exprs):
+    def __init__(self, data, project):
+        keys = project.settings['persons']['hdrs']
+        no_exprs = project.settings['persons']['nope_expressions']
         self.fname = data[keys['fname']].strip()
         self.lname = data[keys['lname']].strip()
         self._dept_str = data[keys['dept']].strip()
-        self.dept = AllDepartments.ref().get_department(self._dept_str)
+        self.dept = project.departments.get_department(self._dept_str)
         self.special_foods = data[keys['special_foods']].strip().replace('.','')
         if self.special_foods.lower() in no_exprs:
             self.special_foods = ''

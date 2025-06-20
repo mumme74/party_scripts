@@ -28,7 +28,7 @@ def create_table_report(project):
         sec.page_width = A4_w
 
     # one page for each table
-    for i, tbl in enumerate(AllTables.ref().tables):
+    for i, tbl in enumerate(project.tables.tables):
         if i > 0:
             doc.add_page_break()
         doc.add_heading('Bordsplacering', 0)
