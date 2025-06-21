@@ -2,12 +2,23 @@ from collections import Counter
 from datetime import datetime
 from .departments import AllDepartments
 from .read_data import read_data
-from .exceptions import DuplicatePersonException
+from .exceptions import DuplicatePersonException, \
+                        InputDataBadFormat
+
+def parse_date(date_str, file):
+    for ds in ['%Y-%m-%d %H.%M.%S',
+               '%Y-%m-%d %H:%M:%S',
+               '%Y-%m-%dT%H.%M.%SZ',
+               '%Y-%m-%d',
+               '%d/%m/%Y']:
+        try:
+            return datetime.strptime(date_str.strip(),ds)
+        except ValueError:
+            pass
+    raise InputDataBadFormat(file, f'Could not convert date, invalid format {date_str}')
 
 class AllPersons:
     def __init__(self, project):
-        assert not hasattr(AllPersons, '_instance')
-        AllPersons._instance = self
 
         self.unique_check = set()
         self.persons = []
@@ -52,13 +63,13 @@ class Person:
         if self.special_foods.lower() in no_exprs:
             self.special_foods = ''
         self.email = data[keys['email']].strip()
-        self.registered_date = datetime.strptime(
+        self.registered_date = parse_date(
             data[keys['date']].strip(),
-            '%Y-%m-%d %H.%M.%S')
+            project.settings['persons']['file'])
         self.placed_at_tbl = None
 
     def table_id(self):
-        if self.placed_at_table:
+        if self.placed_at_tbl:
             return self.placed_at_tbl.id
         return ""
 

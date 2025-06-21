@@ -117,5 +117,5 @@ def create_name_cards(project, template, persons, font_1, font_2 = ''):
         _, _, w2, h2 = img_draw.textbbox((0,0), dept, font2)
         img_draw.text(((w-w1)//2, 270), name, font=font1, fill=(0,0,0))
         img_draw.text(((w-w2)//2, 330), dept, font=font2, fill=(0,0,0))
-        img_draw.text((13,3), p.placed_at_table(), font=font3, fill="#999999")
+        img_draw.text((13,3), p.table_id(), font=font3, fill="#999999")
         card.save(prj_dir / 'outdata' / f'{i}.png')

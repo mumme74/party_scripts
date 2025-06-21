@@ -7,8 +7,6 @@ from collections import Counter
 
 class AllTables:
     def __init__(self, project):
-        assert not hasattr(AllTables, '_instance')
-        AllTables._instance = self
 
         self.project = project
         self.settings = project.settings['tables']

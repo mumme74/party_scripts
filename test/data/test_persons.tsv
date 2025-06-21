@@ -1,0 +1,235 @@
+date	email	fname	lname	dept	special foods
+2025-06-20 00:41:28	elisabet43@example.com	Thomas	Johansson	Maintence	nut
+2025-05-27 14:08:56	jonassonjohn@example.org	Eva	Hermansson	Assembly	glutenfri
+2025-06-01 17:29:09	xbrodin@example.net	Ruth	Jafari	Administration	nöt
+2025-06-09 01:22:35	annica06@example.com	Philip	Olsson	adm	seafood
+2025-05-26 14:20:27	davidolofsson@example.org	Urban	Axelsson	adm	fisk
+2025-05-23 13:49:47	david85@example.org	Bert	Nilsson	Administration	lactosfri
+2025-06-21 08:28:25	jhagg@example.org	Veronica	Gustafsson	Maintence	
+2025-06-12 15:31:30	baberg@example.org	Alfred	Petersson	maint	seafood
+2025-05-23 13:47:34	oolsson@example.com	Anders	Pettersson	maint	
+2025-06-01 03:46:03	karlljunggren@example.com	Harry	Johansson	Mechanic	pescatarian
+2025-05-30 06:01:34	karlssonmagdalena@example.org	Anders	Grahn	maint	seafood
+2025-06-10 14:18:31	lonnjohn@example.net	Kristina	Gustavsson	Administration	
+2025-05-31 01:27:35	granbergfatima@example.net	Folke	Abrahamsson	Maintence	lactosfri
+2025-05-26 02:34:21	freja64@example.org	Matheo	Lindén	Administration	nöt
+2025-06-01 10:43:20	koberg@example.org	Margareta	Nilsson	Maintence	glutenfri
+2025-05-22 18:26:07	rharaldsson@example.org	Hans	Andersson	Maintence	
+2025-06-14 13:58:23	nilssonchristina@example.net	Kristina	Olsson	seller	fisk
+2025-05-26 13:03:58	wnilsson@example.com	Lars	Johansson	maint	nöt
+2025-06-09 14:55:02	marina99@example.org	Ernst	Karlsson	sales	
+2025-06-10 02:48:41	jamaleriksson@example.com	Martina	Mattsson	Factory worker	glutenfri
+2025-06-06 23:19:39	monaandersson@example.org	Britta	Henriksson	maint	pescatarian
+2025-06-03 08:54:47	zeriksson@example.com	Margareta	Jakobsson	Factory worker	seafood
+2025-05-30 06:47:37	christinapersson@example.org	Mikael	Jansson	seller	lactosfri
+2025-06-05 18:10:38	johanssontherese@example.net	Kerstin	Hallgren	Factory worker	
+2025-05-23 03:14:48	jan02@example.com	Birgitta	Berg	maint	
+2025-06-18 03:22:35	nlovgren@example.com	Cecilia	Hallberg	sales	nöt
+2025-06-17 14:49:24	friskelisabet@example.com	Eva-Lena	Nilsson	Manufacture	nöt
+2025-05-27 22:18:39	kjell12@example.org	Marie	Lindqvist	sale	nut
+2025-05-30 08:54:58	majagustafsson@example.net	Junior	Gustafsson	Mechanic	seafood
+2025-06-16 02:00:38	qjonsson@example.com	Svante	Nilsson	sales	nöt
+2025-05-22 23:13:07	elvirasandberg@example.com	Jan	Jakobsson	adm	lactosfri
+2025-06-06 07:25:53	mariaoberg@example.net	Clas	Hansson	prod	fisk
+2025-05-31 01:34:17	ingegard40@example.com	Sven	Sjögren	adm	nöt
+2025-05-26 20:51:27	jan-eriklindgren@example.com	Gustaf	Selin	sales	fisk
+2025-06-17 03:31:37	elisabeth10@example.net	Bernhard	Lindgren	Administration	pescatarian
+2025-06-17 14:48:24	hlindstrom@example.com	Maria	Mohammad	Factory worker	lactosfri
+2025-06-04 13:12:11	stigborgstrom@example.com	Elma	Larsson	Manufacture	nut
+2025-05-24 15:23:20	johanssonthomas@example.com	Brita	Steen	Economy	pescatarian
+2025-06-04 18:06:50	anderssonlillemor@example.com	Tova	Olsson	Maintence	nut
+2025-06-05 21:25:36	hjonsson@example.org	Margareta	Lindström	sales	
+2025-06-01 10:29:33	svanbergisabella@example.net	Teresa	Söderberg	Administration	glutenfri
+2025-06-15 11:42:34	qblom@example.org	Stig	Höglund	prod	fisk
+2025-06-11 23:02:25	anderssonolof@example.com	Lovisa	Petersson	Maintence	pescatarian
+2025-05-31 20:50:41	fredrikssongunilla@example.com	Folke	Danielsson	Factory worker	nut
+2025-06-06 23:24:24	bosman@example.com	Bengt	Andersson	seller	nut
+2025-06-18 22:33:54	ingrid55@example.com	Eva	Davidsson	sales	
+2025-06-13 14:58:45	njohansson@example.org	Hannes	Nilsson	sales	
+2025-06-04 23:08:10	bjorkwilliam@example.net	Hans	Lind	Assembly	glutenfri
+2025-06-13 02:42:01	kjansson@example.org	Kjell	Olsson	Assembly	seafood
+2025-05-29 18:22:35	aandersson@example.org	Åsa	Hedin	Mechanic	fisk
+2025-05-23 18:09:14	thomasjohansson@example.net	Frida	Tran	maint	nöt
+2025-06-19 12:34:09	anna61@example.net	Ann-Sofie	Persson	Manufacture	nöt
+2025-05-23 21:04:42	bengt83@example.org	Anneli	Wallin	Mechanic	pescatarian
+2025-06-11 22:03:46	emilie41@example.com	Max	Svärd	Maintence	seafood
+2025-06-04 18:37:04	ostlunderik@example.org	Mats	Johansson	sale	fisk
+2025-05-25 11:16:40	oliviamagnusson@example.org	Josef	Nilsson	sales	seafood
+2025-06-20 20:17:08	thomas53@example.net	Kristina	Carlsson	Factory worker	nöt
+2025-06-03 14:56:23	goranjonsson@example.net	Jan	Sjögren	Mechanic	seafood
+2025-06-19 21:24:17	lundgrenanders@example.org	Margareta	Johansson	Assembly	
+2025-06-10 23:35:22	nilssonbo@example.net	Per	Lundqvist	maint	glutenfri
+2025-06-15 06:37:44	zkarlsson@example.com	Erik	Eriksson	sale	lactosfri
+2025-06-09 05:01:07	elvira96@example.com	Åke	Andersson	sale	fisk
+2025-06-13 09:32:37	fbengtsson@example.org	Jenny	Bengtsson	Economy	lactosfri
+2025-06-13 18:32:56	anneliwallin@example.net	Marianne	Nguyen	Mechanic	nut
+2025-05-23 08:30:12	marianne87@example.org	Ingemar	Hermansson	seller	lactosfri
+2025-05-28 13:58:26	johanssonharry@example.org	Gun-Britt	Aronsson	Administration	pescatarian
+2025-06-06 03:23:46	erik28@example.com	Marianne	Gashi	maint	nöt
+2025-06-17 19:39:45	birgitta43@example.net	Tony	Brännström	Factory worker	glutenfri
+2025-06-10 14:29:50	claessonboel@example.org	Ellen	Andersson	Factory worker	seafood
+2025-05-24 06:31:45	gosta51@example.net	Carl	Mohammed	sale	lactosfri
+2025-06-06 14:32:18	patrikkarlsson@example.com	Carina	Olsson	Manufacture	seafood
+2025-06-10 01:49:28	perssonmargareta@example.net	Malin	Olsson	seller	fisk
+2025-06-05 16:39:43	meriksson@example.com	Ted	Johansson	Assembly	nöt
+2025-05-26 12:14:14	westerlundmarianne@example.org	Tony	Wahlström	Maintence	pescatarian
+2025-06-16 10:39:01	hanssonkerstin@example.org	Birgitta	Svensson	prod	nöt
+2025-06-10 11:31:13	faxelsson@example.com	Bengt	Berglund	maint	lactosfri
+2025-06-17 05:50:36	james22@example.org	Hjördis	Eklund	Economy	nöt
+2025-05-25 14:51:33	elsie52@example.com	Matilda	Frid	seller	pescatarian
+2025-06-07 00:14:41	johanssonnils@example.org	Robert	Andersson	Maintence	pescatarian
+2025-06-17 02:38:08	anderssonrune@example.net	Neo	Näslund	seller	nut
+2025-06-03 02:52:03	heddasjoberg@example.org	Ingrid	Norrman	Economy	lactosfri
+2025-05-27 08:54:21	anettejohansson@example.com	Eric	Nilsson	Manufacture	seafood
+2025-06-03 23:20:05	johanssontherese@example.com	Patrik	Eriksson	sale	pescatarian
+2025-05-31 18:32:58	lisbeth68@example.com	Monica	Nordin	sale	pescatarian
+2025-05-28 20:17:16	petterssontherese@example.net	Kristin	Nilsson	adm	fisk
+2025-06-17 09:53:20	cecilia29@example.net	Britt	Petersson	Maintence	lactosfri
+2025-06-18 11:33:24	freja99@example.net	Elinor	Sundqvist	seller	glutenfri
+2025-05-25 02:03:41	malin84@example.com	Hugo	Ibrahim	sale	seafood
+2025-06-20 22:47:39	qwallin@example.com	Johanna	Strand	seller	
+2025-06-09 03:48:27	vrask@example.net	Kenneth	Jonsson	seller	nut
+2025-05-29 18:12:16	kristina50@example.org	Therese	Karlsson	Manufacture	lactosfri
+2025-06-18 16:24:28	hfranzen@example.com	Marianne	Jansson	sale	lactosfri
+2025-06-09 22:09:32	camilla56@example.org	Axel	Andersson	Mechanic	nut
+2025-06-18 16:17:16	jonssonkatarina@example.org	Anna	Eklund	Manufacture	seafood
+2025-06-13 15:00:04	henrikssonper@example.org	Kjell	Jonsson	sales	lactosfri
+2025-06-13 21:56:28	erlingjohansson@example.org	Annika	Östlund	sales	fisk
+2025-05-26 10:33:58	abergstrom@example.net	Linnea	Jonsson	prod	
+2025-06-02 15:42:07	svenssonchrister@example.com	Kristofer	Johnsson	maint	seafood
+2025-06-18 22:21:27	ngunnarsson@example.org	Alma	Larsson	maint	glutenfri
+2025-05-23 06:37:31	mollerjohn@example.net	Anna	Åkerlund	Administration	pescatarian
+2025-05-28 17:21:55	vilhelmengdahl@example.net	Maria	Broberg	Economy	fisk
+2025-05-23 04:23:03	nilssonbirgitta@example.org	Hanna	Edström	adm	seafood
+2025-06-06 02:14:57	karlsandgren@example.net	Gunnar	Dahlin	prod	glutenfri
+2025-05-26 20:04:32	kristinaeriksson@example.net	Göran	Simonsson	Administration	fisk
+2025-06-08 00:41:20	anderssoncharlotte@example.net	Mira	Lindberg	Administration	pescatarian
+2025-06-10 20:59:32	margitnordqvist@example.org	Fritz	Andersson	seller	lactosfri
+2025-05-25 17:00:33	kenneth94@example.com	Kajsa	Andrén	maint	nöt
+2025-06-05 19:20:29	kevin13@example.com	Per	Larsson	Economy	seafood
+2025-06-05 15:45:40	rickardhoglund@example.org	Hilda	Holst	Assembly	nut
+2025-05-31 06:54:33	folsson@example.net	Ingalill	Andersson	Mechanic	seafood
+2025-06-03 20:51:32	sunehansson@example.net	Lena	Olsson	Maintence	nut
+2025-05-23 07:19:58	christinalundqvist@example.com	Veronica	Eklund	prod	seafood
+2025-06-21 13:35:58	kristinaolsson@example.org	Klara	Hansson	Manufacture	fisk
+2025-06-13 23:29:48	almalarsson@example.org	Inger	Boström	sales	fisk
+2025-05-24 00:16:18	annarydberg@example.com	Henry	Lind	Maintence	glutenfri
+2025-06-10 14:41:31	karlssonlouise@example.org	Maria	Sörensen	Maintence	
+2025-05-31 16:33:09	karlssonlars@example.com	Mikael	Johansson	Manufacture	nut
+2025-05-25 15:20:29	saidmargareta@example.org	Christina	Lindh	sale	nöt
+2025-06-05 12:11:47	njohansson@example.com	Pontus	Johansson	Maintence	nut
+2025-05-26 07:46:08	liljegrenmikael@example.org	Gunvor	Viklund	Manufacture	nut
+2025-06-18 16:26:35	sjogrenhelena@example.org	Johan	Landin	adm	nut
+2025-05-29 05:37:26	sara23@example.net	Anders	Strandberg	seller	lactosfri
+2025-05-27 02:01:42	anderssonerik@example.org	Gunnar	Frisk	Assembly	glutenfri
+2025-06-04 17:46:41	nilssonmahmoud@example.net	Jonas	Modig	Mechanic	lactosfri
+2025-05-23 11:10:32	marlene01@example.net	Greta	Wallin	sale	
+2025-06-15 18:19:48	johanssonanette@example.net	Christina	Hansson	prod	nöt
+2025-05-28 18:12:22	sdahlberg@example.com	Nils	Larsson	seller	glutenfri
+2025-05-29 09:07:28	amanda00@example.com	Anders	Mohamed	adm	fisk
+2025-06-16 16:45:19	lindqvistmargareta@example.com	Lennart	Lindblom	Economy	glutenfri
+2025-06-04 02:30:35	erikjohansson@example.org	Anders	Karlsson	Manufacture	nut
+2025-06-18 03:14:37	blundgren@example.org	Karin	Karlsson	Economy	glutenfri
+2025-06-12 22:49:55	monicamattsson@example.org	Cecilia	Landin	Assembly	fisk
+2025-05-28 01:36:45	james98@example.net	Isak	Norlin	Assembly	seafood
+2025-06-06 07:55:23	ann-britt79@example.net	Charlotte	Olsson	adm	glutenfri
+2025-06-16 08:56:04	alarsson@example.org	Nils	Eriksson	sale	lactosfri
+2025-06-05 10:15:17	tova54@example.com	Olof	Magnusson	Maintence	lactosfri
+2025-06-02 23:03:18	jkarlsson@example.org	Christer	Lundqvist	adm	fisk
+2025-06-12 03:15:26	gustavljung@example.org	Wilma	Andersson	Factory worker	lactosfri
+2025-06-07 23:21:56	gkarlsson@example.net	Inge	Lindén	sales	nut
+2025-05-31 05:25:26	vgustafsson@example.net	Madelene	Hedman	Mechanic	lactosfri
+2025-06-15 05:54:18	sveakarlsson@example.com	Bengt	Larsson	seller	fisk
+2025-05-31 01:06:25	weriksson@example.net	Mia	Olsson	sales	fisk
+2025-05-30 04:49:11	norrmanlinnea@example.net	Jennie	Larsson	Mechanic	
+2025-06-17 09:17:06	sundinpeter@example.org	Evy	Holmberg	seller	lactosfri
+2025-06-08 08:59:57	lundstromeva@example.com	Rosa	Nguyen	Manufacture	pescatarian
+2025-05-28 12:03:50	stellanlundin@example.com	Joel	Persson	prod	nöt
+2025-06-01 02:44:51	cdahlin@example.net	Denise	Fredriksson	Mechanic	
+2025-05-26 05:55:26	veriksson@example.net	Emil	Jansson	Maintence	lactosfri
+2025-06-19 02:30:50	annikki56@example.com	Ida	Engström	prod	glutenfri
+2025-06-17 21:51:51	annajeppsson@example.org	Alexander	Ekström	Manufacture	glutenfri
+2025-05-28 09:15:35	klassonerik@example.net	Karin	Sjöstrand	Assembly	nut
+2025-06-09 18:56:33	ben86@example.net	André	Henningsson	Administration	lactosfri
+2025-06-03 20:53:34	waslund@example.net	Martin	Hedström	maint	glutenfri
+2025-06-11 13:57:33	pgustafsson@example.net	Inga-Lill	Lindblom	Economy	
+2025-06-03 22:10:50	louise94@example.org	Berit	Andreasson	seller	lactosfri
+2025-06-05 12:17:02	kristina84@example.com	Sven	Karlsson	seller	nut
+2025-05-26 04:26:49	ernst28@example.net	Martin	Bergvall	Factory worker	nut
+2025-05-27 17:44:47	hampus54@example.net	Inger	Olsson	sale	lactosfri
+2025-06-18 02:10:41	erik05@example.org	Anita	Olofsson	maint	nut
+2025-06-18 23:26:03	zbengtsson@example.com	Pierre	Johansson	Manufacture	
+2025-05-27 09:24:07	patrikkarlsson@example.net	Björn	Hasan	Mechanic	fisk
+2025-06-20 08:01:01	larssonolof@example.org	Helge	Bohlin	Manufacture	nut
+2025-06-20 14:45:06	birgittaboman@example.net	Sara	Magnusson	prod	fisk
+2025-06-07 01:42:37	angelicasvensson@example.com	Robert	Olsson	seller	pescatarian
+2025-05-29 19:45:26	jahmed@example.net	Karl	Löf	Assembly	glutenfri
+2025-05-28 20:59:05	lclaesson@example.net	Elin	Gustafsson	Maintence	lactosfri
+2025-06-03 20:32:30	saidlinnea@example.com	Margareta	Karlsson	sale	
+2025-06-21 13:41:26	erik49@example.org	Tina	Borgström	Economy	
+2025-06-18 21:04:25	perroos@example.net	Helena	Wikström	Manufacture	glutenfri
+2025-05-24 13:35:12	soderlundoskar@example.net	Veronica	Andersson	adm	nut
+2025-06-16 06:02:45	borgangela@example.net	Ingalill	Fransson	sales	pescatarian
+2025-06-12 01:47:58	wberglund@example.com	Margareta	Persson	seller	lactosfri
+2025-06-16 05:37:10	leklund@example.com	Therese	Nilsson	Factory worker	glutenfri
+2025-06-06 15:45:10	colausson@example.com	Richard	Holmberg	Mechanic	nut
+2025-06-05 05:17:31	strombergerik@example.org	Fredrik	Jakobsson	maint	nöt
+2025-06-10 07:56:05	ogustafsson@example.net	Ragnar	Lundgren	sale	nut
+2025-06-01 05:24:58	lovgrenjenny@example.org	Peter	Mårtensson	maint	fisk
+2025-05-26 15:50:06	martinssonsebastian@example.com	Stig	Pettersson	sale	glutenfri
+2025-06-04 00:39:07	lindaholm@example.com	Marie	Rosenqvist	Economy	nut
+2025-05-29 00:41:20	rgreen@example.org	Ulf	Nilsson	sales	nöt
+2025-06-05 08:58:50	maria83@example.net	Lars	Friberg	Administration	nut
+2025-06-15 11:20:32	egustavsson@example.com	Britt	Jonsson	Assembly	nöt
+2025-05-26 21:33:58	lskoglund@example.org	Tomas	Åkesson	adm	lactosfri
+2025-05-31 08:27:32	adam96@example.org	Inga-Lill	Berg	Mechanic	nöt
+2025-05-28 15:32:20	sofia75@example.net	Mattias	Holm	sales	
+2025-06-05 21:33:25	nkarlsson@example.net	Caroline	Johansson	Factory worker	lactosfri
+2025-05-28 14:47:20	moajohansson@example.com	Hugo	Eklund	seller	nut
+2025-05-31 21:14:00	yback@example.com	Christina	Westerberg	sales	
+2025-06-16 08:21:03	tlindgren@example.net	Katarina	Persson	Manufacture	lactosfri
+2025-06-15 06:41:21	mikaelwiberg@example.org	Adam	Lindh	adm	nut
+2025-06-01 17:28:13	mforslund@example.com	Eva	Sandström	Factory worker	nöt
+2025-06-21 10:59:32	kimericson@example.net	Theodor	Nyman	Maintence	nöt
+2025-05-27 09:08:55	johan23@example.org	Jonas	Nordlund	Economy	lactosfri
+2025-06-04 13:24:16	alexanderlindblom@example.net	Mona	Petersson	Maintence	lactosfri
+2025-05-24 01:41:35	kmoller@example.net	Robert	Hedlund	Factory worker	fisk
+2025-06-13 13:50:36	anderssoncarl@example.org	Margareta	Andersson	Economy	lactosfri
+2025-06-21 10:58:36	cornelianystrom@example.net	Abdullahi	Hansson	sales	fisk
+2025-06-19 17:55:21	engstromhugo@example.com	Ove	Carlsson	maint	
+2025-06-13 07:10:47	leif48@example.net	Ingeborg	Nyman	Economy	pescatarian
+2025-06-18 01:29:21	elizabeth34@example.net	Mattias	Högberg	Economy	seafood
+2025-05-24 22:51:44	hholmberg@example.org	Elias	Wester	Maintence	nut
+2025-06-16 17:56:20	ann-christine40@example.net	Hugo	Niklasson	Manufacture	lactosfri
+2025-06-04 22:04:25	tenglund@example.net	Helena	Berg	Mechanic	seafood
+2025-06-10 15:05:05	claudia17@example.com	Jerker	Berg	Assembly	lactosfri
+2025-05-26 04:39:17	agne32@example.com	Linnea	Pettersson	Manufacture	pescatarian
+2025-06-03 11:48:52	ivaneriksson@example.org	Per	Olsson	sales	pescatarian
+2025-06-08 11:20:05	ann-mariolausson@example.net	Maria	Gustafsson	seller	lactosfri
+2025-05-31 14:08:11	helga69@example.net	Louise	Johansson	Mechanic	fisk
+2025-05-27 12:48:00	ihogberg@example.org	Therese	Karlsson	sales	glutenfri
+2025-06-11 18:01:24	ggustafsson@example.net	Inez	Larsson	maint	
+2025-06-06 16:43:31	granbergingegerd@example.net	Lars	Nyberg	Assembly	lactosfri
+2025-06-10 17:00:29	annablom@example.org	Lukas	Moberg	sales	fisk
+2025-05-22 17:36:23	xdahlgren@example.com	Gustaf	Gustafsson	prod	seafood
+2025-06-04 08:55:18	bengteriksson@example.com	Inga-Britt	Gustafsson	prod	fisk
+2025-05-27 08:19:29	mona74@example.com	Jonas	Emilsson	Administration	nut
+2025-05-27 16:15:46	ann-charlotte55@example.com	Torbjörn	Persson	sales	nöt
+2025-05-27 12:03:13	anderssonagnes@example.net	Emanuel	Karlsson	seller	pescatarian
+2025-06-09 23:04:32	fredrik54@example.net	Maria	Roos	sale	
+2025-06-19 06:16:50	elise03@example.net	Mustafa	Carlsson	Factory worker	nöt
+2025-05-22 16:45:39	wilmaandersson@example.org	Carolina	Farah	sale	
+2025-06-21 12:55:56	ejohansson@example.org	Johan	Larsson	sale	nut
+2025-05-24 17:23:10	axeleriksson@example.org	Elisabeth	Andersson	sale	seafood
+2025-06-02 13:54:34	sofiabergsten@example.org	Tommy	Karlsson	sale	seafood
+2025-05-25 19:46:32	anders60@example.net	Elisabeth	Larsson	Administration	fisk
+2025-05-23 09:00:33	evelinahammar@example.org	Johanna	Svensson	Administration	nut
+2025-05-30 18:49:31	jblom@example.com	Kristina	Hanna	Mechanic	lactosfri
+2025-05-24 20:03:46	blomcecilia@example.net	Ingegerd	Abrahamsson	seller	glutenfri
+2025-05-22 17:38:10	fgustafsson@example.net	Victoria	Nilsson	maint	fisk
+2025-05-25 20:58:55	vali@example.net	Anette	Andersson	maint	lactosfri
+2025-05-25 09:59:38	emiliaandren@example.net	Matilda	Hansson	Economy	nöt
+2025-05-22 20:48:20	gote08@example.org	Rebecca	Lindgren	sales	glutenfri
+2025-05-24 04:30:01	josefinenilsson@example.com	Christopher	Axelsson	seller	seafood
+2025-06-19 09:56:14	kennethharaldsson@example.com	Ferdinand	Holm	prod	lactosfri
+2025-05-26 08:46:53	davidkarlsson@example.org	Erik	Skoog	adm	pescatarian
