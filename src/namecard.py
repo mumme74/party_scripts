@@ -2,6 +2,7 @@ from PIL import Image, ImageDraw, ImageFont
 from sys import platform
 from io import BytesIO
 from pathlib import Path
+from .exceptions import ReadFileNotFound
 import urllib.error, urllib.request
 import configparser, os, zipfile
 
@@ -82,19 +83,27 @@ def clear_old_cards():
         if file.suffix == '.png' and file.stem.isnumeric():
             os.remove(prj_dir / 'outdata' / file)
 
+def draw_text(font, text, img_draw, new_size):
+    if not font.enabled:
+        return
+    w, h = new_size
+    f = load_font(font.font, font.size)
+ 
+    match font.align:
+        case 'absolute':
+            pos = font.pos
+        case 'center' | _ :
+            _, _, w1, h1 = img_draw.textbbox((0,0), text, f)
+            pos = ((w-w1) // 2, font.pos[1])
+   
+    img_draw.text(pos, text, font=f, fill=font.color)
 
-def create_name_cards(project, template, persons, font_1, font_2 = ''):
-    sett = project.settings['templates']['namecard']
-    template = sett['file']
-
-    if not font_2:
-        font_2 = font_1
+def create_name_cards(project, persons):
+    card = project.settings['namecard']
+    template = Path(card.template_json).parent / \
+                 Path(card.template_png).name
 
     clear_old_cards()
-
-    font1 = load_font(font_1, 32)
-    font2 = load_font(font_2, 24)
-    font3 = load_font(font_1, 10)
 
     w, h = new_size = (600, 400)
 
@@ -102,20 +111,20 @@ def create_name_cards(project, template, persons, font_1, font_2 = ''):
         img = Image.open(template)
         img = img.resize(size=new_size)
     except FileNotFoundError:
-        print(f'*** Name card template {template} was not found')
-        exit(1)
+        raise ReadFileNotFound(f'*** Name card template {template} was not found')
     
     for i, p in enumerate(persons):
         # create a new image to draw onto
-        card = Image.new(mode='RGB', size=new_size, color=(255,255,255,255))
-        card.paste(img)
-        img_draw = ImageDraw.Draw(card)
-        img_draw.rectangle([(0,0),(w-1,h-1)], outline=(0,0,0))
-        name = f'{p.fname} {p.lname}'
-        dept = f'{p.dept.name}'
-        _, _, w1, h1 = img_draw.textbbox((0,0), name, font1)
-        _, _, w2, h2 = img_draw.textbbox((0,0), dept, font2)
-        img_draw.text(((w-w1)//2, 270), name, font=font1, fill=(0,0,0))
-        img_draw.text(((w-w2)//2, 330), dept, font=font2, fill=(0,0,0))
-        img_draw.text((13,3), p.table_id(), font=font3, fill="#999999")
-        card.save(prj_dir / 'outdata' / f'{i}.png')
+        card_img = Image.new(mode='RGB', size=new_size, color=(255,255,255,255))
+        card_img.paste(img)
+        img_draw = ImageDraw.Draw(card_img)
+        # draw a outline
+        img_draw.rectangle([(0,0),(w-1,h-1)], outline="#000000")
+
+        # draw texts
+        draw_text(card.greet_font, card.greet, img_draw, new_size)
+        draw_text(card.name_font, f'{p.fname} {p.lname}', img_draw, new_size)
+        draw_text(card.dept_font, f'{p.dept.name}', img_draw, new_size)
+        draw_text(card.tbl_font, p.table_id(), img_draw, new_size)
+
+        card_img.save(prj_dir / 'outdata' / f'{i}.png')

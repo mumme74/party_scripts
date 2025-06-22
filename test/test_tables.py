@@ -27,7 +27,7 @@ class TestTable(unittest.TestCase):
         self.data.rows = [
             DataRow(self.data, ('tbl1','10')),
             DataRow(self.data, ('tbl2','20','sale')),
-            DataRow(self.data, ('tbl3','30','prod mang'))
+            DataRow(self.data, ('tbl3','30','prod adm'))
         ]
     
     def test_constructor(self):
@@ -45,7 +45,7 @@ class TestTable(unittest.TestCase):
         self.assertEqual(tbl3.id, 'tbl3')
         self.assertEqual(tbl3.num_seats, 30)
         self.assertEqual(tbl3.prio_dept[0].id, 'prod')
-        self.assertEqual(tbl3.prio_dept[1].id, 'mang')
+        self.assertEqual(tbl3.prio_dept[1].id, 'adm')
 
     def test_place_person(self):
         self.mock_persons()
@@ -62,7 +62,7 @@ class TestTable(unittest.TestCase):
         for p in self.project.persons.persons:
             tbl.place_person(p)
         cnt = Counter({'name_unk':2,'name_sale':2,
-                       'name_prod':2,'name_mang':1})
+                       'name_prod':2,'name_maint':1})
         self.assertCountEqual(tbl.departments(), cnt)
 
 if __name__ == '__main__':

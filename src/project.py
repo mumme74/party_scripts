@@ -3,12 +3,94 @@ from .persons import AllPersons
 from .tables import AllTables
 from .departments import AllDepartments
 from .exceptions import ReadFileNotFound, \
-                        ReadFileException
+                        ReadFileException, \
+                        ReadFileUnhandledFormat, \
+                        InputDataBadFormat, \
+                        WriteFileException, \
+                        WriteFileExists
+                        
 from datetime import datetime
 from pathlib import Path
 import json
 
 app_dir = Path(__file__).parent.parent
+
+class TextFont:
+    def __init__(self, obj, file):
+        try:
+            self.font  = obj['font']
+            self.size  = obj['size']
+            self.pos   = tuple(obj['pos'])
+            self.align = obj['align']
+            self.color = obj['color']
+            self.enabled = obj['enabled']
+        except (KeyError, ValueError, TypeError) as e:
+            raise InputDataBadFormat(
+                file, f'Bad format for font {e}')
+
+    def __json__(self):
+        return {
+            'font':    self.font, 
+            'size':    self.size,
+            'pos':     self.pos,
+            'align':   self.align,
+            'color':   self.color,
+            'enabled': self.enabled
+        }
+
+class NameCard:
+    def __init__(self, greet, template):
+        self.greet = greet
+        self.template_json = template
+        try:
+            with open(template, encoding='utf8') as file:
+                obj = json.load(file)
+        except FileNotFoundError as e:
+            raise ReadFileNotFound(template, f'Could not find file {e}')
+        except json.JSONDecodeError as e:
+            raise ReadFileUnhandledFormat(template, f'{e}')
+        else:
+            self.read_template(obj, template)
+
+    def read_template(self, obj, template):
+        self.name = obj['name']
+        self.template_png = obj['png_file']
+        self.tbl_font = TextFont(
+            obj['tbl_id_font'], template)
+        self.greet_font = TextFont(
+            obj['greet_font'], template)
+        self.name_font = TextFont(
+            obj['name_font'], template)
+        self.dept_font = TextFont(
+            obj['dept_font'], template)
+        png = Path(template).parent / Path(self.template_json).name
+        if not png.exists():
+            raise ReadFileNotFound(str(png), f'Template png file {png} does not exist')
+        
+    def save_as_new_template(self, save_path):
+        if Path(save_path).exists():
+            raise WriteFileExists(save_path, f'Template file already exists: {save_path}')
+        try:
+            with open(save_path, encoding='utf8',
+                      mode='w') as file:
+                json.dump({
+                    'name':self.name,
+                    'template_png': self.template_png,
+                    'tbl_id_font': self.tbl_font,
+                    'greet_font': self.greet_font,
+                    'name_font': self.name_font,
+                    'dept_none': self.dept_font
+                }, file, ensure_ascii=False, indent=2,
+                  default=lambda o: o.__json__()
+                    if hasattr(o, '__json__') else None)
+        except IOError as e:
+            raise WriteFileException(save_path, f'Failed to save namecard template {e}')
+
+    def __json__(self):
+        return {
+            'greet': self.greet,
+            'template_json': self.template_json
+        }
 
 class Project:
     def __init__(self):
@@ -37,29 +119,12 @@ class Project:
                 'file': '',
                 'nope_expressions':['-', '--', 'nej', 'nope','no','none','inga']
             },
-            'templates':{
-                'namecard': {
-                    'file': str(app_dir / "templates" / "default_namecard.png"),
-                    'greet': def_name,
-                    'greet_font':{
-                        'family':'Georgia Italic',
-                        'size':32,
-                        'pos_y':210
-                    },
-                    'name_font':{
-                        'family':'Lucinda Handwriting STD',
-                        'size':32,
-                        'pos_y':270
-                    },
-                    'dept_font':{
-                        'family':'Lucinda Handwriting STD',
-                        'size':24,
-                        'pos_y':330
-                    }
-                },
-                'table_sign':{
-                    'file':str(app_dir / "templates" / "table_sign_default.docx")
-                }
+            'namecard': NameCard(
+                'Party #1', 
+                str(app_dir / 'templates' / 'default_namecard.json')
+            ),
+            'table_sign':{
+                'file':str(app_dir / "templates" / "table_sign_default.docx")
             }
         }
 
@@ -108,7 +173,10 @@ class Project:
     def save_project_as(self, save_path):
         self.settings['project_file_path'] = save_path
         with open(save_path, mode='w') as file:
-            json.dump(self.settings, file, ensure_ascii=False)
+            json.dump(self.settings, file, 
+                      ensure_ascii=False, indent=2,
+                      default=lambda o: o.__json__() 
+                        if hasattr(o, '__json__') else None)
 
     def save_project(self):
         self.save_project_as(self.settings['project_file_path'])

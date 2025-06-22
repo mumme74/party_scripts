@@ -6,7 +6,7 @@ from src.namecard import create_name_cards
 from src.namecards_docx import create_namecard_docx
 from src.tables_docx import create_table_report
 from src.special_foods import create_special_foods_report
-from src.project import Project
+from src.project import Project, NameCard
 from src.exceptions import *
 from pathlib import Path
 from argparse import ArgumentParser
@@ -18,8 +18,10 @@ rootdir = Path(__file__).parent
 parser = ArgumentParser(prog='Skapa bordsplacerings brickor')
 parser.add_argument('--tsv', type=str, help='Path to the source data file for persons', 
                     default=rootdir / 'indata/party.tsv', nargs='?')
-parser.add_argument('--namecard_template', type=str, help='Path to the template to build each card from',
-                    default=rootdir / 'templates/default.png', nargs='?')
+parser.add_argument('--party-greet', type=str, help='The greeting printed to namecard',
+                    default='Party !', nargs='?')
+parser.add_argument('--namecard-template', type=str, help='Path to the template to build each card from',
+                    default=rootdir / 'templates/default_namecard.json', nargs='?')
 parser.add_argument('--departments', type=str, help='Path to all departments and their synonyms',
                     default=rootdir / 'indata/departments.json', nargs='?')
 parser.add_argument('--create-namecards', type=bool, help='Create new namecards',
@@ -47,7 +49,7 @@ def namecards(project):
             pers = [p for t in project.tables.tables for p in t.persons]
         else:
             pers = sorted(project.persons)
-        create_name_cards(project, args.namecard_template, pers, "Lucida Handwriting STD")
+        create_name_cards(project, pers)
         create_namecard_docx(project)
 
 def special_foods(project):
@@ -64,7 +66,7 @@ def dbg_print_dept(project):
 def switches(project):
     s = project.settings
     s['persons']['file'] = args.tsv
-    s['templates']['namecard']['file'] = args.namecard_template
+    s['namecard'] = NameCard(args.party_greet, args.namecard_template)
     s['departments']['file'] = args.departments
     s['tables']['file'] = args.tables
     project.reload()

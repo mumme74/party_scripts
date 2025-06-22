@@ -13,7 +13,7 @@ prj_dir = Path(__file__).parent.parent
 
 def create_table_report(project):
     output_dir = Path(project.settings['output_folder'])
-    template_path = Path(project.settings['templates']['table_sign']['file'])
+    template_path = Path(project.settings['table_sign']['file'])
 
      # Create a new document from template
     doc = Document(template_path)

@@ -1,0 +1,36 @@
+{
+    "name": "Default namecard",
+    "png_file": "default_namecard.png",
+    "tbl_id_font": {
+        "font": "Lucida Handwriting STD",
+        "size": 10,
+        "pos": [13,3],
+        "align": "absolute",
+        "color": "#999999",
+        "enabled": true 
+    },
+    "greet_font": {
+        "font": "Georgia Italic",
+        "size": 32,
+        "pos": [400,210],
+        "align": "center",
+        "color": "#000000",
+        "enabled": true 
+    },
+    "name_font": {
+        "font": "Lucida Handwriting STD",
+        "size": 32,
+        "pos": [400,270],
+        "align": "center",
+        "color": "#000000",
+        "enabled": true 
+    },
+    "dept_font": {
+        "font": "Lucida Handwriting STD",
+        "size": 24,
+        "pos": [400,320],
+        "align": "center",
+        "color": "#000000",
+        "enabled": true 
+    }
+}

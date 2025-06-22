@@ -27,6 +27,14 @@ class InputDataBadFormat(ReadFileException):
     """When input has wrong format"""
     pass
 
+class WriteFileException(AppException):
+    def __init__(self, file, *args):
+        super().__init__(*args)
+        self.file = file
+
+class WriteFileExists(WriteFileException):
+    pass
+
 class DataRetrivalError(AppException):
     """When trying to get an invalid value"""
     pass
