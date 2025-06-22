@@ -2,20 +2,9 @@ from collections import Counter
 from datetime import datetime
 from .departments import AllDepartments
 from .read_data import read_data
+from .helpers import parse_date
 from .exceptions import DuplicatePersonException, \
                         InputDataBadFormat
-
-def parse_date(date_str, file):
-    for ds in ['%Y-%m-%d %H.%M.%S',
-               '%Y-%m-%d %H:%M:%S',
-               '%Y-%m-%dT%H.%M.%SZ',
-               '%Y-%m-%d',
-               '%d/%m/%Y']:
-        try:
-            return datetime.strptime(date_str.strip(),ds)
-        except ValueError:
-            pass
-    raise InputDataBadFormat(file, f'Could not convert date, invalid format {date_str}')
 
 class AllPersons:
     def __init__(self, project):

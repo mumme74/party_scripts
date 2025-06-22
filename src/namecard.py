@@ -100,6 +100,7 @@ def draw_text(font, text, img_draw, new_size):
 
 def create_name_cards(project, persons):
     card = project.settings['namecard']
+    out_dir = project.settings['output_folder']
     template = Path(card.template_json).parent / \
                  Path(card.template_png).name
 
@@ -122,9 +123,9 @@ def create_name_cards(project, persons):
         img_draw.rectangle([(0,0),(w-1,h-1)], outline="#000000")
 
         # draw texts
-        draw_text(card.greet_font, card.greet, img_draw, new_size)
-        draw_text(card.name_font, f'{p.fname} {p.lname}', img_draw, new_size)
-        draw_text(card.dept_font, f'{p.dept.name}', img_draw, new_size)
-        draw_text(card.tbl_font, p.table_id(), img_draw, new_size)
+        draw_text(card.greet_text, card.greet, img_draw, new_size)
+        draw_text(card.name_text, f'{p.fname} {p.lname}', img_draw, new_size)
+        draw_text(card.dept_text, f'{p.dept.name}', img_draw, new_size)
+        draw_text(card.tbl_id_text, p.table_id(), img_draw, new_size)
 
-        card_img.save(prj_dir / 'outdata' / f'{i}.png')
+        card_img.save(out_dir / f'{i}.png')

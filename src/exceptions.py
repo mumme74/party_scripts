@@ -35,6 +35,9 @@ class WriteFileException(AppException):
 class WriteFileExists(WriteFileException):
     pass
 
+class OutdataDirDoesNotExist(WriteFileException):
+    pass
+
 class DataRetrivalError(AppException):
     """When trying to get an invalid value"""
     pass

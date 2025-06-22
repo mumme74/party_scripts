@@ -13,7 +13,7 @@ def create_namecard_docx(project):
 
     # Create a new document
     def all_png_files():
-        return [fn for fn in output_dir.iterdir() 
+        return [Path(fn.name) for fn in output_dir.iterdir() 
                     if fn.suffix == '.png']
     doc = Document()
 

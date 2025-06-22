@@ -66,7 +66,11 @@ def dbg_print_dept(project):
 def switches(project):
     s = project.settings
     s['persons']['file'] = args.tsv
-    s['namecard'] = NameCard(args.party_greet, args.namecard_template)
+    obj = {
+        'greet':args.party_greet, 
+        'template':args.namecard_template
+    }
+    s['namecard'] = NameCard(obj)
     s['departments']['file'] = args.departments
     s['tables']['file'] = args.tables
     project.reload()
@@ -75,7 +79,7 @@ def main():
     project = Project()
     try:
         if args.project:
-            project.open_project(args.project.settings)
+            project.open_project(args.project)
         else:
             switches(project)
 
@@ -90,6 +94,8 @@ def main():
         print(f'**IO Error: {e}')
     except AppException as e:
         print(f'**Error: {e}')
+    except Exception as e:
+        print(f'**Exception: {e}')
 
 if __name__ == '__main__':
     main()

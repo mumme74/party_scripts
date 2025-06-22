@@ -12,6 +12,7 @@ from src.read_data import Data, DataRow
 from mocks import *
 
 data_dir = Path(__file__).parent / "data"
+app_dir = data_dir.parent.parent
 
 class TestTextFont(unittest.TestCase):
     def setUp(self):
@@ -59,6 +60,10 @@ class TestNameCard(unittest.TestCase):
         super().setUp()
         self.template = data_dir / 'test_namecard.json'
         self.greet = 'test greet'
+        self.obj = {
+            'greet': self.greet,
+            'template': self.template
+        }
 
     def tearDown(self):
         super().tearDown()
@@ -67,11 +72,11 @@ class TestNameCard(unittest.TestCase):
 
 
     def test_constructor(self):
-        card = NameCard(self.greet, self.template)
+        card = NameCard(self.obj)
         self.assertEqual(card.greet, self.greet)
         self.assertEqual(card.template_json, self.template)
         self.assertEqual(card.template_png, 'test_namecard.png')
-        self.assertEqual(card.tbl_font.__json__(),
+        self.assertEqual(card.tbl_id_text.__json__(),
         {
             "font": "Lucida Handwriting STD",
             "size": 10,
@@ -80,16 +85,16 @@ class TestNameCard(unittest.TestCase):
             "color": "#999999",
             "enabled": True 
         })
-        self.assertEqual(card.greet_font.__json__(),
+        self.assertEqual(card.greet_text.__json__(),
         {
             "font": "Georgia Italic",
             "size": 32,
-            "pos": (400,270),
+            "pos": (400,210),
             "align": "center",
             "color": "#000000",
             "enabled": True 
         })
-        self.assertEqual(card.name_font.__json__(),
+        self.assertEqual(card.name_text.__json__(),
         {
             "font": "Lucida Handwriting STD",
             "size": 32,
@@ -98,30 +103,38 @@ class TestNameCard(unittest.TestCase):
             "color": "#000000",
             "enabled": True 
         })
-        self.assertEqual(card.dept_font.__json__(),
+        self.assertEqual(card.dept_text.__json__(),
         {
             "font": "Lucida Handwriting STD",
             "size": 24,
-            "pos": (400,330),
+            "pos": (400,320),
             "align": "center",
             "color": "#000000",
             "enabled": True 
         })
 
     def test_fail_construct(self):
+        self.obj['template'] = 'nonexistant.json'
         self.assertRaises(ReadFileNotFound,
-                          lambda: NameCard(self.greet, 'nonexistant.json'))
+                          lambda: NameCard(self.obj))
 
     def test_json(self):
-        card = NameCard(self.greet, self.template)
-        self.assertEqual(card.__json__(),
-        {
-            'greet':self.greet,
-            'template_json':self.template
-        })
+        card = NameCard(self.obj)
+        self.maxDiff = None
+        obj = card.__json__()
+        self.assertEqual(obj['greet'], self.greet)
+        self.assertEqual(obj['template'],self.template)
+        self.assertTrue('card' in obj)
+        c = obj['card']
+        self.assertEqual(c['name'], 'Test namecard')
+        self.assertEqual(c['template_png'], 'test_namecard.png')
+        self.assertTrue(isinstance(c['tbl_id_text'], dict))
+        self.assertTrue(isinstance(c['greet_text'], dict))
+        self.assertTrue(isinstance(c['name_text'], dict))
+        self.assertTrue(isinstance(c['dept_text'], dict))
 
     def test_save_as_new_template(self):
-        card = NameCard(self.greet, self.template)
+        card = NameCard(self.obj)
         self.assertRaises(
             WriteFileExists,
             lambda: card.save_as_new_template(data_dir / self.template))
@@ -136,17 +149,46 @@ class TestPreject(unittest.TestCase):
         self.save_as_file = data_dir / "test_project_save_as.json"
 
     def test_constructor(self):
+        now = datetime.now()
         prj = Project()
         self.assertEqual(prj.departments, None)
         self.assertEqual(prj.tables, None)
         self.assertEqual(prj.persons, None)
         s = prj.settings
-        self.assertAlmostEqual(s['date'], datetime.now())
+        self.assertEqual(s['date'].strftime('%Y-%m-%d %H:%M'), 
+                         now.strftime('%Y-%m-%d %H:%M'))
         self.assertEqual(s['project_name'][:6], 'Party ')
-        self.assertEqual(s['project_file_path'], '')
+        self.assertEqual(s['project_file_path'], Path(''))
+        self.assertEqual(s['output_folder'],
+                         app_dir / 'outdata')
+        self.assertEqual(s['departments'],{
+            'hdrs':{'id':0,'name':1,'syn':2},
+            'file':Path('')
+        })
+        self.assertEqual(s['tables'],{
+            'hdrs':{'id':0,'num_seats':1,'prio_dept':2},
+            'file':Path('')
+        })
+        self.assertEqual(s['persons'],{
+            'hdrs':{
+                'date':0,'email':1,'fname':2,
+                'lname':3,'dept':4,'special_foods':5
+            },
+            'file':Path(''),
+            'nope_expressions':['-','--','nej','nope','no','none','inga']
+        })
+        self.assertTrue(isinstance(s['namecard'],NameCard))
+        self.assertEqual(s['table_sign']['file'],
+                         app_dir / "templates" / "table_sign_default.docx")
 
     def test_open_project(self):
-        pass
+        prj = Project()
+        self.assertRaises(
+            ReadFileNotFound,
+            lambda: prj.open_project('nonexistant.json')
+        )
+
+        prj.open_project(data_dir / "test_project.json")
 
 if __name__ == "__main__":
     unittest.main()

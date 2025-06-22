@@ -1,0 +1,49 @@
+{
+  "date": "2025-06-22 08:40:15",
+  "project_name": "Party 2025-06-22 08-40",
+  "project_file_path": "test/data/test_project.json",
+  "output_folder": "test/data/outdata",
+  "departments": {
+    "hdrs": {
+      "id": 0,
+      "name": 1,
+      "syn": 2
+    },
+    "file": "test/data/test_departments.tsv"
+  },
+  "tables": {
+    "hdrs": {
+      "id": 0,
+      "num_seats": 1,
+      "prio_dept": 2
+    },
+    "file": "test/data/test_tables.csv"
+  },
+  "persons": {
+    "hdrs": {
+      "date": 0,
+      "email": 1,
+      "fname": 2,
+      "lname": 3,
+      "dept": 4,
+      "special_foods": 5
+    },
+    "file": "test/data/test_persons.tsv",
+    "nope_expressions": [
+      "-",
+      "--",
+      "nej",
+      "nope",
+      "no",
+      "none",
+      "inga"
+    ]
+  },
+  "namecard": {
+    "greet": "Party !",
+    "template": "test/data/test_namecard.json"
+  },
+  "table_sign": {
+    "file": "test/data/test_table_sign.docx"
+  }
+}

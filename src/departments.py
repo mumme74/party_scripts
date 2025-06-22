@@ -17,8 +17,9 @@ class AllDepartments:
                 name = row[dept['hdrs']['name']]
                 syn = row[dept['hdrs']['syn']]
                 if not isinstance(syn, (list, tuple)):
-                    syn = [row[k] for k in row.keys() 
-                        if k not in ['id', 'name'] and row[k]]
+                    syn = [s for i, s in enumerate(row.data) 
+                        if s and i not in [dept['hdrs']['id'],
+                                     dept['hdrs']['name']]]
                 self.departments.append(Dept(key, name, syn))
         except (KeyError, DataRetrivalError) as e:
             raise InputDataBadFormat(self.data_file, f'Input data, bad format {e}')

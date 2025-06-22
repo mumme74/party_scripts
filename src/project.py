@@ -1,4 +1,5 @@
 # A project is one specific party
+from .helpers import parse_date, File
 from .persons import AllPersons
 from .tables import AllTables
 from .departments import AllDepartments
@@ -7,7 +8,8 @@ from .exceptions import ReadFileNotFound, \
                         ReadFileUnhandledFormat, \
                         InputDataBadFormat, \
                         WriteFileException, \
-                        WriteFileExists
+                        WriteFileExists, \
+                        OutdataDirDoesNotExist
                         
 from datetime import datetime
 from pathlib import Path
@@ -15,6 +17,18 @@ import json
 
 app_dir = Path(__file__).parent.parent
 
+# an encoder to help encode custom classes to json
+class EncodeJson(json.JSONEncoder):
+    def default(self, o):
+        if hasattr(o, '__json__'):
+            return o.__json__()
+        elif isinstance(o, datetime):
+            return o.strftime('%Y-%m-%d %H:%M:%S')
+        elif isinstance(o, Path):
+            return str(o)
+        return super().default(o)
+
+# A class for each text in namecard
 class TextFont:
     def __init__(self, obj, file):
         try:
@@ -39,30 +53,37 @@ class TextFont:
         }
 
 class NameCard:
-    def __init__(self, greet, template):
-        self.greet = greet
-        self.template_json = template
+    def __init__(self, obj):
+        self.greet = obj['greet']
+        template = self.template_json = obj['template']
+
+        if 'card' in obj:
+            self.read_object(obj['card'], template)
+            return
+        
+        # else read from template
         try:
-            with open(template, encoding='utf8') as file:
+            with File(template, encoding='utf8',
+                      search=[app_dir]) as file:
                 obj = json.load(file)
         except FileNotFoundError as e:
             raise ReadFileNotFound(template, f'Could not find file {e}')
         except json.JSONDecodeError as e:
             raise ReadFileUnhandledFormat(template, f'{e}')
         else:
-            self.read_template(obj, template)
+            self.read_object(obj, template)
 
-    def read_template(self, obj, template):
+    def read_object(self, obj, template):
         self.name = obj['name']
-        self.template_png = obj['png_file']
-        self.tbl_font = TextFont(
-            obj['tbl_id_font'], template)
-        self.greet_font = TextFont(
-            obj['greet_font'], template)
-        self.name_font = TextFont(
-            obj['name_font'], template)
-        self.dept_font = TextFont(
-            obj['dept_font'], template)
+        self.template_png = obj['template_png']
+        self.tbl_id_text = TextFont(
+            obj['tbl_id_text'], template)
+        self.greet_text = TextFont(
+            obj['greet_text'], template)
+        self.name_text = TextFont(
+            obj['name_text'], template)
+        self.dept_text = TextFont(
+            obj['dept_text'], template)
         png = Path(template).parent / Path(self.template_json).name
         if not png.exists():
             raise ReadFileNotFound(str(png), f'Template png file {png} does not exist')
@@ -76,20 +97,27 @@ class NameCard:
                 json.dump({
                     'name':self.name,
                     'template_png': self.template_png,
-                    'tbl_id_font': self.tbl_font,
-                    'greet_font': self.greet_font,
-                    'name_font': self.name_font,
-                    'dept_none': self.dept_font
+                    'tbl_id_text': self.tbl_id_text,
+                    'greet_text': self.greet_text,
+                    'name_text': self.name_text,
+                    'dept_text': self.dept_text
                 }, file, ensure_ascii=False, indent=2,
-                  default=lambda o: o.__json__()
-                    if hasattr(o, '__json__') else None)
+                    cls=EncodeJson)
         except IOError as e:
             raise WriteFileException(save_path, f'Failed to save namecard template {e}')
 
     def __json__(self):
         return {
             'greet': self.greet,
-            'template_json': self.template_json
+            'template': self.template_json,
+            'card': {
+                'name': self.name,
+                'template_png': self.template_png,
+                'tbl_id_text': self.tbl_id_text.__json__(),
+                'greet_text': self.greet_text.__json__(),
+                'name_text': self.name_text.__json__(),
+                'dept_text': self.dept_text.__json__()
+            }
         }
 
 class Project:
@@ -98,33 +126,33 @@ class Project:
         self.settings = {
             'date': datetime.now(),
             'project_name': def_name,
-            'project_file_path': '',
+            'project_file_path': Path(''),
             'output_folder': app_dir / 'outdata',
             'departments':{
                  # reading order for department columns in file
                 'hdrs': {'id':0, 'name':1, 'syn':2},
                 # indata file
-                'file': ''
+                'file': Path('')
             },
             'tables':{
                 # reading order for tables file
                 'hdrs': {'id':0, 'num_seats':1, 'prio_dept':2},
                 # indata file
-                'file': ''
+                'file': Path('')
             },
             'persons':{
                 # reading order for persons file
                 'hdrs': {'date':0,'email':1,'fname':2,'lname':3,'dept':4,'special_foods':5},
                 # indata file
-                'file': '',
+                'file': Path(''),
                 'nope_expressions':['-', '--', 'nej', 'nope','no','none','inga']
             },
-            'namecard': NameCard(
-                'Party #1', 
-                str(app_dir / 'templates' / 'default_namecard.json')
-            ),
+            'namecard': NameCard({
+                'greet':'Party #1', 
+                'template':app_dir / 'templates' / 'default_namecard.json'
+            }),
             'table_sign':{
-                'file':str(app_dir / "templates" / "table_sign_default.docx")
+                'file':app_dir / "templates" / "table_sign_default.docx"
             }
         }
 
@@ -145,13 +173,19 @@ class Project:
             def do(k): # change value or recurse
                 if isinstance(setting[k], (list, dict)):
                     recurse(setting[k], obj[k])
-                else:
+                elif isinstance(setting[k], NameCard):
+                    setting[k] = NameCard(obj[k])
+                elif isinstance(setting[k], datetime):
+                    setting[k] = parse_date(obj[k], prj_file)
+                elif isinstance(setting[k], Path):
+                    setting[k] = Path(obj[k])
+                elif type(setting[k]) == type(obj[k]):
                     setting[k] = obj[k]
 
             # make sure to only set those values which match type and name
             if isinstance(setting, dict):
                 for k,v in setting.items():
-                    if hasattr(obj, k) and type(v) == type(obj[k]):
+                    if k in obj:
                         do(k)
             elif isinstance(setting, list):
                 for i, v in enumerate(setting):
@@ -161,9 +195,17 @@ class Project:
         # re-load the data with the new settings
         recurse(self.settings, obj)
         self.settings['project_file_path'] = prj_file
-        if not self.settings['output_folder']:
-            self.settings['output_folder'] = Path(prj_file).parent
+        self._sanity_check()
         self.reload()
+
+    def _sanity_check(self):
+        sett = self.settings
+        for obj in [sett['departments'],
+                    sett['tables'],
+                    sett['persons'],
+                    sett['table_sign']]:
+            if not Path(obj['file']).exists():
+                raise ReadFileNotFound(obj['file'], f'File not found {obj['file']}')
 
     def reload(self):
         self.departments = AllDepartments(self)
@@ -175,8 +217,7 @@ class Project:
         with open(save_path, mode='w') as file:
             json.dump(self.settings, file, 
                       ensure_ascii=False, indent=2,
-                      default=lambda o: o.__json__() 
-                        if hasattr(o, '__json__') else None)
+                      cls=EncodeJson)
 
     def save_project(self):
         self.save_project_as(self.settings['project_file_path'])
