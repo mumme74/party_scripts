@@ -4,10 +4,13 @@ from pathlib import Path
 
 import openpyxl.utils
 import openpyxl.utils.exceptions
+from .helpers import File
 from .exceptions import ReadFileException, \
                         ReadFileNotFound, \
                         ReadFileUnhandledFormat, \
                         DataRetrivalError
+
+app_dir = Path(__file__).parent.parent
 
 class DataRow:
     def __init__(self, owner, data=()):
@@ -73,7 +76,8 @@ class Data:
     def __len__(self):
         return len(self.rows)
 
-def read_data(path: Path) -> list:
+def read_data(path: Path, 
+              search=[app_dir]) -> list:
     """The root function to read files
     
     Parameter
@@ -90,7 +94,8 @@ def read_data(path: Path) -> list:
     ReadFileException
     """
     try:
-        with open(path, newline='', encoding='utf8') as file:
+        with File(path, newline='', 
+                  encoding='utf8', search=search) as file:
             return _route_to_reader(path, file)
     except (FileNotFoundError):
         raise ReadFileNotFound(path, f"Could not locate {path}")
