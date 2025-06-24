@@ -26,8 +26,9 @@ class ProjectPage(ttk.Frame):
 
         # content splitter
         pane = ttk.PanedWindow(self, orient='horizontal')
-        pane.grid(row=1, column=0, sticky="wnes")
-        pane.columnconfigure(0, weight=1)
+        pane.grid(row=1, column=0, padx=3, sticky="wnes")
+        pane.columnconfigure(0, weight=0)
+        pane.columnconfigure(1, weight=1)
         pane.rowconfigure(0, weight=1)
 
         SettingsFrame(pane, controller, width=300)
@@ -249,9 +250,17 @@ class ContentFrame(ttk.LabelFrame):
             values=[v['name'] for _,v in self.indata_sources.items()]
         ).grid(row=0, column=1, sticky='wn')
 
-        TableWidget(
-            self, self.indata
-        ).grid(row=1, column=0, columnspan=2, sticky='wnes')
+        tbl = TableWidget(self, self.indata)
+        tbl.grid(row=1, column=0, columnspan=2, sticky='wnes')
+        
+        # scrollbars
+        vscroll = ttk.Scrollbar(self, orient='vertical', command=tbl.yview)
+        tbl.configure(yscrollcommand=vscroll.set)
+        vscroll.grid(row=1, column=1, sticky='nes')
+
+        hscroll = ttk.Scrollbar(self, orient='horizontal', command=tbl.xview)
+        tbl.configure(xscrollcommand=hscroll.set)
+        hscroll.grid(row=2, column=0, columnspan=2, sticky='wne')
 
     def indata_changed(self):
         source = self.indata.get()
@@ -299,13 +308,6 @@ class TableWidget(ttk.Treeview):
                                 for i,_ in enumerate(obj_hdrs)] \
                         if v is not None]
             self.insert('', tk.END, values=vlus)
-
-        # scrollbars
-        vscroll = ttk.Scrollbar(self, orient='vertical', command=self.yview)
-        self.configure(yscrollcommand=vscroll.set)
-
-        hscroll = ttk.Scrollbar(self, orient='horizontal', command=self.xview)
-        self.configure(xscrollcommand=hscroll.set)
 
         self.update()
 
