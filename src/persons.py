@@ -15,7 +15,8 @@ class AllPersons:
         self.project = project
         self.settings = project.settings['persons']
 
-        for row in read_data(self.settings['file']):
+        self._data = read_data(self.settings['file'])
+        for row in self._data:
             self.add(row)
 
     def add(self, data):
@@ -55,7 +56,7 @@ class Person:
         self.registered_date = parse_date(
             data[keys['date']].strip(),
             project.settings['persons']['file'])
-        self.placed_at_tbl = None
+        self.placed_at_tbl = False
 
     def table_id(self):
         if self.placed_at_tbl:

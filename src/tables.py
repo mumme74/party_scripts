@@ -13,8 +13,9 @@ class AllTables:
         self.data_file = self.settings['file']
         self.tables = []
         self.is_placed = False
+        self._data = read_data(self.data_file)
 
-        for row in read_data(self.data_file):
+        for row in self._data:
             self.tables.append(Table(row, self.project))
     
     def find_table_to(self, num_pers):

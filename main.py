@@ -34,6 +34,8 @@ parser.add_argument('--table-signs-template-docx', type=bool, help='The path to 
                     default=rootdir / 'templates/table_sign_default.docx', nargs='?')
 parser.add_argument('--special-foods', type=bool, help='Produce a list with all special foods',
                     default=True, nargs='?')
+parser.add_argument('--no-gui', help='Stop launching GUI',
+                    action='store_true')
 parser.add_argument('project', type=str, help='Path to projectfile',
                     default='', nargs='?')
 args = parser.parse_args()
@@ -83,10 +85,14 @@ def main():
         else:
             switches(project)
 
-        dbg_print_dept(project)
-        place_at_tables(project)
-        namecards(project)
-        special_foods(project)
+        if args.no_gui:
+            dbg_print_dept(project)
+            place_at_tables(project)
+            namecards(project)
+            special_foods(project)
+        else:
+            from gui.app import GuiApp
+            GuiApp(project).mainloop()
 
     except (ReadFileException) as e:
         print(f'**File error: {e.file}\n{e}')
@@ -94,8 +100,11 @@ def main():
         print(f'**IO Error: {e}')
     except AppException as e:
         print(f'**Error: {e}')
+    except AssertionError as e:
+        raise e
     except Exception as e:
         print(f'**Exception: {e}')
+        raise e
 
 if __name__ == '__main__':
     main()

@@ -12,7 +12,8 @@ class AllDepartments:
         self.departments = [Dept('unk', 'Unknown', [])]
         self.data_file = dept['file']
         try:
-            for row in read_data(self.data_file):
+            self._data = read_data(self.data_file)
+            for row in self._data:
                 key = row[dept['hdrs']['id']]
                 name = row[dept['hdrs']['name']]
                 syn = row[dept['hdrs']['syn']]
