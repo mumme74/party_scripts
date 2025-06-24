@@ -4,8 +4,24 @@ from tkinter import ttk
 from tkinter import colorchooser
 from tkinter import filedialog
 from tkinter import messagebox
+from PIL import ImageTk
 from pathlib import Path
 from menu import PageHeader
+from src.namecard import load_template, \
+                         create_img
+
+class FakeDept:
+    name = 'Avd. för tester'
+
+class FakePerson:
+    date = '2025-06-16 17:30',
+    fname = 'Test'
+    lname = 'Testsson'
+    email = 'test@fake.com'
+    dept = FakeDept()
+    def table_id(self):
+        return 'Bord 10'
+
 
 class NameCardPage(ttk.Frame):
     name = "Namnbricke vy"
@@ -41,11 +57,48 @@ class NameCardProperties(ttk.LabelFrame):
 class EditNameCard(ttk.LabelFrame):
     def __init__(self, master, controller, **kwargs):
         ttk.LabelFrame.__init__(
-            self, master, text='Mall', **kwargs)
+            self, master, text='Förhandgransning', **kwargs)
         self.controller = controller
+        self.columnconfigure(0, weight=1)
+        self.rowconfigure(1, weight=1)
 
-        ttk.Label(self, text='edit').grid(
-            row=0,column=0, sticky='wnes')
+        self.card = controller.prj_wrapped['settings']['namecard']
+        self.trace_vars(self.card)
+        
+        self.canvas = tk.Canvas(
+            self, width=800, height=600, background='black')
+        self.canvas.grid(row=0, column=0, sticky='wne')
+        ttk.Label(self).grid(row=1, column=0)
+
+        self.indata_changed()
+
+    def indata_changed(self, *args):
+        img, new_size, out_dir, card = load_template(
+            self.controller.project)
+        img_card = create_img(img, card, new_size, FakePerson())
+
+        imgtk = ImageTk.PhotoImage(img_card)
+        self.canvas.delete('all')
+        self.canvas.create_image(
+            new_size[0]//2, new_size[1]//2, image=imgtk)
+
+    def trace_vars(self, obj):
+        def cb(*args):
+            self.after(1, self.indata_changed)
+            
+        if isinstance(obj, dict):
+            for k,v in obj.items():
+                if not isinstance(v, tk.Variable):
+                    self.trace_vars(v)
+                else:
+                    v.trace_add('write', cb)
+        elif isinstance(obj, list):
+            for i, v in enumerate(obj):
+                if not isinstance(v, tk.Variable):
+                    self.trace_vars(v)
+                else:
+                    v.trace_add('write', cb)
+
 
 class PropertyWidget(ttk.Treeview):
     def __init__(self, master, controller, **kwargs):
@@ -59,6 +112,7 @@ class PropertyWidget(ttk.Treeview):
         for i, c in enumerate(cols):
             self.heading(c, text=c)
         self.column(cols[0], width=100, minwidth=0, stretch=False)
+        self.column(cols[1], width=180, minwidth=0, stretch=False)
         self.column('#0', width=20, minwidth=0, stretch=False)
 
         self.recreate()
@@ -139,7 +193,7 @@ class IntEdit(ttk.Spinbox):
             self, master, textvariable=var,
             from_=-100000, to=100000)
 
-        self.varaiable = variable
+        self.variable = variable
         self.iid = iid
         self.bbox = bbox
         self._var = var
@@ -198,8 +252,8 @@ class PosEdit(ttk.Frame):
 
         self._var = tk.StringVar(
             value=f'({variable[0].get()}, {variable[1].get()})')
-        self.x_var = tk.IntVar(value=variable[0].get())
-        self.y_var = tk.IntVar(value=variable[1].get())
+        self.x_var = tk.StringVar(value=variable[0].get())
+        self.y_var = tk.StringVar(value=variable[1].get())
         self.x_var.trace_add('write', self._changed)
         self.y_var.trace_add('write', self._changed)
 
@@ -233,8 +287,8 @@ class PosEdit(ttk.Frame):
         self.x_spin.focus()
 
     def set_value(self, event):
-        x = self.x_var.get()
-        y = self.y_var.get()
+        x = int(self.x_var.get())
+        y = int(self.y_var.get())
         x1 = self.variable[0].get()
         y1 = self.variable[1].get()
         if x != x1:

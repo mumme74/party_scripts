@@ -4,7 +4,7 @@ from io import BytesIO
 from pathlib import Path
 from .exceptions import ReadFileNotFound
 import urllib.error, urllib.request
-import configparser, os, zipfile
+import os, zipfile, re
 
 prj_dir = Path(__file__).parent.parent
 dir_path = Path(__file__).absolute().parent
@@ -16,6 +16,7 @@ fontpaths = [prj_dir / "fonts/", '']
 if platform == 'darwin': # apple
     fontpaths += ['~/Library/Fonts/', 
                   '/System/Library/Fonts/Supplemental/',
+                  '/System/Library/Fonts/'
                   '/Library/Fonts/']
 elif platform in ('linux', 'linux2'):
     fontpaths += ['~/.local/fonts/', 
@@ -66,13 +67,20 @@ def dl_font(fontname):
 
 
 def load_font(fontfamily, fontsize, font_download = True):
+    def try_font(font):
+        try:
+            return ImageFont.truetype(font, fontsize)
+        except OSError as e:
+            return
+
     for path in fontpaths:
         for suf in fontsuffixes:
             font = os.path.join(path, f"{fontfamily}{suf}")
-            try:
-                return ImageFont.truetype(font, fontsize)
-            except OSError as e:
-                pass
+            ft = try_font(font)
+            if ft: return ft
+            if re.match('.* [A-Z]{2}$', font[:-len(suf)]):
+                ft = try_font(font[:-(3+len(suf))] + suf)
+                if ft: return ft
         if font_download:
             dl_font(fontfamily)
             return load_font(fontfamily, fontsize, False)
@@ -99,33 +107,40 @@ def draw_text(font, text, img_draw, new_size):
     img_draw.text(pos, text, font=f, fill=font.color)
 
 def create_name_cards(project, persons):
-    card = project.settings['namecard']
-    out_dir = project.settings['output_folder']
+    img, new_size, out_dir, card = load_template(project)
+    
+    for i, p in enumerate(persons):
+        card_img = create_img(img, card, new_size, p)
+        card_img.save(out_dir / f'{i}.png')
+
+def load_template(prj):
+    card = prj.settings['namecard']
+    out_dir = prj.settings['output_folder']
     template = Path(card.template_json).parent / \
                  Path(card.template_png).name
 
     clear_old_cards()
-
-    w, h = new_size = (600, 400)
+    new_size = (600, 400)
 
     try:
         img = Image.open(template)
         img = img.resize(size=new_size)
+        return img, new_size, out_dir, card
     except FileNotFoundError:
         raise ReadFileNotFound(f'*** Name card template {template} was not found')
-    
-    for i, p in enumerate(persons):
-        # create a new image to draw onto
-        card_img = Image.new(mode='RGB', size=new_size, color=(255,255,255,255))
-        card_img.paste(img)
-        img_draw = ImageDraw.Draw(card_img)
-        # draw a outline
-        img_draw.rectangle([(0,0),(w-1,h-1)], outline="#000000")
 
-        # draw texts
-        draw_text(card.greet_text, card.greet, img_draw, new_size)
-        draw_text(card.name_text, f'{p.fname} {p.lname}', img_draw, new_size)
-        draw_text(card.dept_text, f'{p.dept.name}', img_draw, new_size)
-        draw_text(card.tbl_id_text, p.table_id(), img_draw, new_size)
+def create_img(img, card, new_size, per):
+    w, h = new_size
+    # create a new image to draw onto
+    card_img = Image.new(mode='RGB', size=new_size, color=(255,255,255,255))
+    card_img.paste(img)
+    img_draw = ImageDraw.Draw(card_img)
+    # draw a outline
+    img_draw.rectangle([(0,0),(w-1,h-1)], outline="#000000")
 
-        card_img.save(out_dir / f'{i}.png')
+    # draw texts
+    draw_text(card.greet_text, card.greet, img_draw, new_size)
+    draw_text(card.name_text, f'{per.fname} {per.lname}', img_draw, new_size)
+    draw_text(card.dept_text, f'{per.dept.name}', img_draw, new_size)
+    draw_text(card.tbl_id_text, per.table_id(), img_draw, new_size)
+    return card_img
