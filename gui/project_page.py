@@ -261,7 +261,7 @@ class ContentFrame(ttk.LabelFrame):
 
 class TableWidget(ttk.Treeview):
     def __init__(self, parent, indatavar, **kwargs):
-        ttk.Treeview.__init__(self, parent, **kwargs)
+        ttk.Treeview.__init__(self, parent, show=['headings'], **kwargs)
         self.indatavar = indatavar
         indatavar.trace_add('write', lambda *a: self.recreate())
 
@@ -283,7 +283,7 @@ class TableWidget(ttk.Treeview):
                        if x.get()==i), '?')
             s = f'{h} ({hd:.10})' if h != hd else f'{h}'
             self.heading(i, text=s)
-            self.column(i, width=2)
+            self.column(i, width=80, minwidth=0, stretch=False)
 
         def get_col(idx, row):
             if len(hdrs) <= idx:
