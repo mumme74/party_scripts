@@ -3,8 +3,8 @@ from tkinter import ttk
 from tkinter import filedialog
 from pathlib import Path
 from datetime import datetime
-import re
 from tkcalendar import Calendar, DateEntry
+from menu import PageHeader
 
 class ProjectPage(ttk.Frame):
     name = "Projekt vy"
@@ -22,11 +22,7 @@ class ProjectPage(ttk.Frame):
             lambda *a: self.title_changed())
 
         # page header
-        lbl = ttk.Label(self, textvariable=self.header_var, 
-                        font=controller.title_font)
-        lbl.grid(row=0, column=0, pady=10, sticky='wne')
-        lbl.columnconfigure(0, weight=1)
-        lbl.rowconfigure(0, weight=1)
+        PageHeader(self, controller)
 
         # content splitter
         pane = ttk.PanedWindow(self, orient='horizontal')
@@ -137,6 +133,8 @@ class LookupPath(ttk.Frame):
             case 'file_open':
                 vlu = filedialog.askopenfile(
                     initialdir=initvlu, initialfile=initfile)
+                if vlu:
+                    vlu = vlu.name
             case 'file_save':
                 vlu = filedialog.askopenfilename(
                     initialdir=initvlu, initialfile=initfile)
@@ -264,15 +262,19 @@ class TableWidget(ttk.Treeview):
         ttk.Treeview.__init__(self, parent, show=['headings'], **kwargs)
         self.indatavar = indatavar
         indatavar.trace_add('write', lambda *a: self.recreate())
+        self.recreate()
 
     def recreate(self):
         self.delete(*self.get_children())
         self['columns'] = ()
+
         name = self.indatavar.get()
         for k,v in self.master.indata_sources.items():
             if v['name'] == name:
                 return self._recreate(v['obj'], k, v['hdrs'], v['specialcols'])
-        assert False # should never get here
+            
+        k,v = 'persons', self.master.indata_sources['persons']
+        self._recreate(v['obj'], k, v['hdrs'], v['specialcols'])
 
     def _recreate(self, obj, key, hdrs, specialcols):
         obj_hdrs = obj['_data'].headers

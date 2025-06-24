@@ -2,22 +2,27 @@ import tkinter as tk
 from datetime import datetime
 from pathlib import Path
 from src.helpers import parse_date
+from undo_redo import Undo
 
 # special case datetime
 def closure_date_write(root, key, var):
     def callback(*args):
+        Undo.ref().store_change(var, 
+            root[key].strftime('%Y-%m-%d %H:%M:%S'), var.get())
         root[key] = parse_date(var.get(), '')
     return callback
 
 # sepcial case paths
 def closure_path_write(root, key, var):
     def callback(*args):
+        Undo.ref().store_change(var, str(root[key]), var.get())
         root[key] = Path(var.get())
     return callback
 
 # when updating an item
 def closure_write(root, key, var):
     def callback(*args):
+        Undo.ref().store_change(var, root[key], var.get())
         root[key] = var.get()
     return callback
 
@@ -42,7 +47,7 @@ def create_wrapper(root, key, wrapper):
         return var
     elif isinstance(root[key], Path):
         var = tk.StringVar(value=str(root[key]))
-        var.trace_add('write', closure_path_write)
+        var.trace_add('write', closure_path_write(root, key, var))
         return var
     elif isinstance(root[key], (list, tuple)):
         lst = []

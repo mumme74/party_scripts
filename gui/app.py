@@ -1,4 +1,5 @@
 import tkinter as tk
+from sys import platform
 from tkinter import ttk
 from tkinter import font as tkfont
 from namecard_page import NameCardPage
@@ -7,18 +8,24 @@ from placement_page import PlacementPage
 from template_page import TemplatePage
 from menu import main_menu
 from wrap_obj_to_vars import wrap_instance
+from undo_redo import Undo
 
 class GuiApp(tk.Tk):
     def __init__(self, project, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
+        self.option_add('*tearOff', False)
         self._project = project
         self.prj_wrapped = wrap_instance(project)
+        self.undo = Undo(self.prj_wrapped)
         self.geometry('1024x600')
         self.pages = (ProjectPage, NameCardPage, 
                       PlacementPage, TemplatePage)
         
-        self.title_font = tkfont.Font(family='Helvetica', size=18, weight="bold", slant="italic")
-        self.menu = main_menu(self)
+        self.setup_events()
+        
+        self.title_font = tkfont.Font(
+            family='Helvetica', size=18, weight="bold", slant="italic")
+        self.menu = main_menu(self, self.undo)
 
         style = ttk.Style(self)
         if style.theme_use() == "aqua":
@@ -49,6 +56,9 @@ class GuiApp(tk.Tk):
         date = sett['date'].get()
         self.title(f'Bordsplacering: {name} {date}')
 
-if __name__ == "__main__":
-    app = GuiApp()
-    app.mainloop()
+    def setup_events(self):
+        self.bind('<<undo>>', lambda a:self.undo.undo())
+        self.bind('<<redo>>', lambda a:self.undo.redo())
+        ctrl = 'Command' if platform == 'darwin' else 'Control'
+        self.bind_all(f'<{ctrl}-z>', lambda a:self.undo.undo())
+        self.bind_all(f'<{ctrl}-Shift-Z>', lambda a:self.undo.redo())
