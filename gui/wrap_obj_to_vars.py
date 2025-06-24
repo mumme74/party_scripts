@@ -33,12 +33,12 @@ def closure_unset(root, key, var):
 
 def create_wrapper(root, key, wrapper):
     """Wrap a variable to tkinter variable"""
-    if isinstance(root[key], str):
+    if isinstance(root[key], bool):
+        var = tk.BooleanVar(value=root[key])
+    elif isinstance(root[key], str):
         var = tk.StringVar(value=root[key])
     elif isinstance(root[key], int):
         var = tk.IntVar(value=root[key])
-    elif isinstance(root[key], bool):
-        var = tk.BooleanVar(value=root[key])
     elif isinstance(root[key], float):
         var = tk.DoubleVar(value=root[key])
     elif isinstance(root[key], datetime):

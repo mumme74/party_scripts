@@ -8,8 +8,8 @@ from menu import PageHeader
 
 class ProjectPage(ttk.Frame):
     name = "Projekt vy"
-    def __init__(self, parent, controller):
-        ttk.Frame.__init__(self, parent)
+    def __init__(self, master, controller):
+        ttk.Frame.__init__(self, master)
         self.controller = controller
         prj = self.controller.prj_wrapped
         self.settings = sett = prj['settings']
@@ -17,25 +17,22 @@ class ProjectPage(ttk.Frame):
         # page header
         PageHeader(self, controller)
 
-        # content splitter
-        pane = ttk.PanedWindow(self, orient='horizontal')
-        pane.grid(row=1, column=0, padx=3, sticky="wnes")
-        pane.columnconfigure(0, weight=0)
-        pane.columnconfigure(1, weight=1)
-        pane.rowconfigure(0, weight=1)
+        sett_pane = SettingsFrame(self, controller)
+        sett_pane.columnconfigure(0, weight=0)
+        sett_pane.columnconfigure(1,weight=0)
+        sett_pane.rowconfigure(0, weight=1)
+        sett_pane.grid(row=1, column=0, padx=5, sticky='wnes')
 
-        SettingsFrame(pane, controller, width=300)
-        ContentFrame(pane, controller)
-        
+        cont_pane = ContentFrame(self, controller)
+        cont_pane.columnconfigure(0, weight=0)
+        cont_pane.columnconfigure(1, weight=2)
+        cont_pane.rowconfigure(1, weight=1)
+        cont_pane.grid(row=1, column=1, padx=5, sticky='wnes')
 
 class SettingsFrame(ttk.LabelFrame):
-    def __init__(self, parent, controller, **kwargs):
+    def __init__(self, master, controller, **kwargs):
         ttk.LabelFrame.__init__(
-            self, parent, text='Inställningar', **kwargs)
-
-        self.columnconfigure(0, weight=1)
-        self.rowconfigure(0, weight=1)
-        self.grid(row=0, column=0, sticky='wnes')
+            self, master, text='Inställningar', **kwargs)
 
         sett = controller.prj_wrapped['settings']
 
@@ -92,9 +89,9 @@ class SettingsFrame(ttk.LabelFrame):
 
 
 class LookupPath(ttk.Frame):
-    def __init__(self, parent, variable, type, 
+    def __init__(self, master, variable, type, 
                  settings, **kwargs):
-        ttk.Frame.__init__(self, parent, **kwargs)
+        ttk.Frame.__init__(self, master, **kwargs)
         self.textvariable = variable
         self.settings = settings
         self.type = type
@@ -134,8 +131,8 @@ class LookupPath(ttk.Frame):
             self.textvariable.set(vlu)
 
 class DateTime(ttk.Frame):
-    def __init__(self, parent, variable, settings, **kwargs):
-        ttk.Frame.__init__(self, parent, **kwargs)
+    def __init__(self, master, variable, settings, **kwargs):
+        ttk.Frame.__init__(self, master, **kwargs)
         self.textvariable = variable
         self.settings = settings
         var = self.textvariable.get()
@@ -186,14 +183,10 @@ class DateTime(ttk.Frame):
         
 
 class ContentFrame(ttk.LabelFrame):
-    def __init__(self, parent, controller, **kwargs):
+    def __init__(self, master, controller, **kwargs):
         ttk.LabelFrame.__init__(
-            self, parent, text='Data', **kwargs)
+            self, master, text='Data', **kwargs)
 
-        self.columnconfigure(0, weight=0)
-        self.columnconfigure(1, weight=1)
-        self.rowconfigure(1, weight=1)
-        self.grid(row=0, column=1, sticky='wnes')
         prj = controller.prj_wrapped
         sett = self.settings = prj['settings']
 
@@ -255,8 +248,8 @@ class ContentFrame(ttk.LabelFrame):
         print(source)
 
 class TableWidget(ttk.Treeview):
-    def __init__(self, parent, indatavar, **kwargs):
-        ttk.Treeview.__init__(self, parent, show=['headings'], **kwargs)
+    def __init__(self, master, indatavar, **kwargs):
+        ttk.Treeview.__init__(self, master, show=['headings'], **kwargs)
         self.indatavar = indatavar
         indatavar.trace_add('write', lambda *a: self.recreate())
         self.recreate()

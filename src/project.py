@@ -34,7 +34,7 @@ class TextFont:
         try:
             self.font  = obj['font']
             self.size  = obj['size']
-            self.pos   = tuple(obj['pos'])
+            self.pos   = list(obj['pos'])
             self.align = obj['align']
             self.color = obj['color']
             self.enabled = obj['enabled']

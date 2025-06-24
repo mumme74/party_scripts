@@ -14,12 +14,14 @@ class GuiApp(tk.Tk):
     def __init__(self, project, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
         self.option_add('*tearOff', False)
-        self._project = project
+        self.project = project
         self.prj_wrapped = wrap_instance(project)
         self.undo = Undo(self.prj_wrapped)
         self.geometry('1024x600')
         self.pages = (ProjectPage, NameCardPage, 
                       PlacementPage, TemplatePage)
+        self.rowconfigure(0, weight=1)
+        self.columnconfigure(0, weight=1)
         
         self.setup_events()
 
@@ -41,8 +43,8 @@ class GuiApp(tk.Tk):
             tab = ttk.Frame(self.tab_ctrl)
             self.tab_ctrl.add(tab, text=frm.name)
 
-            frame = frm(parent=tab, controller=self)
-            frame.grid(row=0,column=0, sticky='nsew')
+            frame = frm(master=tab, controller=self)
+            frame.grid(row=0,column=0, ipadx=3, sticky='wnes')
         
         self.tab_ctrl.select(0)
 
