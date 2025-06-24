@@ -19,7 +19,7 @@ class PageHeader(ttk.Frame):
         r_btn.grid(row=0, column=1, pady=5, padx=2, sticky='wn')
         
          # page header
-        lbl = ttk.Label(self, textvariable=page.header_var, 
+        lbl = ttk.Label(self, textvariable=controller.header_var, 
                         font=controller.title_font)
         lbl.grid(row=0, column=2, pady=10, padx=3, sticky='wne')
 

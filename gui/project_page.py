@@ -14,13 +14,6 @@ class ProjectPage(ttk.Frame):
         prj = self.controller.prj_wrapped
         self.settings = sett = prj['settings']
 
-        self.header_var = tk.StringVar(
-            value=f'{sett["project_name"].get()} {sett["date"].get()}')
-        sett['project_name'].trace_add('write', 
-            lambda *a: self.title_changed())
-        sett['date'].trace_add('write', 
-            lambda *a: self.title_changed())
-
         # page header
         PageHeader(self, controller)
 
@@ -33,11 +26,6 @@ class ProjectPage(ttk.Frame):
 
         SettingsFrame(pane, controller, width=300)
         ContentFrame(pane, controller)
-
-    def title_changed(self):
-        name = self.settings['project_name'].get()
-        date = self.settings['date'].get()
-        self.header_var.set(f'{name} {date}')
         
 
 class SettingsFrame(ttk.LabelFrame):

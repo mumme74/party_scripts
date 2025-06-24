@@ -22,6 +22,8 @@ class GuiApp(tk.Tk):
                       PlacementPage, TemplatePage)
         
         self.setup_events()
+
+        self.header_var = tk.StringVar()
         
         self.title_font = tkfont.Font(
             family='Helvetica', size=18, weight="bold", slant="italic")
@@ -43,18 +45,20 @@ class GuiApp(tk.Tk):
             frame.grid(row=0,column=0, sticky='nsew')
         
         self.tab_ctrl.select(0)
-        sett = self.prj_wrapped['settings']
-        sett['project_name'] \
-            .trace_add('write', lambda *a: self.redraw())
-        sett['date'] \
-            .trace_add('write', lambda *a: self.redraw())
-        self.redraw()
 
-    def redraw(self):
+        sett = self.prj_wrapped['settings']  
+        sett['project_name'].trace_add('write', 
+            lambda *a: self.title_changed())
+        sett['date'].trace_add('write', 
+            lambda *a: self.title_changed())
+        self.title_changed()
+
+    def title_changed(self):
         sett = self.prj_wrapped['settings']
         name = sett['project_name'].get()
-        date = sett['date'].get()
+        date = sett['date'].get()[:16]
         self.title(f'Bordsplacering: {name} {date}')
+        self.header_var.set(f'{name} {date}')
 
     def setup_events(self):
         self.bind('<<undo>>', lambda a:self.undo.undo())
