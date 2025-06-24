@@ -13,6 +13,8 @@ class ProjectPage(ttk.Frame):
         self.controller = controller
         prj = self.controller.prj_wrapped
         self.settings = sett = prj['settings']
+        self.columnconfigure(0, weight=0)
+        self.columnconfigure(1, weight=1)
 
         # page header
         PageHeader(self, controller)

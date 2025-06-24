@@ -37,14 +37,20 @@ class GuiApp(tk.Tk):
             style.theme_use('clam')
 
         self.tab_ctrl = ttk.Notebook(self)
-        self.tab_ctrl.pack(expand=True, fill='both')
+        self.tab_ctrl.grid(row=0, column=0, sticky='nsew')
+        self.tab_ctrl.rowconfigure(0, weight=1)
+        self.tab_ctrl.columnconfigure(0, weight=1)
+
         
         for i, frm in enumerate(self.pages):
             tab = ttk.Frame(self.tab_ctrl)
-            self.tab_ctrl.add(tab, text=frm.name)
+            self.tab_ctrl.add(tab, text=frm.name, sticky='nsew') 
+            
+            tab.rowconfigure(0, weight=1)
+            tab.columnconfigure(0, weight=1)
 
             frame = frm(master=tab, controller=self)
-            frame.grid(row=0,column=0, ipadx=3, sticky='wnes')
+            frame.grid(row=0,column=0, ipadx=3, sticky='nsew')
         
         self.tab_ctrl.select(0)
 

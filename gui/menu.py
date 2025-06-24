@@ -7,7 +7,7 @@ class PageHeader(ttk.Frame):
         ttk.Frame.__init__(self, page, **kwargs)
         self.controller = controller
         #self.rowconfigure(2, weight=1)
-        self.grid(row=0, column=0, sticky='wne')
+        self.grid(row=0, column=0, columnspan=2, sticky='wne')
 
         # undo redo buttons
         u_btn = ttk.Button(self, text='<', width=1,

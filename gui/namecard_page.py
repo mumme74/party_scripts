@@ -30,20 +30,21 @@ class NameCardPage(ttk.Frame):
         self.controller = controller
         prj = self.controller.prj_wrapped
         self.settings = sett = prj['settings']
-        self.rowconfigure(1, weight=1)
+        self.rowconfigure(1, weight=0)
+        self.columnconfigure(0, weight=0)
         self.columnconfigure(1, weight=1)
 
         PageHeader(self, controller)
 
         sel_pane = NameCardProperties(self, controller, width=300)
         sel_pane.columnconfigure(0, weight=1)
-        sel_pane.rowconfigure(0, weight=1)
+        sel_pane.rowconfigure(0, weight=0)
         sel_pane.grid(row=1, column=0, padx=3, sticky='wnes')
 
         edit_pane = EditNameCard(self, controller)
         edit_pane.columnconfigure(0, weight=1)
-        edit_pane.rowconfigure(0, weight=1)
-        edit_pane.grid(row=1, column=1, padx=3, sticky='wnes')
+        edit_pane.rowconfigure(0, weight=0)
+        edit_pane.grid(row=1, column=1, padx=3, sticky='nw')
 
 class NameCardProperties(ttk.LabelFrame):
     def __init__(self, master, controller, **kwargs):
@@ -66,9 +67,11 @@ class EditNameCard(ttk.LabelFrame):
         self.trace_vars(self.card)
         
         self.canvas = tk.Canvas(
-            self, width=800, height=600, background='black')
-        self.canvas.grid(row=0, column=0, sticky='wne')
-        ttk.Label(self).grid(row=1, column=0)
+            self, width=600, height=400, 
+            background='gray', border=0, 
+            borderwidth=0, highlightthickness=0)
+        self.canvas.grid(row=1, column=1, sticky='nw')
+        ttk.Label(self).grid(row=1, padx=5, pady=5, column=0)
 
         self.indata_changed()
 
@@ -79,8 +82,7 @@ class EditNameCard(ttk.LabelFrame):
 
         imgtk = ImageTk.PhotoImage(img_card)
         self.canvas.delete('all')
-        self.canvas.create_image(
-            new_size[0]//2, new_size[1]//2, image=imgtk)
+        self.canvas.create_image(0,0, image=imgtk, anchor=tk.NW)
 
     def trace_vars(self, obj):
         def cb(*args):
