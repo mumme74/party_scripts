@@ -318,7 +318,8 @@ class TableWidget(ttk.Treeview):
         self._recreate(v['obj'], k, v['hdrs'], v['specialcols'])
 
     def _recreate(self, obj, key, hdrs, specialcols):
-        hdr_names = obj['_data'].headers if obj else hdrs
+        hdr_names = obj['_data'].headers \
+            if obj and hasattr(obj, '_data') else [k for k in hdrs.keys()]
         conf_hdrs = {k:v.get() for k,v in self.master.controller\
                         .prj_wrapped['settings'][key]['hdrs'].items()}
         hdr_keys = {v:k for k,v in conf_hdrs.items()}

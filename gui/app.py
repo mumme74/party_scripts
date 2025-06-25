@@ -3,6 +3,7 @@ from sys import platform
 from tkinter import ttk
 from tkinter import font as tkfont
 from tkinter import filedialog
+from tkinter import messagebox
 from pathlib import Path
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
@@ -10,15 +11,10 @@ from namecard_page import NameCardPage
 from project_page import ProjectPage
 from placement_page import PlacementPage
 from template_page import TemplatePage
+from src.exceptions import AppException
 from menu import main_menu
 import wrap_obj_to_vars as wrap
 from undo_redo import Undo
-
-class MyHandler(FileSystemEventHandler):
-    def on_modified(self, event):
-        if not event.is_directory:
-            print(f"File {event.src_path} has been modified!")
-
 
 class FileChangeHandler(FileSystemEventHandler):
     def __init__(self, project, app):
@@ -34,10 +30,19 @@ class FileChangeHandler(FileSystemEventHandler):
                 self._app.indata_file_changed(prop, path)
 
 class GuiApp(tk.Tk):
-    def __init__(self, project, *args, **kwargs):
-        tk.Tk.__init__(self, *args, **kwargs)
+    def __init__(self, project, proj_path):
+        tk.Tk.__init__(self)
         self.option_add('*tearOff', False)
         self.project = project
+        if proj_path:
+            try:
+                self.project.open_project(proj_path)
+            except AppException as e:
+                messagebox.showerror(
+                    title='Fel vid laddning',
+                    message=f'{e.__class__.__name__}\n {e}'
+                )
+                
         self.prj_wrapped = wrap.wrap_instance(project)
         self.undo = Undo(self.prj_wrapped)
         self.geometry('1024x610')
@@ -137,9 +142,9 @@ class GuiApp(tk.Tk):
             wrap.reload_wrapped(self.prj_wrapped, self.project)
         else:
             props = {
-                'persons':self.project.persons,
-                'departments':self.project.departments,
-                'tables': self.project.tables
+                'persons':     self.project.persons,
+                'departments': self.project.departments,
+                'tables':      self.project.tables
             }
             if not prop in props.keys():
                 return

@@ -79,20 +79,20 @@ def switches(project):
 
 def main():
     project = Project()
-    try:
-        if args.project:
-            project.open_project(args.project)
-        elif args.no_gui:
-            switches(project)
-
+    try:  
         if args.no_gui:
+            if args.project:
+                project.open_project(args.project)
+            else:
+                switches(project)
+
             dbg_print_dept(project)
             place_at_tables(project)
             namecards(project)
             special_foods(project)
         else:
             from gui.app import GuiApp
-            GuiApp(project).mainloop()
+            GuiApp(project, args.project).mainloop()
 
     except (ReadFileException) as e:
         print(f'**File error: {e.file}\n{e}')

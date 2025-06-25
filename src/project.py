@@ -9,7 +9,8 @@ from .exceptions import ReadFileNotFound, \
                         InputDataBadFormat, \
                         WriteFileException, \
                         WriteFileExists, \
-                        OutdataDirDoesNotExist
+                        OutdataDirDoesNotExist, \
+                        AppException
                         
 from datetime import datetime
 from pathlib import Path
@@ -208,12 +209,24 @@ class Project:
                 raise ReadFileNotFound(obj['file'], f'File not found {obj['file']}')
 
     def reload(self, obj=None):
-        if not obj or obj == 'departments':
-            self.departments = AllDepartments(self)
-        if not obj or obj == 'persons':
-            self.persons = AllPersons(self)
-        if not obj or obj == 'tables':
-            self.tables = AllTables(self)
+        props = {
+            'departments':AllDepartments,
+            'persons':    AllPersons,
+            'tables':     AllTables
+        }
+        for prop, cls in props.items():
+            if obj and obj != prop:
+                continue
+
+            try:
+                self.__dict__[prop] = cls(self)
+            except AppException as e:
+                # force an instance by omitting file
+                file = self.settings[prop]['file']
+                self.settings[prop]['file'] = Path()
+                self.__dict__[prop] = cls(self)
+                self.settings[prop]['file'] = file
+                raise e # notify upstream of the error
 
     def save_project_as(self, save_path):
         self.settings['project_file_path'] = save_path
