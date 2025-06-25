@@ -237,6 +237,7 @@ class ContentFrame(ttk.LabelFrame):
         hscroll.grid(row=2, column=0, columnspan=4, sticky='wne')
 
         controller.bind('<<Reloaded>>', lambda *a: self.tbl.recreate())
+        controller.bind('<<IndataReloaded>>', self.indata_reloaded)
 
     def indata_sources(self):
         prj = self.controller.prj_wrapped
@@ -288,8 +289,13 @@ class ContentFrame(ttk.LabelFrame):
             self.controller.reload(
                 self.indata_key())
             self.tbl.recreate()
-        except KeyboardInterrupt:
+        except Exception:
             pass
+
+    def indata_reloaded(self, event):
+        key = self.indata_key()
+        if self.controller.last_indata_change == key:
+            self.tbl.recreate()
 
 class TableWidget(ttk.Treeview):
     def __init__(self, master, indatavar, **kwargs):

@@ -4,6 +4,8 @@ from tkinter import ttk
 from tkinter import font as tkfont
 from tkinter import filedialog
 from pathlib import Path
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
 from namecard_page import NameCardPage
 from project_page import ProjectPage
 from placement_page import PlacementPage
@@ -11,6 +13,25 @@ from template_page import TemplatePage
 from menu import main_menu
 import wrap_obj_to_vars as wrap
 from undo_redo import Undo
+
+class MyHandler(FileSystemEventHandler):
+    def on_modified(self, event):
+        if not event.is_directory:
+            print(f"File {event.src_path} has been modified!")
+
+
+class FileChangeHandler(FileSystemEventHandler):
+    def __init__(self, project, app):
+        FileSystemEventHandler.__init__(self)
+        self._project = project
+        self._app = app
+
+    def on_modified(self, event):
+        file = Path(event.src_path)
+        for prop in ('persons', 'departments','tables'):
+            path = self._project.settings[prop]['file']
+            if file.absolute() == path.absolute():
+                self._app.indata_file_changed(prop, path)
 
 class GuiApp(tk.Tk):
     def __init__(self, project, *args, **kwargs):
@@ -24,6 +45,13 @@ class GuiApp(tk.Tk):
                       PlacementPage, TemplatePage)
         self.rowconfigure(0, weight=1)
         self.columnconfigure(0, weight=1)
+
+        # file change observer
+        self._file_observer = Observer()
+        self._file_evt = FileChangeHandler(project, self)
+        self.trace_indata_files()
+        self._file_observer.start()
+        self.last_indata_change = None # workaround as events can't pass values
         
         self.setup_events()
 
@@ -43,7 +71,7 @@ class GuiApp(tk.Tk):
         self.tab_ctrl.rowconfigure(0, weight=1)
         self.tab_ctrl.columnconfigure(0, weight=1)
 
-        
+        # add tabs adn pages
         for i, frm in enumerate(self.pages):
             tab = ttk.Frame(self.tab_ctrl)
             self.tab_ctrl.add(tab, text=frm.name, sticky='nsew') 
@@ -61,6 +89,7 @@ class GuiApp(tk.Tk):
             lambda *a: self.title_changed())
         sett['date'].trace_add('write', 
             lambda *a: self.title_changed())
+        
         self.title_changed()
 
     def title_changed(self):
@@ -79,11 +108,32 @@ class GuiApp(tk.Tk):
         self.bind_all(f'<{ctrl}-s>', self.save)
         self.bind_all(f'<{ctrl}-Shift-S>', self.save_as)
         self.bind_all(f'<{ctrl}-o>', self.open)
+        self.trace_indata_files()
 
-    def reload(self, table=None):
-        self.project.reload(table)
+    def trace_indata_files(self):
+        self._file_observer.unschedule_all()
+
+        sett = self.project.settings
+        dirs = set() # get unique
+        for prop in ('persons', 'departments','tables'):
+            dirs.add(str(sett[prop]['file'].parent.absolute()))
+ 
+        for dir in dirs:
+            self._file_observer.schedule(
+                self._file_evt, dir, recursive=True)
+
+    def indata_file_changed(self, prop, path):
+        self.last_indata_change = prop
+        self.reload(prop)
+        self.event_generate(
+            '<<IndataReloaded>>', data=prop)
+
+        self.last_indata_change = None
+
+    def reload(self, prop=None):
+        self.project.reload(prop)
         self.undo.set_disabled(True)
-        if not table:
+        if not prop:
             wrap.reload_wrapped(self.prj_wrapped, self.project)
         else:
             props = {
@@ -91,13 +141,14 @@ class GuiApp(tk.Tk):
                 'departments':self.project.departments,
                 'tables': self.project.tables
             }
-            if not table in props.keys():
+            if not prop in props.keys():
                 return
 
-            wrap.reload_wrapped(self.prj_wrapped[table], props[table])
-            wrap.reload_item(self.prj_wrapped['settings'], table,
-                             self.project.settings[table], {})
-        
+            wrap.reload_wrapped(self.prj_wrapped[prop], props[prop])
+            wrap.reload_item(self.prj_wrapped['settings'], prop,
+                             self.project.settings[prop], {})
+            
+        self.trace_indata_files()
         self.undo.set_disabled(False)
 
     def save_as(self, *args):
@@ -130,5 +181,6 @@ class GuiApp(tk.Tk):
         if path:
             self.project.open_project(path)
             wrap.reload_wrapped(self.prj_wrapped, self.project)
+            self.trace_indata_files()
             self.event_generate('<<Reloaded>>')
 
