@@ -59,6 +59,19 @@ class NameCardProperties(ttk.LabelFrame):
         props.configure(yscrollcommand=vscroll.set)
         vscroll.grid(row=0, column=1, sticky='nes')
 
+        ttk.Button(self, text='Spara som ny mall',
+            command=self.save_as_new_template
+        ).grid(row=2, column=0, columnspan=2, sticky='e')
+        
+    def save_as_new_template(self):
+        template_path = Path(__file__).parent.parent / 'templates'
+        path = filedialog.asksaveasfilename(
+            title='Spara som',initialdir=template_path,
+            filetypes=(('Template filer', '*.json'),))
+        if path:
+            self.controller.project.settings['namecard'] \
+                .save_as_new_template(path)
+
 class EditNameCard(ttk.LabelFrame):
     def __init__(self, master, controller, **kwargs):
         ttk.LabelFrame.__init__(

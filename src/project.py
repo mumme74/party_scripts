@@ -56,7 +56,7 @@ class TextFont:
 class NameCard:
     def __init__(self, obj):
         self.greet = obj['greet']
-        template = self.template_json = obj['template']
+        template = self.template_json = Path(obj['template'])
 
         if 'card' in obj:
             self.read_object(obj['card'], template)
@@ -76,7 +76,7 @@ class NameCard:
 
     def read_object(self, obj, template):
         self.name = obj['name']
-        self.template_png = obj['template_png']
+        self.template_png = Path(obj['template_png'])
         self.tbl_id_text = TextFont(
             obj['tbl_id_text'], template)
         self.greet_text = TextFont(
@@ -90,20 +90,21 @@ class NameCard:
             raise ReadFileNotFound(str(png), f'Template png file {png} does not exist')
         
     def save_as_new_template(self, save_path):
-        if Path(save_path).exists():
-            raise WriteFileExists(save_path, f'Template file already exists: {save_path}')
+        save_path = Path(save_path)
         try:
             with open(save_path, encoding='utf8',
                       mode='w') as file:
-                json.dump({
-                    'name':self.name,
-                    'template_png': self.template_png,
-                    'tbl_id_text': self.tbl_id_text,
-                    'greet_text': self.greet_text,
-                    'name_text': self.name_text,
-                    'dept_text': self.dept_text
-                }, file, ensure_ascii=False, indent=2,
+                json.dump(self, file, ensure_ascii=False, indent=2,
                     cls=EncodeJson)
+
+            # copy over the image to
+            new_path = save_path.parent / f'{save_path.stem}{self.template_png.suffix}'
+            orig_path = self.template_json.parent / self.template_png.name
+            if not new_path.exists() and orig_path.exists():
+                with open(orig_path, 'br') as from_, \
+                     open(new_path, 'bw') as to:
+                    to.write(from_.read())
+
         except IOError as e:
             raise WriteFileException(save_path, f'Failed to save namecard template {e}')
 
