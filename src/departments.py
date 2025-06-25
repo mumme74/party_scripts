@@ -7,7 +7,7 @@ class AllDepartments:
     def __init__(self, project):
 
         # default self.departments include unknown
-        self.project = project
+        self._project = project
         dept = project.settings['departments']
         self.departments = [Dept('unk', 'Unknown', [])]
         self.data_file = dept['file']

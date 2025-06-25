@@ -7,12 +7,16 @@ class Undo:
         self._stack = []
         self._pos = -1
         self._mychange = False
+        self._disabled = False
     
     @classmethod
     def ref(cls):
         return cls._instance
 
     def store_change(self, var, old_vlu, new_vlu):
+        if self._disabled:
+            return
+        
         if self._mychange:
             self._mychange = False
             return # abort my own change from redo/undo action
@@ -50,3 +54,6 @@ class Undo:
             self._pos += 1
             itm = self._stack[self._pos]
             itm['var'].set(itm['new_vlu'])
+
+    def set_disabled(self, dis):
+        self._disabled = dis

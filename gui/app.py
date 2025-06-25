@@ -9,8 +9,7 @@ from project_page import ProjectPage
 from placement_page import PlacementPage
 from template_page import TemplatePage
 from menu import main_menu
-from wrap_obj_to_vars import wrap_instance, \
-                             reload_wrapped
+import wrap_obj_to_vars as wrap
 from undo_redo import Undo
 
 class GuiApp(tk.Tk):
@@ -18,7 +17,7 @@ class GuiApp(tk.Tk):
         tk.Tk.__init__(self, *args, **kwargs)
         self.option_add('*tearOff', False)
         self.project = project
-        self.prj_wrapped = wrap_instance(project)
+        self.prj_wrapped = wrap.wrap_instance(project)
         self.undo = Undo(self.prj_wrapped)
         self.geometry('1024x610')
         self.pages = (ProjectPage, NameCardPage, 
@@ -81,6 +80,26 @@ class GuiApp(tk.Tk):
         self.bind_all(f'<{ctrl}-Shift-S>', self.save_as)
         self.bind_all(f'<{ctrl}-o>', self.open)
 
+    def reload(self, table=None):
+        self.project.reload(table)
+        self.undo.set_disabled(True)
+        if not table:
+            wrap.reload_wrapped(self.prj_wrapped, self.project)
+        else:
+            props = {
+                'persons':self.project.persons,
+                'departments':self.project.departments,
+                'tables': self.project.tables
+            }
+            if not table in props.keys():
+                return
+
+            wrap.reload_wrapped(self.prj_wrapped[table], props[table])
+            wrap.reload_item(self.prj_wrapped['settings'], table,
+                             self.project.settings[table], {})
+        
+        self.undo.set_disabled(False)
+
     def save_as(self, *args):
         path = self.project.settings['project_file_path']
         path = filedialog.asksaveasfilename(
@@ -110,7 +129,6 @@ class GuiApp(tk.Tk):
             title='Open project')
         if path:
             self.project.open_project(path)
-            reload_wrapped(self.prj_wrapped, self.project)
-            self.undo.clear()
+            wrap.reload_wrapped(self.prj_wrapped, self.project)
             self.event_generate('<<Reloaded>>')
 

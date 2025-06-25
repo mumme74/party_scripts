@@ -217,18 +217,24 @@ class ContentFrame(ttk.LabelFrame):
             self, text='Ändra kolumn ordning', 
             command=self.change_col_order
         ).grid(row=0, column=2, sticky='ne')
+        
+        # update when file externally 
+        ttk.Button(
+            self, text='Läs om', 
+            command=self.reload_data
+        ).grid(row=0, column=3, sticky='ne')
 
         self.tbl = TableWidget(self, self.indata)
-        self.tbl.grid(row=1, column=0, columnspan=3, sticky='wnes')
+        self.tbl.grid(row=1, column=0, columnspan=4, sticky='wnes')
         
         # scrollbars
         vscroll = ttk.Scrollbar(self, orient='vertical', command=self.tbl.yview)
         self.tbl.configure(yscrollcommand=vscroll.set)
-        vscroll.grid(row=1, column=2, sticky='nes')
+        vscroll.grid(row=1, column=3, sticky='nes')
 
         hscroll = ttk.Scrollbar(self, orient='horizontal', command=self.tbl.xview)
         self.tbl.configure(xscrollcommand=hscroll.set)
-        hscroll.grid(row=2, column=0, columnspan=3, sticky='wne')
+        hscroll.grid(row=2, column=0, columnspan=4, sticky='wne')
 
         controller.bind('<<Reloaded>>', lambda *a: self.tbl.recreate())
 
@@ -275,12 +281,16 @@ class ContentFrame(ttk.LabelFrame):
     
     def change_col_order(self, *args):
         ColumnOrderDlg(self, self.controller)
+        self.reload_data()
+
+    def reload_data(self, *args):
         try:
-            self.controller.project.reload(
+            self.controller.reload(
                 self.indata_key())
             self.tbl.recreate()
         except KeyboardInterrupt:
             pass
+
 class TableWidget(ttk.Treeview):
     def __init__(self, master, indatavar, **kwargs):
         ttk.Treeview.__init__(self, master, show=['headings'], **kwargs)
@@ -306,14 +316,9 @@ class TableWidget(ttk.Treeview):
         conf_hdrs = {k:v.get() for k,v in self.master.controller\
                         .prj_wrapped['settings'][key]['hdrs'].items()}
         hdr_keys = {v:k for k,v in conf_hdrs.items()}
-        self['columns'] = [i for i in range(max(len(hdr_names), len(hdrs)))]
-        for i, h in enumerate(hdr_names):
-            hidx,hd = next(((k,v) for idx, (k,v) in enumerate(hdr_keys.items())
-                       if idx == i), (i,'?'))
-            s = f'{hd} ({hdr_names[hidx]})' if h != hd else f'{h}'
-            self.heading(i, text=s)
-            self.column(i, width=120, minwidth=0, stretch=False)
+        rows = obj[key] if obj else ()
 
+        # rows from here on
         def get_col(idx, row):
             if len(hdrs) <= idx:
                 return None
@@ -321,13 +326,38 @@ class TableWidget(ttk.Treeview):
             return specialcols[key](row) \
                 if key in specialcols else row[key].get()
 
-        for row in obj[key] if obj else ():
-            vlus = [v for v in 
-                        [
-                            get_col(i, row) 
-                            for i,_ in enumerate(hdr_names)
-                        ]
-                    if v is not None]
+        insert_rows = []
+        col_max = max(len(hdr_names), len(hdrs))
+
+        # generate cols in mem before insert to get the max column count
+        for row in rows:
+            vlus = []
+            for i,_ in enumerate(hdr_names):
+                vlu = get_col(i, row)
+                if isinstance(vlu, list):
+                    vlus.extend(vlu)
+                else:
+                    vlus.append(vlu)
+
+            col_max = max(col_max, len(vlus))
+            insert_rows.append(vlus)
+
+        # columns 
+        # a row can be a list, extend to added columns
+        self['columns'] = [i for i in range(col_max)]
+
+        # name columns and insert them
+        for i in range(col_max):
+            hidx,hd = next(((k,v) for idx, (k,v) in enumerate(hdr_keys.items())
+                       if idx == i), (i,'?'))
+            h = hdr_names[hidx] if hidx < len(hdr_names) \
+                else f'{hdr_names[-1]}-{hidx - len(hdr_names)+1}'
+            s = f'{hd} ({h})' if h != hd else f'{h}'
+            self.heading(i, text=s)
+            self.column(i, width=120, minwidth=0, stretch=False)
+
+        # lastly insert the rows
+        for vlus in insert_rows:
             self.insert('', tk.END, values=vlus)
 
         self.update()

@@ -96,7 +96,7 @@ def reload_item(to, key, vlu, wrapped):
     When reloading a wrapped item, reload values into already wrapped
     Reset all wraps messes up GUI, so do this instead
     '''
-    if not to or key not in to:
+    if not to:
         return
     if isinstance(vlu, dict):
         # remove keys no longer in stored in vlu
@@ -112,7 +112,7 @@ def reload_item(to, key, vlu, wrapped):
     elif isinstance(vlu, (list, tuple)):
         from_len = len(vlu)
         to_len = len(to[key])
-        while to_len > from_len:
+        while len(to[key]) > from_len:
             to[key].pop() # too many in to
         for i, v in enumerate(vlu):
             if i < to_len:
@@ -148,6 +148,8 @@ def reload_wrapped(to, from_, wrapped=None):
     for k,v in from_.__dict__.items():
         if k == '_data':
             to['_data'] = v
+        elif k[0] == '_':
+            continue
         elif to[k] is None:
             to[k] = create_wrapper(
                 from_.__dict__, k, wrapped)

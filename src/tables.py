@@ -8,9 +8,9 @@ from collections import Counter
 class AllTables:
     def __init__(self, project):
 
-        self.project = project
-        self.settings = project.settings['tables']
-        self.data_file = self.settings['file']
+        self._project = project
+        self._settings = project.settings['tables']
+        self.data_file = self._settings['file']
         self.tables = []
         self.is_placed = False
         if not self.data_file.name:
@@ -18,7 +18,7 @@ class AllTables:
         self._data = read_data(self.data_file)
 
         for row in self._data:
-            self.tables.append(Table(row, self.project))
+            self.tables.append(Table(row, self._project))
     
     def find_table_to(self, num_pers):
         tbls = sorted([(t, t.free_seats()) for t in self.tables], 
@@ -33,7 +33,7 @@ class AllTables:
     
     def place_persons(self):
         "Try to seat all persons at tables with their department"
-        all_pers = self.project.persons
+        all_pers = self._project.persons
         persons = sorted(all_pers.persons)
         deps = all_pers.departments().most_common() # sort largest table first
 

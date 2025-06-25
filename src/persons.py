@@ -12,19 +12,19 @@ class AllPersons:
         self.unique_check = set()
         self.persons = []
 
-        self.project = project
-        self.settings = project.settings['persons']
+        self._project = project
+        self._settings = project.settings['persons']
 
-        if not self.settings['file'].name:
+        if not self._settings['file'].name:
             return # when reading an empy project
 
-        self._data = read_data(self.settings['file'])
+        self._data = read_data(self._settings['file'])
         for row in self._data:
             self.add(row)
 
     def add(self, data):
         "Add a new person"
-        p = Person(data, self.project)
+        p = Person(data, self._project)
         if (p.fname, p.lname, p.email) in self.unique_check:
             raise DuplicatePersonException(p, f'Duplicate entry of person {p.fname} {p.lname}  {p.email}')
         self.unique_check.add( (p.fname, p.lname, p.email))
