@@ -2,12 +2,15 @@ import tkinter as tk
 from sys import platform
 from tkinter import ttk
 from tkinter import font as tkfont
+from tkinter import filedialog
+from pathlib import Path
 from namecard_page import NameCardPage
 from project_page import ProjectPage
 from placement_page import PlacementPage
 from template_page import TemplatePage
 from menu import main_menu
-from wrap_obj_to_vars import wrap_instance
+from wrap_obj_to_vars import wrap_instance, \
+                             reload_wrapped
 from undo_redo import Undo
 
 class GuiApp(tk.Tk):
@@ -74,3 +77,40 @@ class GuiApp(tk.Tk):
         ctrl = 'Command' if platform == 'darwin' else 'Control'
         self.bind_all(f'<{ctrl}-z>', lambda a:self.undo.undo())
         self.bind_all(f'<{ctrl}-Shift-Z>', lambda a:self.undo.redo())
+        self.bind_all(f'<{ctrl}-s>', self.save)
+        self.bind_all(f'<{ctrl}-Shift-S>', self.save_as)
+        self.bind_all(f'<{ctrl}-o>', self.open)
+
+    def save_as(self, *args):
+        path = self.project.settings['project_file_path']
+        path = filedialog.asksaveasfilename(
+            defaultextension='*.json',
+            filetypes=(('Projectfile','*.json'),),
+            title='Spara project som',
+            initialfile=path.name,
+            initialdir=str(path.parent))
+        if path:
+            self.project.save_project_as(path)
+            self.prj_wrapped['settings'] \
+                ['project_file_path'].set(Path(path))
+
+    def save(self, *args):
+        path = str(self.project.settings['project_file_path'])
+        if not path or path == '.':
+            self.save_as(*args)
+        else:
+            self.project.save_project()
+
+    def open(self, *args):
+        path = self.project.settings['project_file_path'] 
+        path = path if str(path) else Path('')
+        path = filedialog.askopenfilename(
+            defaultextension='*.json',
+            initialdir=path.parent, initialfile=path.name,
+            title='Open project')
+        if path:
+            self.project.open_project(path)
+            reload_wrapped(self.prj_wrapped, self.project)
+            self.undo.clear()
+            self.event_generate('<<Reloaded>>')
+

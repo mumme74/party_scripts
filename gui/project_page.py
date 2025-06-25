@@ -54,8 +54,9 @@ class SettingsFrame(ttk.LabelFrame):
         ttk.Label(self, text='Projekt fil sökväg:')\
             .grid(row=2, column=0, sticky='w')
         prj_path = ttk.Entry(self, 
-            textvariable=sett['project_file_path'])
-        prj_path.state(['disabled'])
+            textvariable=sett['project_file_path'],
+            validate='all',
+            validatecommand=lambda *a:False)
         prj_path.grid(row=2,column=1, sticky='w')
 
         # path to persons input file
@@ -138,7 +139,9 @@ class DateTime(ttk.Frame):
         self.textvariable = variable
         self.settings = settings
         var = self.textvariable.get()
+        self._my_event = False
 
+        variable.trace_add('write', self.variable_changed)
 
         # some trickery to separate date from time
         # could not get around that with these controls
@@ -150,11 +153,7 @@ class DateTime(ttk.Frame):
         self.min_var.trace_add('write', lambda *a: self.datetime_changed())
         
         self.cal = Calendar(self, selectmode='day',
-            textvariable=self.date_var, locale='sv_SE',
-            #background="black", disabledbackground="black", bordercolor="black", 
-            #headersbackground="black", normalbackground="black", foreground='white', 
-            #normalforeground='white', headersforeground='white'
-        )
+            textvariable=self.date_var, locale='sv_SE')
         self.cal.grid(row=1, column=0, columnspan=3)
         
         self.cal.strptime(var[:10], '%Y-%m-%d')
@@ -181,23 +180,64 @@ class DateTime(ttk.Frame):
         if not hour or not min:
             return
         s = f'{date} {hour}:{min}:00'
+        self._my_event = True
         self.textvariable.set(s)
-        
+
+    def variable_changed(self, *args):
+        if not self._my_event:
+            dtstr = self.textvariable.get()
+            self.date_var.set(dtstr[:10])
+            self.hour_var.set(dtstr[11:13])
+            self.min_var.set(dtstr[14:16])
+
+        self._my_event = False
 
 class ContentFrame(ttk.LabelFrame):
     def __init__(self, master, controller, **kwargs):
         ttk.LabelFrame.__init__(
             self, master, text='Data', **kwargs)
+        self.controller = controller
 
         prj = controller.prj_wrapped
-        sett = self.settings = prj['settings']
+        self.settings = prj['settings']
 
         # variable that gets chenged whenever we change indata
         self.indata = tk.StringVar(value='persons')
-        self.indata.trace_add('write', lambda *a: self.indata_changed())
+        self.indata.trace_add('write', self.indata_changed)
 
-        # indata sources
-        self.indata_sources = {
+        #indata selector
+        ttk.Label(self, text='Visa indata') \
+            .grid(row=0, column=0, sticky='w')
+        self.selector = ttk.Combobox(
+            self, textvariable=self.indata,
+            values=[v['name'] for _,v in self.indata_sources().items()]
+        )
+        self.selector.grid(row=0, column=1, sticky='w')
+
+        # change column order
+        ttk.Button(
+            self, text='Ändra kolumn ordning', 
+            command=self.change_col_order
+        ).grid(row=0, column=2, sticky='ne')
+
+        self.tbl = TableWidget(self, self.indata)
+        self.tbl.grid(row=1, column=0, columnspan=3, sticky='wnes')
+        
+        # scrollbars
+        vscroll = ttk.Scrollbar(self, orient='vertical', command=self.tbl.yview)
+        self.tbl.configure(yscrollcommand=vscroll.set)
+        vscroll.grid(row=1, column=2, sticky='nes')
+
+        hscroll = ttk.Scrollbar(self, orient='horizontal', command=self.tbl.xview)
+        self.tbl.configure(xscrollcommand=hscroll.set)
+        hscroll.grid(row=2, column=0, columnspan=3, sticky='wne')
+
+        controller.bind('<<Reloaded>>', lambda *a: self.tbl.recreate())
+
+    def indata_sources(self):
+        prj = self.controller.prj_wrapped
+        sett = self.settings
+        return  {
             'persons': {
                 'name':'Personer', 
                 'obj':prj['persons'],
@@ -225,29 +265,12 @@ class ContentFrame(ttk.LabelFrame):
             }
         }
 
-        #indata selector
-        ttk.Label(self, text='Visa indata') \
-            .grid(row=0, column=0, sticky='wn')
-        selector = ttk.Combobox(
-            self, textvariable=self.indata,
-            values=[v['name'] for _,v in self.indata_sources.items()]
-        ).grid(row=0, column=1, sticky='wn')
-
-        tbl = TableWidget(self, self.indata)
-        tbl.grid(row=1, column=0, columnspan=2, sticky='wnes')
-        
-        # scrollbars
-        vscroll = ttk.Scrollbar(self, orient='vertical', command=tbl.yview)
-        tbl.configure(yscrollcommand=vscroll.set)
-        vscroll.grid(row=1, column=1, sticky='nes')
-
-        hscroll = ttk.Scrollbar(self, orient='horizontal', command=tbl.xview)
-        tbl.configure(xscrollcommand=hscroll.set)
-        hscroll.grid(row=2, column=0, columnspan=2, sticky='wne')
-
-    def indata_changed(self):
+    def indata_changed(self, *args):
         source = self.indata.get()
         print(source)
+    
+    def change_col_order(self, *args):
+        pass
 
 class TableWidget(ttk.Treeview):
     def __init__(self, master, indatavar, **kwargs):
@@ -261,15 +284,16 @@ class TableWidget(ttk.Treeview):
         self['columns'] = ()
 
         name = self.indatavar.get()
-        for k,v in self.master.indata_sources.items():
+        indata_sources = self.master.indata_sources()
+        for k,v in indata_sources.items():
             if v['name'] == name:
                 return self._recreate(v['obj'], k, v['hdrs'], v['specialcols'])
             
-        k,v = 'persons', self.master.indata_sources['persons']
+        k,v = 'persons', indata_sources['persons']
         self._recreate(v['obj'], k, v['hdrs'], v['specialcols'])
 
     def _recreate(self, obj, key, hdrs, specialcols):
-        obj_hdrs = obj['_data'].headers
+        obj_hdrs = obj['_data'].headers if obj else hdrs
         hdr_keys = tuple(hdrs.keys())
         self['columns'] = [i for i in range(max(len(obj_hdrs), len(hdrs)))]
         for i, h in enumerate(obj_hdrs):
@@ -286,7 +310,7 @@ class TableWidget(ttk.Treeview):
             return specialcols[key](row) \
                 if key in specialcols else row[key].get()
 
-        for row in obj[key]:
+        for row in obj[key] if obj else ():
             vlus = [v for v in [get_col(i, row) \
                                 for i,_ in enumerate(obj_hdrs)] \
                         if v is not None]

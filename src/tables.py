@@ -13,6 +13,8 @@ class AllTables:
         self.data_file = self.settings['file']
         self.tables = []
         self.is_placed = False
+        if not self.data_file.name:
+            return # when reading an empy project
         self._data = read_data(self.data_file)
 
         for row in self._data:

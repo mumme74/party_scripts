@@ -120,6 +120,7 @@ class PropertyWidget(ttk.Treeview):
         self.recreate()
 
         self.bind('<Double-1>', self.dbl_clicked)
+        controller.bind('<<Reload>>', self.recreate)
 
     def variable_for(self, iid):
         key = self.item(iid).get('values')[0].strip()

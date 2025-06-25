@@ -11,6 +11,8 @@ class AllDepartments:
         dept = project.settings['departments']
         self.departments = [Dept('unk', 'Unknown', [])]
         self.data_file = dept['file']
+        if not self.data_file.name:
+            return # when loading an empty project
         try:
             self._data = read_data(self.data_file)
             for row in self._data:

@@ -15,6 +15,9 @@ class AllPersons:
         self.project = project
         self.settings = project.settings['persons']
 
+        if not self.settings['file'].name:
+            return # when reading an empy project
+
         self._data = read_data(self.settings['file'])
         for row in self._data:
             self.add(row)

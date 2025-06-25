@@ -122,7 +122,7 @@ class NameCard:
 
 class Project:
     def __init__(self):
-        def_name = f'Party {datetime.now().strftime('%Y-%m-%d %H-%M')}'
+        def_name = f'Party !'
         self.settings = {
             'date': datetime.now(),
             'project_name': def_name,
@@ -194,7 +194,7 @@ class Project:
         
         # re-load the data with the new settings
         recurse(self.settings, obj)
-        self.settings['project_file_path'] = prj_file
+        self.settings['project_file_path'] = Path(prj_file)
         self._sanity_check()
         self.reload()
 
@@ -220,4 +220,6 @@ class Project:
                       cls=EncodeJson)
 
     def save_project(self):
-        self.save_project_as(self.settings['project_file_path'])
+        path = self.settings['project_file_path']
+        if path:
+            self.save_project_as(path)

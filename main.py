@@ -82,7 +82,7 @@ def main():
     try:
         if args.project:
             project.open_project(args.project)
-        else:
+        elif args.no_gui:
             switches(project)
 
         if args.no_gui:

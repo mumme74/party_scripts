@@ -29,7 +29,7 @@ class Undo:
     def clear(self, to_pos=0):
         while to_pos < len(self._stack):
             self._stack.pop()
-        self._pos = to_pos
+        self._pos = to_pos-1
 
     def undo_cnt(self):
         return self._pos

@@ -46,7 +46,8 @@ def create_wrapper(root, key, wrapper):
         var.trace_add('write', closure_date_write(root, key, var))
         return var
     elif isinstance(root[key], Path):
-        var = tk.StringVar(value=str(root[key]))
+        path = str(root[key])
+        var = tk.StringVar(value=path if path != '.' else '')
         var.trace_add('write', closure_path_write(root, key, var))
         return var
     elif isinstance(root[key], (list, tuple)):
@@ -71,8 +72,10 @@ def create_wrapper(root, key, wrapper):
     return var
 
 
-def wrap_instance(inst, wrapped={}):
+def wrap_instance(inst, wrapped=None):
     """Wrapp a class instance"""
+    if not wrapped:
+        wrapped = {}
     assert str(type(inst))[1:6] == 'class'
     inst_id = f'_{id(inst)}'
     if inst_id in wrapped:
@@ -86,3 +89,69 @@ def wrap_instance(inst, wrapped={}):
             dct['_data'] = v
 
     return dct
+
+
+def reload_item(to, key, vlu, wrapped):
+    '''
+    When reloading a wrapped item, reload values into already wrapped
+    Reset all wraps messes up GUI, so do this instead
+    '''
+    if not to or key not in to:
+        return
+    if isinstance(vlu, dict):
+        # remove keys no longer in stored in vlu
+        for k in [k for k in to[key].keys() if k not in vlu]:
+            del to[k]
+        # set vlues and add new keys
+        for k,v in vlu.items():
+            if k in to[key]:
+                reload_item(to[key], k, v, wrapped)
+            else:
+                w = create_wrapper(vlu, k, wrapped)
+                to[key][k] = w
+    elif isinstance(vlu, (list, tuple)):
+        from_len = len(vlu)
+        to_len = len(to[key])
+        while to_len > from_len:
+            to[key].pop() # too many in to
+        for i, v in enumerate(vlu):
+            if i < to_len:
+                reload_item(to[key], i, v, wrapped)
+            else: # when we have more items than to
+                w = create_wrapper(vlu, i, wrapped)
+                to[key].append(w)
+    elif isinstance(vlu, datetime):
+        to[key].set(vlu.strftime('%Y-%m-%d %H:%M:%S'))
+    elif isinstance(vlu, Path):
+        to[key].set(str(vlu))
+    elif isinstance(vlu, (str, int, float, bool)):
+        to[key].set(vlu)
+    elif str(type(vlu))[1:6] == 'class':
+        reload_wrapped(to[key], vlu, wrapped)
+    else:
+        to[key].set(vlu)
+
+
+def reload_wrapped(to, from_, wrapped=None):
+    '''
+    When reloading a wrapped item, reload values into already wrapped
+    Reset all wraps messes up GUI, so do this instead
+    '''
+    if not wrapped:
+        wrapped = {}
+    assert str(type(from_))[1:6] == 'class'
+    inst_id = f'_{id(from_)}'
+    if inst_id in wrapped:
+        return wrapped[inst_id] # prevent cyclic wrap
+    
+    wrapped[inst_id] = {}
+    for k,v in from_.__dict__.items():
+        if k == '_data':
+            to['_data'] = v
+        elif to[k] is None:
+            to[k] = create_wrapper(
+                from_.__dict__, k, wrapped)
+        else:
+            reload_item(to, k, v, wrapped)
+
+
