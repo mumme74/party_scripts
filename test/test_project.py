@@ -20,7 +20,7 @@ class TestTextFont(unittest.TestCase):
         self.obj = {
             'font':'testfont',
             'size': 10,
-            'pos': (10,20),
+            'pos': [10,20],
             'align': 'center',
             'color': '#CCCCCC',
             'enabled': False
@@ -80,7 +80,7 @@ class TestNameCard(unittest.TestCase):
         {
             "font": "Lucida Handwriting STD",
             "size": 10,
-            "pos": (13,3),
+            "pos": [13,3],
             "align": "absolute",
             "color": "#999999",
             "enabled": True 
@@ -89,7 +89,7 @@ class TestNameCard(unittest.TestCase):
         {
             "font": "Georgia Italic",
             "size": 32,
-            "pos": (400,210),
+            "pos": [400,210],
             "align": "center",
             "color": "#000000",
             "enabled": True 
@@ -98,7 +98,7 @@ class TestNameCard(unittest.TestCase):
         {
             "font": "Lucida Handwriting STD",
             "size": 32,
-            "pos": (400,270),
+            "pos": [400,270],
             "align": "center",
             "color": "#000000",
             "enabled": True 
@@ -107,7 +107,7 @@ class TestNameCard(unittest.TestCase):
         {
             "font": "Lucida Handwriting STD",
             "size": 24,
-            "pos": (400,320),
+            "pos": [400,320],
             "align": "center",
             "color": "#000000",
             "enabled": True 

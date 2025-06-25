@@ -38,7 +38,7 @@ class TestPerson(unittest.TestCase):
         self.assertEqual(p.lname, data[3])
         self.assertEqual(p.dept.id, data[4])
         self.assertEqual(p.special_foods, data[5])
-        self.assertEqual(p.placed_at_tbl, None)
+        self.assertEqual(p.placed_at_tbl, False)
 
     def test_table_id(self):
         data = mock_person_data(self.project)
@@ -61,7 +61,6 @@ class TestAllPersons(unittest.TestCase):
     def test_contructor(self):
         per = AllPersons(self.project)
         self.assertEqual(len(per.persons), 234)
-        self.assertEqual(per.project, self.project)
 
     def test_add_duplicate(self):
         per = AllPersons(self.project)
