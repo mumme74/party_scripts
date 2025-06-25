@@ -207,10 +207,13 @@ class Project:
             if not Path(obj['file']).exists():
                 raise ReadFileNotFound(obj['file'], f'File not found {obj['file']}')
 
-    def reload(self):
-        self.departments = AllDepartments(self)
-        self.persons = AllPersons(self)
-        self.tables = AllTables(self)
+    def reload(self, obj=None):
+        if not obj or obj == 'departments':
+            self.departments = AllDepartments(self)
+        if not obj or obj == 'persons':
+            self.persons = AllPersons(self)
+        if not obj or obj == 'tables':
+            self.tables = AllTables(self)
 
     def save_project_as(self, save_path):
         self.settings['project_file_path'] = save_path

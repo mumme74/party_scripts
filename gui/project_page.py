@@ -262,14 +262,25 @@ class ContentFrame(ttk.LabelFrame):
                 }
             }
         }
+    
+    def indata_key(self):
+        sel = self.indata.get()
+        key = next(k for k,v in self.indata_sources().items()
+                   if k == sel or v['name'] == sel)
+        return key
 
     def indata_changed(self, *args):
         source = self.indata.get()
         print(source)
     
     def change_col_order(self, *args):
-        pass
-
+        ColumnOrderDlg(self, self.controller)
+        try:
+            self.controller.project.reload(
+                self.indata_key())
+            self.tbl.recreate()
+        except KeyboardInterrupt:
+            pass
 class TableWidget(ttk.Treeview):
     def __init__(self, master, indatavar, **kwargs):
         ttk.Treeview.__init__(self, master, show=['headings'], **kwargs)
@@ -291,13 +302,15 @@ class TableWidget(ttk.Treeview):
         self._recreate(v['obj'], k, v['hdrs'], v['specialcols'])
 
     def _recreate(self, obj, key, hdrs, specialcols):
-        obj_hdrs = obj['_data'].headers if obj else hdrs
-        hdr_keys = tuple(hdrs.keys())
-        self['columns'] = [i for i in range(max(len(obj_hdrs), len(hdrs)))]
-        for i, h in enumerate(obj_hdrs):
-            hd = next((k for k,x in hdrs.items() 
-                       if x.get()==i), '?')
-            s = f'{hd} ({h})' if h != hd else f'{h}'
+        hdr_names = obj['_data'].headers if obj else hdrs
+        conf_hdrs = {k:v.get() for k,v in self.master.controller\
+                        .prj_wrapped['settings'][key]['hdrs'].items()}
+        hdr_keys = {v:k for k,v in conf_hdrs.items()}
+        self['columns'] = [i for i in range(max(len(hdr_names), len(hdrs)))]
+        for i, h in enumerate(hdr_names):
+            hidx,hd = next(((k,v) for idx, (k,v) in enumerate(hdr_keys.items())
+                       if idx == i), (i,'?'))
+            s = f'{hd} ({hdr_names[hidx]})' if h != hd else f'{h}'
             self.heading(i, text=s)
             self.column(i, width=120, minwidth=0, stretch=False)
 
@@ -309,9 +322,111 @@ class TableWidget(ttk.Treeview):
                 if key in specialcols else row[key].get()
 
         for row in obj[key] if obj else ():
-            vlus = [v for v in [get_col(i, row) \
-                                for i,_ in enumerate(obj_hdrs)] \
-                        if v is not None]
+            vlus = [v for v in 
+                        [
+                            get_col(i, row) 
+                            for i,_ in enumerate(hdr_names)
+                        ]
+                    if v is not None]
             self.insert('', tk.END, values=vlus)
 
         self.update()
+
+class ColumnOrderDlg(tk.Toplevel):
+    def __init__(self, master, controller, **args):
+
+        # get background from root window
+        s = ttk.Style()
+        bg = s.lookup('TFrame', 'background')
+
+        tk.Toplevel.__init__(
+            self, master, takefocus=True, bg=bg, **args)
+        
+        self.master = master
+        self.controller = controller
+
+        # header
+        ttk.Label(
+            self, text='Ändra kolumn ordning',
+            font=controller.title_font
+        ).grid(row=0, column=0, columnspan=2,
+            sticky='nwe', pady=5, padx=5)
+
+        sel = self.master.indata.get()
+
+        # what table are we changing?
+        src = master.indata_sources()[master.indata_key()]
+        self.headers = ['']
+        self.headers.extend([h for h in src['obj']['_data'].headers])
+
+        self.vars = {}
+        # insert selections
+        i = 1
+        for col, idx in src['hdrs'].items():
+            lbl =ttk.Label(self, text=col)
+            lbl.grid(row=i,column=0, sticky='w', pady=5, padx=5)
+
+            var = tk.StringVar(
+                self, value=self.headers[src['hdrs'][col].get()+1])
+            self.vars[col] = var
+            var.trace_add('write', self.col_changed)
+
+            cmb = ttk.Combobox(self, values=self.headers, textvariable=var)
+            cmb.grid(row=i, column=1, sticky='we', pady=5, padx=5)
+            i += 1
+
+        ttk.Button(
+            self, text='Avbryt', command=self.destroy
+        ).grid(row=i, column=0, sticky='w', padx=5, pady=5)
+        self.ok = ttk.Button(
+            self, text='OK', command=self.accept)
+        self.ok.grid(row=i, column=1, sticky='e', padx=5, pady=5)
+
+        self.ok_btn_state()
+
+        # make this dialog modal
+        self.protocol("WM_DELETE_WINDOW", self.destroy)
+        self.transient(master)
+        self.wait_visibility()
+        self.grab_set()
+        self.wait_window()
+
+    def col_changed(self, var_id, b, method):
+        var = next(v for _,v in self.vars.items() 
+                   if str(v) == var_id)
+        new_vlu = var.get()
+        if not new_vlu:
+            self.ok_btn_state()
+            return # ignore empty selection
+        
+        for _,v in self.vars.items():
+            if v is var:
+                continue # ignore as this is me
+            if v.get() == new_vlu:
+                v.set('')
+        
+        self.ok_btn_state()
+
+    def is_all_selected(self):
+        for _,v in self.vars.items():
+            if not v.get():
+                return False
+        return True
+    
+    def ok_btn_state(self):
+        str = 'normal' if self.is_all_selected() else 'disabled'
+        self.ok.configure(state=str)
+
+    def accept(self):
+        sel = self.master.indata_key()
+        tbl = self.controller.prj_wrapped['settings'][sel]
+        hdrs = tbl['hdrs']
+        self.headers.pop(0)
+
+        for col, idx in hdrs.items():
+            new_vlu = self.headers.index(self.vars[col].get())
+            old_vlu = hdrs[col].get()
+            if new_vlu != old_vlu:
+                hdrs[col].set(new_vlu)
+        
+        self.destroy()
