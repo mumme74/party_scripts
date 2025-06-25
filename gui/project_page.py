@@ -42,53 +42,51 @@ class SettingsFrame(ttk.LabelFrame):
         prj_name_lbl = ttk.Label(self, text='Projekt namn')
         prj_name_lbl.grid(row=0, column=0, sticky='w')
         prj_name_entry = ttk.Entry(self, textvariable=sett['project_name'])
-        prj_name_entry.grid(row=0, column=1, sticky='we')
+        prj_name_entry.grid(row=1, column=0, sticky='we')
 
         # the date for this party
-        ttk.Label(self, text='Datum och tid')\
-            .grid(row=1, column=0, sticky='wn')
         prj_date = DateTime(self, sett['date'], sett)
-        prj_date.grid(row=1, column=1, sticky="we")
+        prj_date.grid(row=2, column=0, sticky="we")
 
         # project file path
         ttk.Label(self, text='Projekt fil sökväg:')\
-            .grid(row=2, column=0, sticky='w')
+            .grid(row=3, column=0, sticky='w')
         prj_path = ttk.Entry(self, 
             textvariable=sett['project_file_path'],
             validate='all',
             validatecommand=lambda *a:False)
-        prj_path.grid(row=2,column=1, sticky='w')
+        prj_path.grid(row=4,column=0, sticky='w')
 
         # path to persons input file
         persons_file_lbl = ttk.Label(self, text="Personer indata fil:")
-        persons_file_lbl.grid(row=3, column=0, sticky='w')
+        persons_file_lbl.grid(row=5, column=0, sticky='w')
         out_folder = LookupPath(
             self, sett['persons']['file'], 'file_open', sett)
-        out_folder.grid(row=3, column=1, sticky='we')
+        out_folder.grid(row=6, column=0, sticky='we')
 
         # path to departments input file
         depts_file_lbl = ttk.Label(self, text="Avdelningar indata fil:")
-        depts_file_lbl.grid(row=4, column=0, sticky='w')
+        depts_file_lbl.grid(row=7, column=0, sticky='w')
         out_folder = LookupPath(
             self, sett['departments']['file'], 'file_open', sett)
-        out_folder.grid(row=4, column=1, sticky='we')
+        out_folder.grid(row=8, column=0, sticky='we')
 
         # path to departments input file
         depts_file_lbl = ttk.Label(self, text="Bord indata fil:")
-        depts_file_lbl.grid(row=5, column=0, sticky='w')
+        depts_file_lbl.grid(row=9, column=0, sticky='w')
         out_folder = LookupPath(
             self, sett['tables']['file'], 'file_open', sett)
-        out_folder.grid(row=5, column=1, sticky='we')
+        out_folder.grid(row=10, column=0, sticky='we')
 
         # path to output folder
         out_folder_lbl = ttk.Label(self, text="Utdata mapp:")
-        out_folder_lbl.grid(row=6, column=0, sticky='w')
+        out_folder_lbl.grid(row=11, column=0, sticky='w')
         out_folder = LookupPath(
             self, sett['output_folder'], 'dir', sett)
-        out_folder.grid(row=6, column=1, sticky='we')
+        out_folder.grid(row=12, column=0, sticky='we')
 
         for wgt in self.winfo_children():
-            wgt.grid_configure(padx=5, pady=5)
+            wgt.grid_configure(padx=5)
 
 
 class LookupPath(ttk.Frame):
@@ -299,9 +297,9 @@ class TableWidget(ttk.Treeview):
         for i, h in enumerate(obj_hdrs):
             hd = next((k for k,x in hdrs.items() 
                        if x.get()==i), '?')
-            s = f'{h} ({hd:.10})' if h != hd else f'{h}'
+            s = f'{hd} ({h})' if h != hd else f'{h}'
             self.heading(i, text=s)
-            self.column(i, width=80, minwidth=0, stretch=False)
+            self.column(i, width=120, minwidth=0, stretch=False)
 
         def get_col(idx, row):
             if len(hdrs) <= idx:
@@ -317,9 +315,3 @@ class TableWidget(ttk.Treeview):
             self.insert('', tk.END, values=vlus)
 
         self.update()
-
-        
-
-        
-
-        

@@ -20,7 +20,7 @@ class GuiApp(tk.Tk):
         self.project = project
         self.prj_wrapped = wrap_instance(project)
         self.undo = Undo(self.prj_wrapped)
-        self.geometry('1024x600')
+        self.geometry('1024x610')
         self.pages = (ProjectPage, NameCardPage, 
                       PlacementPage, TemplatePage)
         self.rowconfigure(0, weight=1)

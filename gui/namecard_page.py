@@ -38,7 +38,7 @@ class NameCardPage(ttk.Frame):
 
         sel_pane = NameCardProperties(self, controller, width=300)
         sel_pane.columnconfigure(0, weight=1)
-        sel_pane.rowconfigure(0, weight=0)
+        sel_pane.rowconfigure(0, weight=1)
         sel_pane.grid(row=1, column=0, padx=3, sticky='wnes')
 
         edit_pane = EditNameCard(self, controller)
@@ -54,6 +54,10 @@ class NameCardProperties(ttk.LabelFrame):
 
         props = PropertyWidget(self, controller)
         props.grid(row=0, column=0, sticky='wnes')
+
+        vscroll = ttk.Scrollbar(self, orient='vertical', command=props.yview)
+        props.configure(yscrollcommand=vscroll.set)
+        vscroll.grid(row=0, column=1, sticky='nes')
 
 class EditNameCard(ttk.LabelFrame):
     def __init__(self, master, controller, **kwargs):
