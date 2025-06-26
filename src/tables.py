@@ -44,7 +44,7 @@ class AllTables:
         # first place prioritized tables
         for table in [t for t in self.tables if t.prio_dept]:
             for p in persons:
-                if not p.placed_at_tbl and p.dept in table.prio_dept:
+                if not p.table() and p.dept in table.prio_dept:
                     table.place_person(p)
 
         # find a table for this
@@ -54,8 +54,8 @@ class AllTables:
             # loop from department level trying to keep them together
             for dep, num in deps: 
                 placed = 0
-                for p in filter(lambda p: p.dept.id == dep and \
-                                not p.placed_at_tbl, persons):
+                for p in filter((lambda p: p.dept.id == dep and \
+                                 not p.table()), persons):
                     # possibly change table
                     if not table or table.free_seats() == 0:
                         for n in range(num, 0, -1):
@@ -69,7 +69,7 @@ class AllTables:
             
         # sanity check
         for p in persons:
-            assert p.placed_at_tbl
+            assert p.table()
 
         for t in self.tables:
             print(t.id, t.departments())
@@ -81,7 +81,7 @@ class AllTables:
             tbl.persons.clear()
 
         for p in self._project.persons.persons:
-            p.placed_at_tbl = False
+            p._placed_at_tbl = None
 
 class Table:
     def __init__(self, row, project):
@@ -110,9 +110,19 @@ class Table:
     
     def place_person(self, person) -> bool:
         "Try to place person at this table, will fail if full"
-        assert person.placed_at_tbl == False
+        assert person.table() == None
         if self.num_seats - len(self.persons) > 0:
             self.persons.append(person)
-            person.placed_at_tbl = self
+            person._placed_at_tbl = self
             return True
         return False
+    
+    def unplace_person(self, person) -> bool:
+        "Remove person from placement at this table"
+        if person.table() != self:
+            return False
+        
+        self.persons.pop(self.persons.index(person))
+
+        person._placed_at_tbl = None
+

@@ -53,7 +53,7 @@ class TestTable(unittest.TestCase):
         self.assertEqual(tbl.free_seats(), 10)
         for p in self.project.persons.persons:
             tbl.place_person(p)
-            self.assertEqual(p.placed_at_tbl, tbl)
+            self.assertEqual(p.table(), tbl)
         self.assertEqual(tbl.free_seats(), 3)
 
     def test_departments(self):

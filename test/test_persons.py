@@ -38,15 +38,15 @@ class TestPerson(unittest.TestCase):
         self.assertEqual(p.lname, data[3])
         self.assertEqual(p.dept.id, data[4])
         self.assertEqual(p.special_foods, data[5])
-        self.assertEqual(p.placed_at_tbl, False)
+        self.assertEqual(p._placed_at_tbl, None)
 
-    def test_table_id(self):
+    def test_table(self):
         data = mock_person_data(self.project)
         p = Person(data, self.project)
-        self.assertEqual(p.table_id(), "")
+        self.assertEqual(p.table(), None)
         tbl = MockTable(self.project)
-        p.placed_at_tbl = tbl
-        self.assertEqual(p.table_id(), tbl.id)
+        p._placed_at_tbl = tbl
+        self.assertEqual(p.table(), tbl)
 
 class TestAllPersons(unittest.TestCase):
     def setUp(self):

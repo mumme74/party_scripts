@@ -1,5 +1,5 @@
 import setup_prj_dir
-import unittest
+import unittest, os
 from pathlib import Path
 from datetime import datetime
 from collections import Counter
@@ -59,6 +59,7 @@ class TestNameCard(unittest.TestCase):
     def setUp(self):
         super().setUp()
         self.template = data_dir / 'test_namecard.json'
+        self.template_png = Path('test_namecard.png')
         self.greet = 'test greet'
         self.obj = {
             'greet': self.greet,
@@ -67,15 +68,17 @@ class TestNameCard(unittest.TestCase):
 
     def tearDown(self):
         super().tearDown()
-        save_as = data_dir / f'save_as_{self.template.name}'
-        save_as.unlink(True)
-
+        outdata = data_dir / 'outdata/'
+        for root, dirs, files in os.walk(outdata):
+            for f in files:
+                if not (outdata / f).name.startswith('.'):
+                    (outdata / f).unlink(True)
 
     def test_constructor(self):
         card = NameCard(self.obj)
         self.assertEqual(card.greet, self.greet)
         self.assertEqual(card.template_json, self.template)
-        self.assertEqual(card.template_png, 'test_namecard.png')
+        self.assertEqual(card.template_png, self.template_png)
         self.assertEqual(card.tbl_id_text.__json__(),
         {
             "font": "Lucida Handwriting STD",
@@ -127,7 +130,7 @@ class TestNameCard(unittest.TestCase):
         self.assertTrue('card' in obj)
         c = obj['card']
         self.assertEqual(c['name'], 'Test namecard')
-        self.assertEqual(c['template_png'], 'test_namecard.png')
+        self.assertEqual(c['template_png'], self.template_png)
         self.assertTrue(isinstance(c['tbl_id_text'], dict))
         self.assertTrue(isinstance(c['greet_text'], dict))
         self.assertTrue(isinstance(c['name_text'], dict))
@@ -138,9 +141,11 @@ class TestNameCard(unittest.TestCase):
         self.assertRaises(
             WriteFileExists,
             lambda: card.save_as_new_template(data_dir / self.template))
-        file = data_dir / f'save_as_{self.template.name}'
+        file = data_dir / 'outdata' / f'save_as_{self.template.name}'
+        file_png = file.parent / f'save_as_{self.template_png.name}'
         card.save_as_new_template(file)
         self.assertTrue(file.exists())
+        self.assertTrue(file_png.exists())
 
 class TestPreject(unittest.TestCase):
     def setUp(self):

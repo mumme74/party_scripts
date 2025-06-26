@@ -69,12 +69,15 @@ class MockPerson:
         self.dept = None
         self.special_foods = fake.get_words_list()
         self.registered_date = fake.date()
-        self.placed_at_tbl = None
+        self._placed_at_tbl = None
 
     def table_placement(self):
         if self.placed_at_table:
             return self.placed_at_table.id
         return ""
+    
+    def table(self):
+        return self._placed_at_tbl
     
 class MockTable:
     _tbl_cnt = 1

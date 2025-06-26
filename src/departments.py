@@ -10,8 +10,11 @@ class AllDepartments:
         self._project = project
         dept = project.settings['departments']
         row = ['unk', 'Unknown']
-        self.departments = [Dept(row[dept['hdrs']['id']],
-                                 row[dept['hdrs']['name']], [])]
+        unk_id = dept['hdrs']['id']
+        unk_name = dept['hdrs']['name']
+        self.departments = [Dept(row[unk_id if unk_id in row else 0],
+                                 row[unk_name if unk_name in row else 1],
+                                [])]
 
         self.data_file = dept['file']
         if not self.data_file.name:

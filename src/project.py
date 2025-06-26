@@ -91,6 +91,9 @@ class NameCard:
         
     def save_as_new_template(self, save_path):
         save_path = Path(save_path)
+        if save_path.exists():
+            raise WriteFileExists(save_path, 
+                f'File {save_path} already exists')
         try:
             with open(save_path, encoding='utf8',
                       mode='w') as file:

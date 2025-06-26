@@ -46,7 +46,7 @@ class AllPersons:
     
     def num_to_place(self):
         "Return how many people left to place"
-        return len([p for p in self.persons if not p.placed_at_tbl])
+        return len([p for p in self.persons if not p._placed_at_tbl])
 
 class Person:
     def __init__(self, data, project):
@@ -63,13 +63,10 @@ class Person:
         self.registered_date = parse_date(
             data[keys['date']].strip(),
             project.settings['persons']['file'])
-        self.placed_at_tbl = False
+        self._placed_at_tbl = None
 
-    def table_id(self):
-        if self.placed_at_tbl:
-            return self.placed_at_tbl.id
-        return ""
-
+    def table(self):
+        return self._placed_at_tbl
 
     # for comparisons
     def __eq__(self, o):
