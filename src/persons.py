@@ -43,6 +43,10 @@ class AllPersons:
         for p in self.persons:
             foods.update((p.special_foods,))
         return foods
+    
+    def num_to_place(self):
+        "Return how many people left to place"
+        return len([p for p in self.persons if not p.placed_at_tbl])
 
 class Person:
     def __init__(self, data, project):

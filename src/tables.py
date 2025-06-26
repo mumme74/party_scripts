@@ -76,6 +76,13 @@ class AllTables:
 
         self.is_placed = True
 
+    def clear_placements(self):
+        for tbl in self.tables:
+            tbl.persons.clear()
+
+        for p in self._project.persons.persons:
+            p.placed_at_tbl = False
+
 class Table:
     def __init__(self, row, project):
         keys = project.settings['tables']['hdrs']
@@ -103,7 +110,7 @@ class Table:
     
     def place_person(self, person) -> bool:
         "Try to place person at this table, will fail if full"
-        assert person.placed_at_tbl == None
+        assert person.placed_at_tbl == False
         if self.num_seats - len(self.persons) > 0:
             self.persons.append(person)
             person.placed_at_tbl = self
