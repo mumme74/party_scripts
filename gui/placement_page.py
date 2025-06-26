@@ -8,4 +8,4 @@ class PlacementPage(ttk.Frame):
         ttk.Frame.__init__(self, master)
         self.controller = controller
 
-        PageHeader(self, controller)
+        self.page_hdr = PageHeader(self, controller)

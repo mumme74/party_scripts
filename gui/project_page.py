@@ -17,7 +17,7 @@ class ProjectPage(ttk.Frame):
         self.columnconfigure(1, weight=1)
 
         # page header
-        PageHeader(self, controller)
+        self.page_hdr = PageHeader(self, controller)
 
         sett_pane = SettingsFrame(self, controller)
         sett_pane.columnconfigure(0, weight=0)
@@ -199,7 +199,7 @@ class ContentFrame(ttk.LabelFrame):
         prj = controller.prj_wrapped
         self.settings = prj['settings']
 
-        # variable that gets chenged whenever we change indata
+        # variable that gets changed whenever we change indata
         self.indata = tk.StringVar(value='persons')
         self.indata.trace_add('write', self.indata_changed)
 
@@ -289,8 +289,8 @@ class ContentFrame(ttk.LabelFrame):
             self.controller.reload(
                 self.indata_key())
             self.tbl.recreate()
-        except Exception:
-            pass
+        except Exception as e:
+            self.controller.show_error(str(e))
 
     def indata_reloaded(self, event):
         key = self.indata_key()

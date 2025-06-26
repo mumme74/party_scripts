@@ -9,7 +9,8 @@ class PageHeader(ttk.Frame):
     def __init__(self, page, controller, **kwargs):
         ttk.Frame.__init__(self, page, **kwargs)
         self.controller = controller
-        #self.rowconfigure(2, weight=1)
+        self.columnconfigure(2, weight=1)
+        self.columnconfigure(3, weight=1)
         self.grid(row=0, column=0, columnspan=2, sticky='wne')
 
         # undo redo buttons
@@ -25,6 +26,125 @@ class PageHeader(ttk.Frame):
         lbl = ttk.Label(self, textvariable=controller.header_var, 
                         font=controller.title_font)
         lbl.grid(row=0, column=2, pady=10, padx=3, sticky='wne')
+
+        # error messages view
+        self.msgs = MessagesView(self, controller)
+        self.msgs.grid(row=0, columns=3, sticky='nesw')
+
+# we use a canvas as warapper here to 
+# make a scrollable area
+class MessagesView(tk.Canvas):
+    def __init__(self, master, controller):
+        style = ttk.Style()
+        bg = style.lookup('TFrame','background')
+        tk.Canvas.__init__(self, master, 
+            width=400, height=50, bg=bg, 
+            highlightthickness=0)
+        self.master = master
+        self.controller = controller
+
+        self.grid(row=0, column=3, sticky='en', padx=5)
+        
+        # the content frame
+        self.frm = ttk.Frame(self, width=self.winfo_width(), height=0) 
+        self.frm.columnconfigure(0, weight=1)
+        self.create_window((0,0), window=self.frm, anchor='nw')
+
+        # scroll stuff
+        def frm_changed(event):
+            frm_h = self.frm.winfo_height()
+            my_h = self.winfo_height()
+            if frm_h < my_h:
+                if self.scroll:
+                    self.scroll.destroy()
+                    self.scroll = None
+            elif not self.scroll:
+                self.scroll = ttk.Scrollbar(master, orient='vertical', command=self.yview)
+                self.configure(yscrollcommand=self.scroll.set)
+                self.scroll.grid(row=0, column=4, sticky='nes')
+
+            if self.scroll:
+                self.configure(scrollregion=self.bbox('all'))
+        
+        # add scoll when a widget is added
+        self.scroll = None
+        self.frm.bind('<Configure>', frm_changed) 
+
+        # style messages
+        style = ttk.Style()
+        style.configure('sMsgError.TEntry', fieldbackground="#f5bdc2")
+        style.configure('sMsgError.TEntry', foreground="#6C0909")
+        style.configure('sMsg.TEntry', fieldbackground="#EAFAE1")
+        style.configure('sMsg.TEntry', foreground="#084C16")
+
+    def add_message(self, text):
+        Message(self, text)
+
+    def add_error(self, text):
+        Message(self, text, True)
+
+class Message(ttk.Frame):
+    def __init__(self, master, text, is_error=False):
+        ttk.Frame.__init__(self, master.frm, width=master.winfo_width())
+        self.master = master
+        self.columnconfigure(0, weight=1)
+        self.grid(column=0, sticky='we')
+
+        id = 'sMsgError' if is_error else 'sMsg'
+
+        # messagebox
+        txt = ttk.Entry(self, width=45, style=f'{id}.TEntry')
+        txt.insert(0, text)
+        txt.configure(validate='all')
+        txt.configure(validatecommand=lambda *a:False)
+        txt.grid(row=0, column=0, sticky='we')
+
+        CloseBtn(self, command=self.close
+        ).grid(row=0, column=1)
+
+        self.after(100, 
+            lambda *a:self.master.yview_moveto(1))
+
+    def close(self, *args):
+        self.destroy()
+
+class CloseBtn(ttk.Label):
+    _init_styles = False
+
+    @classmethod
+    def _cls_init(cls):
+        # only configure styles once
+        cls._init_styles = True
+        style = ttk.Style()
+        style.configure('sClose.TLabel', background="#888787")
+        style.configure('sClose.TLabel', foreground='#3A0101')
+        style.configure('sClose.TLabel', bordercolor="#494848")
+        style.configure('sClose.TLabel', borderwidth=1)
+
+    def __init__(self, master, **kwargs):
+        command = kwargs.pop('command', None)
+        if not hasattr(kwargs, 'text'):
+            kwargs['text'] = '✖'
+        if not hasattr(kwargs, 'style'):
+            kwargs['style'] = 'sClose.TLabel'
+
+        if not CloseBtn._init_styles:
+            CloseBtn._cls_init()
+
+        ttk.Label.__init__(self, master, **kwargs)
+
+        self.sCloseHover = ttk.Style()
+        self.sCloseHover.configure('sCloseHover.TLabel', background='#3A0101')
+        self.sCloseHover.configure('sCloseHover.TLabel', foreground='#958989')
+        self.sCloseHover.configure('sCloseHover.TLabel', bordercolor='#CCCCCC')
+        self.sCloseHover.configure('sCloseHover.TLabel', borderwidth=1)
+        self.bind('<Enter>', 
+            lambda e: self.configure(style='sCloseHover.TLabel'))
+        self.bind('<Leave>', 
+            lambda e: self.configure(style='sClose.TLabel'))
+
+        if command:
+            self.bind('<Button-1>', lambda e: command())
 
 def main_menu(window, undo):
     # Creating Menubar

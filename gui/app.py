@@ -115,6 +115,20 @@ class GuiApp(tk.Tk):
         self.bind_all(f'<{ctrl}-o>', self.open)
         self.trace_indata_files()
 
+    def show_message(self, text):
+        tab_id = self.tab_ctrl.select()
+        tab = self.tab_ctrl.nametowidget(tab_id)
+        frm_id = list(tab.children.keys())[0]
+        tab.children[frm_id].page_hdr \
+            .msgs.add_message(text)
+        
+    def show_error(self, text): 
+        tab_id = self.tab_ctrl.select()
+        tab = self.tab_ctrl.nametowidget(tab_id)
+        frm_id = list(tab.children.keys())[0]
+        tab.children[frm_id].page_hdr \
+            .msgs.add_error(text)
+
     def trace_indata_files(self):
         self._file_observer.unschedule_all()
 
@@ -138,21 +152,23 @@ class GuiApp(tk.Tk):
     def reload(self, prop=None):
         self.project.reload(prop)
         self.undo.set_disabled(True)
-        if not prop:
-            wrap.reload_wrapped(self.prj_wrapped, self.project)
-        else:
-            props = {
-                'persons':     self.project.persons,
-                'departments': self.project.departments,
-                'tables':      self.project.tables
-            }
-            if not prop in props.keys():
-                return
+        try:
+            if not prop:
+                wrap.reload_wrapped(self.prj_wrapped, self.project)
+            else:
+                props = {
+                    'persons':     self.project.persons,
+                    'departments': self.project.departments,
+                    'tables':      self.project.tables
+                }
+                if not prop in props.keys():
+                    return
 
-            wrap.reload_wrapped(self.prj_wrapped[prop], props[prop])
-            wrap.reload_item(self.prj_wrapped['settings'], prop,
-                             self.project.settings[prop], {})
-            
+                wrap.reload_wrapped(self.prj_wrapped[prop], props[prop])
+                wrap.reload_item(self.prj_wrapped['settings'], prop,
+                                self.project.settings[prop], {})
+        except AppException as e:
+            self.show_error(str(e))
         self.trace_indata_files()
         self.undo.set_disabled(False)
 

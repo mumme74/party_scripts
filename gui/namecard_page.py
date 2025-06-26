@@ -3,7 +3,6 @@ from tkinter import font
 from tkinter import ttk
 from tkinter import colorchooser
 from tkinter import filedialog
-from tkinter import messagebox
 from PIL import ImageTk
 from pathlib import Path
 from menu import PageHeader
@@ -34,7 +33,7 @@ class NameCardPage(ttk.Frame):
         self.columnconfigure(0, weight=0)
         self.columnconfigure(1, weight=1)
 
-        PageHeader(self, controller)
+        self.page_hdr = PageHeader(self, controller)
 
         sel_pane = NameCardProperties(self, controller, width=300)
         sel_pane.columnconfigure(0, weight=1)
@@ -176,13 +175,15 @@ class PropertyWidget(ttk.Treeview):
                 FontSelector(self, variable, iid, bbox)
             case _ :
                 if key == 'template_json':
-                    pth = PathEdit(self, variable, iid, bbox, None)
+                    pth = PathEdit(self, variable, iid, bbox, 
+                                   None, (('Template files', '*.json'),))
                     if pth.ok:
                         print('reload namecard')
                 elif key == 'template_png':
                     p = self.controller.project.settings['namecard'].template_json
-                    PathEdit(self, variable, iid, bbox, Path(p).parent)
-                if isinstance(variable.get(), bool):
+                    PathEdit(self, variable, iid, bbox, 
+                             Path(p).parent, (('PNG file', '*.png'),))
+                elif isinstance(variable.get(), bool):
                     vlus=('True', 'False')
                     ComboBoxEdit(self, variable, iid, bbox, 
                                  values=vlus, 
@@ -343,19 +344,20 @@ class ColorEdit:
             master.item(iid, values=vlus)
 
 class PathEdit:
-    def __init__(self, master, variable, iid, bbox, indir):
+    def __init__(self, master, variable, iid, bbox, indir, filetypes):
         in_dir = indir.absolute() if indir else \
             (Path(__file__).parent.parent / 'templates').absolute()
         file = Path(variable.get()).name
 
         vlu = filedialog.askopenfilename(
-                initialdir=in_dir, initialfile=file)
+                initialdir=in_dir, initialfile=file,
+                filetypes=filetypes)
         if vlu:
             new_dir = Path(vlu).absolute().parent
             if indir:
                 if in_dir != new_dir:
-                    messagebox.showerror(
-                        'Fel mapp', f'Filen måste finnas i mappen: {indir}')
+                    master.controller.show_error(
+                        f'Filen måste finnas i mappen: {indir}')
                     return
                 vlu = Path(vlu).name
             
