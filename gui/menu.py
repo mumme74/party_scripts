@@ -57,7 +57,10 @@ class MessagesView(tk.Canvas):
             if frm_h < my_h:
                 if self.scroll:
                     self.scroll.destroy()
-                    self.scroll = None
+                    self.scroll = None                
+                    self.configure(yscrollcommand=lambda *a: None)
+                    self.after(100, 
+                        lambda *a:self.yview_moveto(0))
             elif not self.scroll:
                 self.scroll = ttk.Scrollbar(master, orient='vertical', command=self.yview)
                 self.configure(yscrollcommand=self.scroll.set)
@@ -92,15 +95,24 @@ class Message(ttk.Frame):
 
         id = 'sMsgError' if is_error else 'sMsg'
 
-        # messagebox
-        txt = ttk.Entry(self, width=45, style=f'{id}.TEntry')
+        # messagebox, wrap in a Frame to be able to specify 
+        # width height explicitly
+        master_w, frm_h = master.winfo_width(), 20
+        frm = ttk.Frame(self, width=master_w, height=frm_h)
+
+        txt = ttk.Entry(frm, style=f'{id}.TEntry')
         txt.insert(0, text)
         txt.configure(validate='all')
         txt.configure(validatecommand=lambda *a:False)
-        txt.grid(row=0, column=0, sticky='we')
 
-        CloseBtn(self, command=self.close
-        ).grid(row=0, column=1)
+        close = CloseBtn(self, command=self.close)
+
+        txt_w = master_w - 25
+        txt.place(x=0,y=0, width=txt_w, height=20)
+        close.place(x=txt_w, y=0)
+
+        frm.grid(row=0, column=0, sticky='we')
+        frm.grid_propagate(False)
 
         self.after(100, 
             lambda *a:self.master.yview_moveto(1))
