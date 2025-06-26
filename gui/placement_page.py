@@ -18,12 +18,18 @@ class PlacementPage(ttk.Frame):
 
         self.page_hdr = PageHeader(self, controller)
 
+        self.columnconfigure(1, weight=1)
+        self.rowconfigure(1, weight=1)
+
         # keep track of how many people to place
         to_place = prj.persons.num_to_place()
         self.num_to_place = tk.IntVar(value=to_place)
 
         SettingsPane(self, controller
         ).grid(row=1, column=0, sticky='nw', padx=5, pady=5)
+
+        TableViewPane(self, controller
+        ).grid(row=1, column=1, sticky='nsew', padx=5, pady=5)
 
         
 class SettingsPane(ttk.LabelFrame):
@@ -110,7 +116,7 @@ class SettingsPane(ttk.LabelFrame):
 
     def gen_placement_cards(self):
         prj = self.controller.project
-        create_name_cards(prj, prj.persons)
+        create_name_cards(prj, prj.persons.persons)
         create_namecard_docx(prj)
 
     def gen_placement_list(self):
@@ -120,3 +126,68 @@ class SettingsPane(ttk.LabelFrame):
     def gen_specialfoods_list(self):
         prj = self.controller.project
         create_special_foods_report(prj)
+
+class TableViewPane(ttk.LabelFrame):
+    def __init__(self, master, controller):
+        ttk.LabelFrame.__init__(
+            self, master, text='Bordsplaceringar')
+        self.master = master
+        self.controller = controller
+
+        self.rowconfigure(0, weight=1)
+        self.columnconfigure(0, weight=1)
+
+        self.tbl = PlacementsTable(self, controller)
+        self.tbl.grid(row=0, column=0, sticky='nsew')
+
+        # recreate when this variable changes
+        self.master.num_to_place.trace_add(
+            'write', self.tbl.recreate)
+
+
+class PlacementsTable(ttk.Treeview):
+    def __init__(self, master, controller):
+        cols = ('Bord', 'Person', 'Avdelning', 'Specialkost')
+        ttk.Treeview.__init__(self, master, columns=cols)
+        self.master = master
+        self.controller = controller
+
+        # add headings
+        for c in cols:
+            self.heading(c, text=c)
+        self.column(cols[0], width=120, minwidth=0, stretch=False)
+        self.column(cols[1], width=200, minwidth=0, stretch=False)
+        self.column(cols[2], width=120, minwidth=0, stretch=False)
+        self.column('#0', width=20, minwidth=0, stretch=False)
+
+        self.recreate()
+
+    def recreate(self, *args):
+        self.delete(*self.get_children())
+
+        def ins_person(root, tbl, person):
+            vlus = (f'   {tbl}',
+                f'{person.fname} {person.lname}',
+                f'{person.dept.id}',
+                f'{person.special_foods}'
+            )
+            self.insert(root, tk.END, values=vlus)
+
+        tables = self.controller.project.tables
+        persons = self.controller.project.persons
+        to_place = persons.num_to_place()
+        if to_place > 0:
+            tbl = 'Oplacerade'
+            root = self.insert('',tk.END, values=(tbl,))
+            for p in persons.persons:
+                if not p.placed_at_tbl:
+                    ins_person(root, tbl, p)
+
+        for tbl in tables.tables:
+            header = f'{tbl.id} ({tbl.free_seats()} av {tbl.num_seats})'
+            root = self.insert('',tk.END, values=(header,))
+            for p in tbl.persons:
+                ins_person(root, tbl.id, p)
+
+        self.update()
+
