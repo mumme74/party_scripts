@@ -127,7 +127,7 @@ class PropertyWidget(ttk.Treeview):
         self.namecard = controller.project.settings['namecard']
         namecard_wrapped = controller.prj_wrapped['settings']['namecard']
 
-        for i, c in enumerate(cols):
+        for c in cols:
             self.heading(c, text=c)
         self.column(cols[0], width=100, minwidth=0, stretch=False)
         self.column(cols[1], width=180, minwidth=0, stretch=False)
