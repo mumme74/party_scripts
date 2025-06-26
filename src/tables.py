@@ -3,6 +3,7 @@ from .read_data import read_data
 from .departments import AllDepartments
 from .persons import AllPersons
 from .exceptions import DataRetrivalError
+from .helpers import to_int
 from collections import Counter
 
 class AllTables:
@@ -79,10 +80,10 @@ class Table:
     def __init__(self, row, project):
         keys = project.settings['tables']['hdrs']
         self.id = row[keys['id']]
-        self.num_seats = int(row[keys['num_seats']])
+        self.num_seats = to_int(row[keys['num_seats']], 0)
         self.persons = []
         self.prio_dept = []
-        if len(row) >= keys['prio_dept'] + 1:
+        if len(row) >= len(keys):
             for dept in row[keys['prio_dept']].split(' '):
                 dep = project.departments.get_department(dept)
                 if dep.id == 'unk':

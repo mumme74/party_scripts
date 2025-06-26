@@ -9,7 +9,10 @@ class AllDepartments:
         # default self.departments include unknown
         self._project = project
         dept = project.settings['departments']
-        self.departments = [Dept('unk', 'Unknown', [])]
+        row = ['unk', 'Unknown']
+        self.departments = [Dept(row[dept['hdrs']['id']],
+                                 row[dept['hdrs']['name']], [])]
+
         self.data_file = dept['file']
         if not self.data_file.name:
             return # when loading an empty project
@@ -40,12 +43,12 @@ class Dept:
         self.name = name
         self.synonyms = [s.lower() for s in synonyms]
 
-    def match(self, str):
+    def match(self, string):
         "Test if str matches this department"
-        key = str.lower().strip()
+        key = string.lower().strip()
         if key in self.synonyms or \
            key == self.id or \
-           key == self.name.lower():
+           key == str(self.name).lower():
             return True
         return False
     

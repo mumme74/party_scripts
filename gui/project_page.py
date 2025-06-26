@@ -318,6 +318,7 @@ class TableWidget(ttk.Treeview):
         self._recreate(v['obj'], k, v['hdrs'], v['specialcols'])
 
     def _recreate(self, obj, key, hdrs, specialcols):
+        hdrs_vlus = [k for k in hdrs.keys()]
         hdr_names = obj['_data'].headers \
             if obj and hasattr(obj, '_data') else [k for k in hdrs.keys()]
         conf_hdrs = {k:v.get() for k,v in self.master.controller\
@@ -327,11 +328,13 @@ class TableWidget(ttk.Treeview):
 
         # rows from here on
         def get_col(idx, row):
-            if len(hdrs) <= idx:
-                return None
-            key = hdr_keys[idx]
-            return specialcols[key](row) \
-                if key in specialcols else row[key].get()
+            key = hdrs_vlus[idx] if len(hdrs) > idx else row.keys()[idx]
+            if key in specialcols:
+                return specialcols[key](row) 
+            elif isinstance(row[key], list):
+                return [v.get() for v in row[key] if v is not None]
+            else:
+                return row[key].get()
 
         insert_rows = []
         col_max = max(len(hdr_names), len(hdrs))

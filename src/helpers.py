@@ -15,6 +15,13 @@ def parse_date(date_str, file):
             pass
     raise InputDataBadFormat(file, f'Could not convert date, invalid format {date_str}')
 
+def to_int(vlu, default):
+    """Convert to int, use default if fails"""
+    try:
+        return int(vlu)
+    except ValueError:
+        return default
+
 class File(object):
     def __init__(self, path, *args, **kwargs):
 
