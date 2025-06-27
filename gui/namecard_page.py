@@ -43,7 +43,7 @@ class NameCardPage(ttk.Frame):
         sel_pane.rowconfigure(0, weight=1)
         sel_pane.grid(row=1, column=0, padx=3, sticky='wnes')
 
-        edit_pane = EditNameCard(self, controller)
+        edit_pane = PreviewNameCard(self, controller)
         edit_pane.columnconfigure(0, weight=1)
         edit_pane.rowconfigure(0, weight=0)
         edit_pane.grid(row=1, column=1, padx=3, sticky='nw')
@@ -74,13 +74,12 @@ class NameCardProperties(ttk.LabelFrame):
             self.controller.project.settings['namecard'] \
                 .save_as_new_template(path)
 
-class EditNameCard(ttk.LabelFrame):
+class PreviewNameCard(ttk.LabelFrame):
     def __init__(self, master, controller, **kwargs):
         ttk.LabelFrame.__init__(
             self, master, text='Förhandgransning', **kwargs)
         self.controller = controller
         self.columnconfigure(0, weight=1)
-        self.rowconfigure(1, weight=1)
 
         self.card = controller.prj_wrapped['settings']['namecard']
         self.trace_vars(self.card)
@@ -92,7 +91,8 @@ class EditNameCard(ttk.LabelFrame):
         self.canvas.grid(row=1, column=1, sticky='nw')
         ttk.Label(self).grid(row=1, padx=5, pady=5, column=0)
 
-        self.indata_changed()
+        self.after(100, lambda *a:
+            self.indata_changed())
 
     def indata_changed(self, *args):
         img, new_size, out_dir, card = load_template(
