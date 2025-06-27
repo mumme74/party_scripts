@@ -158,7 +158,8 @@ class Project:
             }),
             'table_sign':{
                 'file':app_dir / "templates" / "table_sign_default.docx"
-            }
+            },
+            'persons_placed_hashes': {}
         }
 
         self.departments = None
@@ -200,6 +201,7 @@ class Project:
         # re-load the data with the new settings
         recurse(self.settings, obj)
         self.settings['project_file_path'] = Path(prj_file)
+        self.settings['persons_placed_hashes'] = obj.get('persons_placed_hashes', {})
         self._sanity_check()
         self.reload()
 
@@ -231,9 +233,28 @@ class Project:
                 self.__dict__[prop] = cls(self)
                 self.settings[prop]['file'] = file
                 raise e # notify upstream of the error
+            
+        # rewire placements
+        placements = self.settings['persons_placed_hashes']
+        for per in self.persons.persons:
+            key = f'{per.email}_{per.fname}_{per.lname}'
+            if key in placements:
+                id = placements[key]
+                tbl = next((t for t in self.tables.tables if t.id==id), None)
+                if tbl:
+                    tbl.place_person(per)
 
     def save_project_as(self, save_path):
         self.settings['project_file_path'] = save_path
+        # store placements already done
+        placements = self.settings['persons_placed_hashes']
+        for per in self.persons.persons:
+            tbl = per.table()
+            if tbl:
+                key = f'{per.email}_{per.fname}_{per.lname}'
+                placements[key] = tbl.id
+
+        # dump settings to json file
         with open(save_path, mode='w') as file:
             json.dump(self.settings, file, 
                       ensure_ascii=False, indent=2,
