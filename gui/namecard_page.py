@@ -36,7 +36,7 @@ class NameCardPage(ttk.Frame):
         self.rowconfigure(1, weight=0)
         self.columnconfigure(0, weight=0)
         self.columnconfigure(1, weight=1)
-        self.undo = Undo(controller.prj_wrapped)
+        self.undo = Undo(self, controller.prj_wrapped)
 
         self.page_hdr = PageHeader(self, controller)
 

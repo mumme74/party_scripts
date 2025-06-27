@@ -17,7 +17,7 @@ class ProjectPage(ttk.Frame):
         self.settings = sett = prj['settings']
         self.columnconfigure(0, weight=0)
         self.columnconfigure(1, weight=1)
-        self.undo = Undo(controller.prj_wrapped)
+        self.undo = Undo(self, controller.prj_wrapped)
 
         # page header
         self.page_hdr = PageHeader(self, controller)

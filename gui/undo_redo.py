@@ -3,9 +3,10 @@
 class Undo:
     _instances = []
     _current = None
-    def __init__(self, prj_wrapped):
+    def __init__(self, master, prj_wrapped):
         Undo._instances.append(self)
         Undo._current = self
+        self.master = master
         self.prj_wrapped = prj_wrapped
         self._stack = []
         self._pos = -1
@@ -49,6 +50,7 @@ class Undo:
             'new_vlu': new_vlu, 
             'old_vlu': old_vlu
         })
+        self.master.event_generate('<<UndoChanged>>')
         
     def clear(self, to_pos=0):
         while to_pos < len(self._stack):
@@ -56,10 +58,10 @@ class Undo:
         self._pos = to_pos-1
 
     def undo_cnt(self):
-        return self._pos
+        return self._pos+1
     
     def redo_cnt(self):
-        return len(self._stack) - self._pos
+        return len(self._stack) - self._pos-1
     
     def undo(self):
         if self._pos >= 0:
@@ -73,6 +75,7 @@ class Undo:
                 itm['var'].set(itm['old_vlu'])
             self._pos -= 1
             self._disabled = dis
+            self.master.event_generate('<<Undo>>')
 
     def redo(self):
         if self._pos < len(self._stack)-1:
@@ -86,6 +89,7 @@ class Undo:
                 itm['var'].set(itm['new_vlu'])
             self._pos += 1
             self._disabled = dis
+            self.master.event_generate('<<Redo>>')
 
     def disabled(self):
         return self._disabled

@@ -10,18 +10,19 @@ class PageHeader(ttk.Frame):
     def __init__(self, page, controller, **kwargs):
         ttk.Frame.__init__(self, page, **kwargs)
         self.controller = controller
+        self.page = page
         self.columnconfigure(2, weight=1)
         self.columnconfigure(3, weight=1)
         self.grid(row=0, column=0, columnspan=2, sticky='wne')
 
         # undo redo buttons
-        u_btn = ttk.Button(self, text='<', width=1,
+        self.u_btn = ttk.Button(self, text='<', width=1,
             command=lambda *a: Undo.ref().undo())
-        u_btn.grid(row=0, column=0, pady=5, padx=2, sticky='wn')
+        self.u_btn.grid(row=0, column=0, pady=5, padx=2, sticky='wn')
         
-        r_btn = ttk.Button(self, text='>', width=1,
+        self.r_btn = ttk.Button(self, text='>', width=1,
             command=lambda *a: Undo.ref().redo())
-        r_btn.grid(row=0, column=1, pady=5, padx=2, sticky='wn')
+        self.r_btn.grid(row=0, column=1, pady=5, padx=2, sticky='wn')
         
          # page header
         lbl = ttk.Label(self, textvariable=controller.header_var, 
@@ -31,6 +32,22 @@ class PageHeader(ttk.Frame):
         # error messages view
         self.msgs = MessagesView(self, controller)
         self.msgs.grid(row=0, columns=3, sticky='nesw')
+
+        page.bind('<<Undo>>', self.btn_state_changed)
+        page.bind('<<Redo>>', self.btn_state_changed)
+        page.bind('<<UndoChanged>>', self.btn_state_changed)
+
+        self.after(1,
+            lambda: self.btn_state_changed(None))
+
+    def btn_state_changed(self, event):
+        def state(fn):
+            return 'normal' if fn() > 0 else 'disabled'
+       
+        undo = self.page.undo
+        self.u_btn['state'] = state(undo.undo_cnt)
+        self.r_btn['state'] = state(undo.redo_cnt)
+    
 
 # we use a canvas as warapper here to 
 # make a scrollable area

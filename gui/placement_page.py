@@ -21,7 +21,7 @@ class PlacementPage(ttk.Frame):
         prj = controller.project
 
         self.page_hdr = PageHeader(self, controller)
-        self.undo = Undo(controller.prj_wrapped)
+        self.undo = Undo(self, controller.prj_wrapped)
 
         self.columnconfigure(1, weight=1)
         self.rowconfigure(1, weight=1)
