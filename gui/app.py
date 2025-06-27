@@ -76,7 +76,7 @@ class GuiApp(tk.Tk):
         self.tab_ctrl.rowconfigure(0, weight=1)
         self.tab_ctrl.columnconfigure(0, weight=1)
 
-        # add tabs adn pages
+        # add tabs and pages
         for i, frm in enumerate(self.pages):
             tab = ttk.Frame(self.tab_ctrl)
             self.tab_ctrl.add(tab, text=frm.name, sticky='nsew') 
