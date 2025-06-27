@@ -5,6 +5,7 @@ from tkinter import ttk
 from tkinter import messagebox
 from pathlib import Path
 from menu import PageHeader
+from undo_redo import Undo
 from common_widgets import LookupPath
 from src.namecard import create_name_cards
 from src.namecards_docx import create_namecard_docx
@@ -20,6 +21,7 @@ class PlacementPage(ttk.Frame):
         prj = controller.project
 
         self.page_hdr = PageHeader(self, controller)
+        self.undo = Undo(controller.prj_wrapped)
 
         self.columnconfigure(1, weight=1)
         self.rowconfigure(1, weight=1)

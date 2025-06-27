@@ -44,7 +44,6 @@ class GuiApp(tk.Tk):
                 )
                 
         self.prj_wrapped = wrap.wrap_instance(project)
-        self.undo = Undo(self.prj_wrapped)
         self.geometry('1024x610')
         self.pages = (ProjectPage, NameCardPage, 
                       PlacementPage, TemplatePage)
@@ -64,7 +63,7 @@ class GuiApp(tk.Tk):
         
         self.title_font = tkfont.Font(
             family='Helvetica', size=18, weight="bold", slant="italic")
-        self.menu = main_menu(self, self.undo)
+        self.menu = main_menu(self)
 
         style = ttk.Style(self)
         if style.theme_use() == "aqua":
@@ -87,6 +86,12 @@ class GuiApp(tk.Tk):
             frame = frm(master=tab, controller=self)
             frame.grid(row=0,column=0, ipadx=3, sticky='nsew')
         
+        # switch undo when changing pages
+        self.tab_ctrl.bind('<<NotebookTabChanged>>', 
+            lambda e: Undo.set_current(self.current_page().undo))
+        Undo.set_current(self.current_page().undo)
+        
+        # default to project page
         self.tab_ctrl.select(0)
 
         sett = self.prj_wrapped['settings']  
@@ -105,28 +110,26 @@ class GuiApp(tk.Tk):
         self.header_var.set(f'{name} {date}')
 
     def setup_events(self):
-        self.bind('<<undo>>', lambda a:self.undo.undo())
-        self.bind('<<redo>>', lambda a:self.undo.redo())
         ctrl = 'Command' if platform == 'darwin' else 'Control'
-        self.bind_all(f'<{ctrl}-z>', lambda a:self.undo.undo())
-        self.bind_all(f'<{ctrl}-Shift-Z>', lambda a:self.undo.redo())
+        self.bind_all(f'<{ctrl}-z>', lambda a:Undo.ref().undo())
+        self.bind_all(f'<{ctrl}-Shift-Z>', lambda a:Undo.ref().redo())
         self.bind_all(f'<{ctrl}-s>', self.save)
         self.bind_all(f'<{ctrl}-Shift-S>', self.save_as)
         self.bind_all(f'<{ctrl}-o>', self.open)
         self.trace_indata_files()
 
-    def show_message(self, text):
+    def current_page(self):
         tab_id = self.tab_ctrl.select()
         tab = self.tab_ctrl.nametowidget(tab_id)
         frm_id = list(tab.children.keys())[0]
-        tab.children[frm_id].page_hdr \
+        return tab.children[frm_id]
+
+    def show_message(self, text):
+        self.current_page().page_hdr \
             .msgs.add_message(text)
         
     def show_error(self, text): 
-        tab_id = self.tab_ctrl.select()
-        tab = self.tab_ctrl.nametowidget(tab_id)
-        frm_id = list(tab.children.keys())[0]
-        tab.children[frm_id].page_hdr \
+        self.current_page().page_hdr \
             .msgs.add_error(text)
 
     def trace_indata_files(self):
@@ -150,7 +153,7 @@ class GuiApp(tk.Tk):
         self.last_indata_change = None
 
     def rewrap(self, prop=None):
-        self.undo.set_disabled(True)
+        Undo.ref().set_disabled(True)
         try:
             if not prop:
                 wrap.reload_wrapped(self.prj_wrapped, self.project)
@@ -170,7 +173,7 @@ class GuiApp(tk.Tk):
         except AppException as e:
             self.show_error(str(e))
         self.trace_indata_files()
-        self.undo.set_disabled(False)
+        Undo.set_disabled(False)
 
     def reload(self, prop=None):
         self.project.reload(prop)

@@ -4,6 +4,7 @@ from tkinter import ttk
 from tkinter import messagebox
 import platform
 import webbrowser
+from undo_redo import Undo
 
 class PageHeader(ttk.Frame):
     def __init__(self, page, controller, **kwargs):
@@ -15,11 +16,11 @@ class PageHeader(ttk.Frame):
 
         # undo redo buttons
         u_btn = ttk.Button(self, text='<', width=1,
-            command=lambda *a:controller.event_generate('<<undo>>'))
+            command=lambda *a: Undo.ref().undo())
         u_btn.grid(row=0, column=0, pady=5, padx=2, sticky='wn')
         
         r_btn = ttk.Button(self, text='>', width=1,
-            command=lambda *a: controller.event_generate('<<redo>>'))
+            command=lambda *a: Undo.ref().redo())
         r_btn.grid(row=0, column=1, pady=5, padx=2, sticky='wn')
         
          # page header
@@ -158,7 +159,7 @@ class CloseBtn(ttk.Label):
         if command:
             self.bind('<Button-1>', lambda e: command())
 
-def main_menu(window, undo):
+def main_menu(window):
     # Creating Menubar
     menubar = tk.Menu(window)
     # Adding File Menu and commands
@@ -186,11 +187,11 @@ def main_menu(window, undo):
     menubar.add_cascade(label ='Redigera', menu=edit)
     edit.add_command(
         label='Undo', 
-        command=lambda:window.event_generate('<<undo>>'),
+        command=lambda: Undo.ref().undo(),
         accelerator=f'{ctrl}+Z')
     edit.add_command(
         label='Redo', 
-        command=lambda:window.event_generate('<<redo>>'),
+        command=lambda: Undo.ref().redo(),
         accelerator=f'{ctrl}+Shift+Z')
     edit.add_separator()
     edit.add_command(label ='Find...', command=None)

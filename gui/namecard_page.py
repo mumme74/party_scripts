@@ -6,6 +6,7 @@ from tkinter import filedialog
 from PIL import ImageTk
 from pathlib import Path
 from menu import PageHeader
+from undo_redo import Undo
 from src.namecard import load_template, \
                          create_img
 
@@ -35,6 +36,7 @@ class NameCardPage(ttk.Frame):
         self.rowconfigure(1, weight=0)
         self.columnconfigure(0, weight=0)
         self.columnconfigure(1, weight=1)
+        self.undo = Undo(controller.prj_wrapped)
 
         self.page_hdr = PageHeader(self, controller)
 

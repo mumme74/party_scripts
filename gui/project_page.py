@@ -5,6 +5,7 @@ from pathlib import Path
 from datetime import datetime
 from tkcalendar import Calendar, DateEntry
 from menu import PageHeader
+from undo_redo import Undo
 from common_widgets import LookupPath
 
 class ProjectPage(ttk.Frame):
@@ -16,6 +17,7 @@ class ProjectPage(ttk.Frame):
         self.settings = sett = prj['settings']
         self.columnconfigure(0, weight=0)
         self.columnconfigure(1, weight=1)
+        self.undo = Undo(controller.prj_wrapped)
 
         # page header
         self.page_hdr = PageHeader(self, controller)
