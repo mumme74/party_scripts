@@ -135,11 +135,12 @@ class DateTime(ttk.Frame):
         date = self.date_var.get()
         hour = self.hour_var.get()
         min = self.min_var.get()
-        if not hour or not min:
+        if hour == '' or min == '':
             return
         s = f'{date} {hour}:{min}:00'
-        self._my_event = True
-        self.textvariable.set(s)
+        if s != self.textvariable.get():
+            self._my_event = True
+            self.textvariable.set(s)
 
     def variable_changed(self, *args):
         if not self._my_event:
