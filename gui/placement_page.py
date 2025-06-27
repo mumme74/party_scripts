@@ -225,6 +225,11 @@ class TableViewPane(ttk.LabelFrame):
         self.tbl = PlacementsTable(self, controller, master.num_to_place)
         self.tbl.grid(row=0, column=0, sticky='nsew')
 
+        vscroll = ttk.Scrollbar(
+            self, orient='vertical', command=self.tbl.yview)
+        self.tbl.configure(yscrollcommand=vscroll.set)
+        vscroll.grid(row=0, column=1, sticky='nes')
+
         # recreate when this variable changes
         self.master.num_to_place.trace_add(
             'write', self.tbl.recreate)
