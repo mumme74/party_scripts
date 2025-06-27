@@ -1,7 +1,5 @@
 import tkinter as tk
-from tkinter import font
 from tkinter import ttk
-from tkinter import colorchooser
 from tkinter import filedialog
 from PIL import ImageTk
 from pathlib import Path
@@ -9,6 +7,13 @@ from menu import PageHeader
 from undo_redo import Undo
 from src.namecard import load_template, \
                          create_img
+from common_widgets import IntEdit, \
+                           StringEdit, \
+                           PosEdit, \
+                           ColorEdit, \
+                           PathEdit, \
+                           ComboBoxEdit, \
+                           FontSelector
 
 class FakeTbl:
     id = 'Bord 10'
@@ -192,7 +197,8 @@ class PropertyWidget(ttk.Treeview):
                     vlus=('True', 'False')
                     ComboBoxEdit(self, variable, iid, bbox, 
                                  values=vlus, 
-                                 convert=lambda v: True if v == 'True' else False)
+                                 convert_to_str=lambda v: 'True' if v else 'False',
+                                 convert_back=lambda v: v == 'True')
                 elif isinstance(variable.get(), int):
                     IntEdit(self, variable, iid, bbox)
                 else:
@@ -212,240 +218,3 @@ class PropertyWidget(ttk.Treeview):
             else:
                 self.insert('','end',k, values=(k,v))
 
-class IntEdit(ttk.Spinbox):
-    def __init__(self, master, variable, iid, bbox):
-        var = tk.IntVar(value=variable.get())
-        ttk.Spinbox.__init__(
-            self, master, textvariable=var,
-            from_=-100000, to=100000)
-
-        self.variable = variable
-        self.iid = iid
-        self.bbox = bbox
-        self._var = var
-
-        self.place(x=bbox[0],y=bbox[1],
-                   w=bbox[2], h=bbox[3])
-        self.bind('<Return>', self.set_value)
-        self.bind('<FocusOut>', self.on_focus_out)
-
-        self.focus()
-
-    def on_focus_out(self, event):
-        self.destroy()
-
-    def set_value(self, event):
-        self.variable.set(self._var.get())
-        vlus = self.master.item(self.iid).get('values')
-        vlus[1] = self._var.get()
-        self.master.item(self.iid, values=vlus)
-        self.destroy()
-
-class StringEdit(ttk.Entry):
-    def __init__(self, master, variable, iid, bbox):
-        var = tk.StringVar(value=variable.get())
-
-        ttk.Entry.__init__(
-            self, master, textvariable=var, width=bbox[2])
-        self.iid = iid
-        self.variable = variable
-        self.bbox = bbox
-        self._var = var
-        self.place(x=bbox[0],y=bbox[1],
-                   w=bbox[2], h=bbox[3])
-        self.bind('<Return>', self.set_value)
-        self.bind('<FocusOut>', self.on_focus_out)
-
-        self.focus()
-
-    def on_focus_out(self, event):
-        self.destroy()
-
-    def set_value(self, event):
-        self.variable.set(self._var.get())
-        vlus = self.master.item(self.iid).get('values')
-        vlus[1] = self._var.get()
-        self.master.item(self.iid, values=vlus)
-        self.destroy()
-
-class PosEdit(ttk.Frame):
-    def __init__(self, master, variable, iid, bbox):
-        ttk.Frame.__init__(
-            self, master, width=bbox[2],height=bbox[3]*2)
-        self.variable = variable
-        self.iid = iid
-        self.bbox = bbox
-
-        self._var = tk.StringVar(
-            value=f'({variable[0].get()}, {variable[1].get()})')
-        self.x_var = tk.StringVar(value=variable[0].get())
-        self.y_var = tk.StringVar(value=variable[1].get())
-        self.x_var.trace_add('write', self._changed)
-        self.y_var.trace_add('write', self._changed)
-
-        self.place(x=bbox[0], y=bbox[1])
-        self.columnconfigure(1, weight=1)
-        self.columnconfigure(3, weight=1)
-
-        self.edit = ttk.Entry(self, textvariable=self._var)
-        self.edit.state(['disabled'])
-        self.edit.grid(row=0, column=0, 
-                  columnspan=4, sticky='wne')
-
-        # X coordinate
-        ttk.Label(self, text='x:').grid(
-            row=1, column=0, padx=3, sticky='wn')
-        self.x_spin = ttk.Spinbox(
-            self, width=4, to=2000, textvariable=self.x_var)
-        self.x_spin.grid(row=1, column=1, sticky='wn')
-        self.x_spin.bind('<Return>', self.set_value)
-        self.x_spin.bind('<FocusOut>', self.on_focus_out)
-
-        # Y coordinate
-        ttk.Label(self, text='y:').grid(
-            row=1, column=2, sticky='wn')
-        self.y_spin = ttk.Spinbox(
-            self, width=4, to=2000, textvariable=self.y_var)
-        self.y_spin.grid(row=1, column=3, sticky='wn')
-        self.y_spin.bind('<Return>', self.set_value)
-        self.y_spin.bind('<FocusOut>', self.on_focus_out)
-
-        self.x_spin.focus()
-
-    def set_value(self, event):
-        x = int(self.x_var.get())
-        y = int(self.y_var.get())
-        x1 = self.variable[0].get()
-        y1 = self.variable[1].get()
-        if x != x1:
-            self.variable[0].set(x)
-        if y != y1:
-            self.variable[1].set(y)
-        
-        vlus = self.master.item(self.iid).get('values')
-        vlus[1] = f'({x}, {y})'
-        self.master.item(self.iid, values=vlus)
-
-        self.destroy()
-
-    def on_focus_out(self, event):
-        foc = self.focus_get()
-        if foc != self.x_spin and foc != self.y_spin:
-            self.destroy()
-
-    def _changed(self, *args):
-        v = f'({self.x_var.get()}, {self.y_var.get()})'
-        self._var.set(v)
-
-class ColorEdit:
-    def __init__(self, master, variable, iid, bbox):
-        color = colorchooser.askcolor(
-            title='Välj färg', color=variable.get(), 
-            master=master)
-        if color and color[1]:
-            variable.set(color[1])
-            vlus = master.item(iid).get('values')
-            vlus[1] = color[1]
-            master.item(iid, values=vlus)
-
-class PathEdit:
-    def __init__(self, master, variable, iid, bbox, indir, filetypes):
-        in_dir = indir.absolute() if indir else \
-            (Path(__file__).parent.parent / 'templates').absolute()
-        file = Path(variable.get()).name
-
-        vlu = filedialog.askopenfilename(
-                initialdir=in_dir, initialfile=file,
-                filetypes=filetypes)
-        if vlu:
-            new_dir = Path(vlu).absolute().parent
-            if indir:
-                if in_dir != new_dir:
-                    master.controller.show_error(
-                        f'Filen måste finnas i mappen: {indir}')
-                    return
-                vlu = Path(vlu).name
-            
-            variable.set(vlu) 
-            vlus = master.item(iid).get('values')
-            vlus[1] = vlu
-            master.item(iid, values=vlus)
-
-class ComboBoxEdit(ttk.Combobox):
-    def __init__(self, master, variable, iid, bbox, **kwargs):
-        var = tk.StringVar(value=variable.get())
-        self.convert = kwargs.pop('convert', lambda v: v)
-
-        ttk.Combobox.__init__(
-            self, master, width=bbox[2], 
-            textvariable=var, **kwargs)
-
-        self.variable = variable
-        self.iid = iid
-        self.bbox = bbox
-        self._var = var
-
-        self.place(x=bbox[0],y=bbox[1],
-                   w=bbox[2], h=bbox[3])
-        
-        self.bind('<Return>', self.set_value)
-        self.bind('<FocusOut>', self.on_focus_out)
-
-    def on_focus_out(self, event):
-        self.destroy()
-
-    def set_value(self, event):
-        vlu = self.convert(self._var.get())
-        self.variable.set(vlu)
-        vlus = self.master.item(self.iid).get('values')
-        vlus[1] = self._var.get()
-        self.master.item(self.iid, values=vlus)
-        self.destroy()
-
-class FontSelector(ttk.Frame):
-    def __init__(self, master, variable, iid, bbox):
-        ttk.Frame.__init__(
-            self, master, width=bbox[2],height=bbox[3]*2)
-        
-        self._var = tk.StringVar(value=variable.get())
-        self._var.trace_add('write', self.changed_vlu)
-        self.variable = variable
-        self.iid = iid
-
-        self.place(x=bbox[0], y=bbox[1])
-
-        # show the font in the Entry box
-        self.families = font.families()
-        self.edit = ttk.Entry(self, textvariable=self._var)
-        self.edit.grid(row=0, column=0, sticky='wne')
-        self.edit.bind('<FocusOut>', self.on_focus_out)
-        self.edit.bind('<Return>', self.set_value)
-
-        self.combobox = ttk.Combobox(
-            self, textvariable=self._var, values=self.families)
-        self.combobox.grid(row=1, column=0, sticky='wnes')
-        self.combobox.bind('<FocusOut>', self.on_focus_out)
-        self.combobox.bind('<Return>', self.set_value)
-        self.combobox.focus()
-
-        self.changed_vlu() # update with current font
-
-    def changed_vlu(self, *args):
-        cur_font = self._var.get()
-        if cur_font in self.families:
-            self.edit.configure(font=font.Font(family=cur_font))
-        else:
-            self.edit.configure(font=font.Font())
-        self.edit.update()
-
-    def on_focus_out(self, event):
-        foc = self.focus_get()
-        if foc != self.edit and foc != self.combobox:
-            self.destroy()
-
-    def set_value(self, event):
-        self.variable.set(self._var.get())
-        vlus = self.master.item(self.iid).get('values')
-        vlus[1] = self._var.get()
-        self.master.item(self.iid, values=vlus)
-        self.destroy()
