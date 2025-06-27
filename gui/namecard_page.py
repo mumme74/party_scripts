@@ -4,7 +4,7 @@ from tkinter import filedialog
 from PIL import ImageTk
 from pathlib import Path
 from menu import PageHeader
-from undo_redo import Undo
+from undo_redo import Undo, UndoDisable
 from src.namecard import load_template, \
                          create_img
 from common_widgets import IntEdit, \
@@ -61,11 +61,14 @@ class NameCardProperties(ttk.LabelFrame):
             self, master, text='Egenskaper', **kwargs)
         self.controller = controller
 
-        props = PropertyWidget(self, controller)
-        props.grid(row=0, column=0, sticky='wnes')
+        self.props = PropertyWidget(self, controller)
+        self.props.grid(row=0, column=0, sticky='wnes')
+        master.bind('<<Undo>>', self.undo_events, add='+')
+        master.bind('<<Redo>>', self.undo_events, add='+')
 
-        vscroll = ttk.Scrollbar(self, orient='vertical', command=props.yview)
-        props.configure(yscrollcommand=vscroll.set)
+        vscroll = ttk.Scrollbar(self, orient='vertical', 
+                command=self.props.yview)
+        self.props.configure(yscrollcommand=vscroll.set)
         vscroll.grid(row=0, column=1, sticky='nes')
 
         ttk.Button(self, text='Spara som ny mall',
@@ -80,6 +83,10 @@ class NameCardProperties(ttk.LabelFrame):
         if path:
             self.controller.project.settings['namecard'] \
                 .save_as_new_template(path)
+            
+    def undo_events(self, event):
+        with UndoDisable(self.master.undo):
+            self.props.recreate()
 
 class PreviewNameCard(ttk.LabelFrame):
     def __init__(self, master, controller, **kwargs):
@@ -205,6 +212,13 @@ class PropertyWidget(ttk.Treeview):
                     StringEdit(self, variable, iid, bbox)
 
     def recreate(self):
+        # store folds and scroll
+        opened = [self.item(c)['values'][0]
+            for i,c in enumerate(self.get_children())
+            if self.item(c)['open']
+        ]
+        scroll = self.yview()
+                
         self.delete(*self.get_children())
 
         for k,v in self.namecard.__dict__.items():
@@ -217,4 +231,10 @@ class PropertyWidget(ttk.Treeview):
                     self.insert(root,'end',values=(f'  {k1}',v1))
             else:
                 self.insert('','end',k, values=(k,v))
-
+        
+        # restore expanded leaves
+        for ch in self.get_children():
+            itm = self.item(ch)
+            if itm['values'][0] in opened:
+                self.item(ch, open=1)
+        self.yview(tk.MOVETO, scroll[0])

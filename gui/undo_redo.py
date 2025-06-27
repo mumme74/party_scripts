@@ -1,5 +1,47 @@
 
 
+class UndoTransaction:
+    """
+    Start a scopeguard undo transaction
+    with a with statment
+     like: 
+       with UndoTransaction(undo):
+          ... do stuff
+
+          # remeber to:
+          ... undo.commit_transaction 
+     
+      Transaction reverted if not yet 
+      committed
+    """
+    def __init__(self, undo):
+        self._undo = undo
+    def __enter__(self):
+        self._undo.start_transaction()
+        return self
+    def __exit__(self, *args):
+        if self._undo._transaction:
+            self._undo.revert_transaction()
+
+
+class UndoDisable:
+    """
+    Temporarily disable a undo
+    with a with statment
+     like: 
+       with UndoDisable(undo):
+          ... do stuff
+     
+      undo enabled again
+    """
+    def __init__(self, undo):
+        self._undo = undo
+    def __enter__(self):
+        self._undo._disabled = True
+        return self
+    def __exit__(self, *args):
+        self._undo._disabled = False
+
 class Undo:
     _instances = []
     _current = None
@@ -65,34 +107,24 @@ class Undo:
     
     def undo(self):
         if self._pos >= 0:
-            dis = self._disabled
-            self._disabled = True
-            itm = self._stack[self._pos]
-            if isinstance(itm, list):
-                for u in itm:
-                    u['var'].set(itm['old_vlu'])
-            else:
-                itm['var'].set(itm['old_vlu'])
-            self._pos -= 1
-            self._disabled = dis
+            with UndoDisable(self):
+                itm = self._stack[self._pos]
+                if isinstance(itm, list):
+                    for u in itm:
+                        u['var'].set(itm['old_vlu'])
+                else:
+                    itm['var'].set(itm['old_vlu'])
+                self._pos -= 1
             self.master.event_generate('<<Undo>>')
 
     def redo(self):
         if self._pos < len(self._stack)-1:
-            dis = self._disabled
-            self._disabled = True
-            itm = self._stack[self._pos]
-            if isinstance(itm, list):
-                for r in itm:
-                    r['var'].set['new_vlu']
-            else:
-                itm['var'].set(itm['new_vlu'])
-            self._pos += 1
-            self._disabled = dis
+            with UndoDisable(self):
+                itm = self._stack[self._pos]
+                if isinstance(itm, list):
+                    for r in itm:
+                        r['var'].set['new_vlu']
+                else:
+                    itm['var'].set(itm['new_vlu'])
+                self._pos += 1
             self.master.event_generate('<<Redo>>')
-
-    def disabled(self):
-        return self._disabled
-
-    def set_disabled(self, dis):
-        self._disabled = dis
