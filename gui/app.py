@@ -10,7 +10,6 @@ from watchdog.events import FileSystemEventHandler
 from namecard_page import NameCardPage
 from project_page import ProjectPage
 from placement_page import PlacementPage
-from template_page import TemplatePage
 from src.exceptions import AppException
 from menu import main_menu
 import wrap_obj_to_vars as wrap
@@ -46,8 +45,7 @@ class GuiApp(tk.Tk):
                 
         self.prj_wrapped = wrap.wrap_instance(project)
         self.geometry('1024x610')
-        self.pages = (ProjectPage, NameCardPage, 
-                      PlacementPage, TemplatePage)
+        self.pages = (ProjectPage, NameCardPage, PlacementPage)
         self.rowconfigure(0, weight=1)
         self.columnconfigure(0, weight=1)
 
