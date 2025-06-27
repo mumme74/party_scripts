@@ -142,5 +142,5 @@ def create_img(img, card, new_size, per):
     draw_text(card.greet_text, card.greet, img_draw, new_size)
     draw_text(card.name_text, f'{per.fname} {per.lname}', img_draw, new_size)
     draw_text(card.dept_text, f'{per.dept.name}', img_draw, new_size)
-    draw_text(card.tbl_id_text, per.table_id(), img_draw, new_size)
+    draw_text(card.tbl_id_text, per.table().id, img_draw, new_size)
     return card_img

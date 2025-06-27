@@ -1,6 +1,9 @@
+import re
+import webbrowser
 import tkinter as tk
 from tkinter import ttk 
 from tkinter import messagebox
+from pathlib import Path
 from menu import PageHeader
 from common_widgets import LookupPath
 from src.namecard import create_name_cards
@@ -31,6 +34,22 @@ class PlacementPage(ttk.Frame):
         TableViewPane(self, controller
         ).grid(row=1, column=1, sticky='nsew', padx=5, pady=5)
 
+        controller.bind('<<IndataReloaded>>', self.on_indata_reloaded)
+
+    def on_indata_reloaded(self, event):
+        err_msg = 'Indata har ändrats, placeringar är ogilltiga'
+
+        if self.controller.last_indata_change == 'persons':
+            persons = self.controller.project.persons
+
+            num = persons.num_to_place()
+            my_num = self.num_to_place.get()
+            has_placements = num != len(persons.persons)
+
+            if num != my_num and has_placements:
+                self.controller.show_err(err_msg)
+        else:
+            self.controller.show_err(err_msg)
         
 class SettingsPane(ttk.LabelFrame):
     def __init__(self, master, controller):
@@ -75,14 +94,23 @@ class SettingsPane(ttk.LabelFrame):
         self.card_btn = ttk.Button(btnfrm, text='Placeringskort',
             command=self.gen_placement_cards)
         self.card_btn.grid(row=0, column=0, sticky='wne', pady=5, padx=5)
+
+        self.card_link = DocLink(btnfrm)
+        self.card_link.grid(row=0, column=1, sticky='nes', pady=5, padx=5)
         
         self.list_btn = ttk.Button(btnfrm, text='Placeringslist',
             command=self.gen_placement_list)
         self.list_btn.grid(row=1, column=0, sticky='wne', pady=5, padx=5)
         
+        self.list_link = DocLink(btnfrm)
+        self.list_link.grid(row=1, column=1, sticky='nes', pady=5, padx=5)
+
         self.meal_btn = ttk.Button(btnfrm, text='Specialkostslista',
             command=self.gen_specialfoods_list)
         self.meal_btn.grid(row=2, column=0, sticky='wne', pady=5, padx=5)
+
+        self.meal_link = DocLink(btnfrm)
+        self.meal_link.grid(row=2, column=1, sticky='nes', pady=5, padx=5)
 
         self.master.num_to_place.trace_add(
             'write', self.set_gen_btn_state)
@@ -94,13 +122,16 @@ class SettingsPane(ttk.LabelFrame):
         for ctl in (self.card_btn, self.list_btn, self.meal_btn):
             ctl.configure(state=state)
 
-
     def auto_place(self):
         prj = self.controller.project
         try:
             prj.tables.place_persons() 
         except AppException as e:
             self.controller.show_error(str(e))
+
+        self.controller.rewrap('persons')
+        self.controller.rewrap('tables')
+
         to_place = prj.persons.num_to_place()
         self.master.num_to_place.set(to_place)
    
@@ -111,21 +142,75 @@ class SettingsPane(ttk.LabelFrame):
             return
         prj = self.controller.project
         prj.tables.clear_placements()
+
+        self.controller.rewrap('tables')
+        self.controller.rewrap('persons')
+
         to_place = prj.persons.num_to_place()
         self.master.num_to_place.set(to_place)
 
     def gen_placement_cards(self):
         prj = self.controller.project
         create_name_cards(prj, prj.persons.persons)
-        create_namecard_docx(prj)
+        save_path = create_namecard_docx(prj)
+        self.card_link.set_url('Placeringskort', save_path)
 
     def gen_placement_list(self):
         prj = self.controller.project
-        create_table_report(prj)
+        save_path = create_table_report(prj)
+        self.list_link.set_url('Placeringslista', save_path)
 
     def gen_specialfoods_list(self):
         prj = self.controller.project
-        create_special_foods_report(prj)
+        save_path = create_special_foods_report(prj)
+        self.meal_link.set_url('Specialkost', save_path)
+
+class DocLink(ttk.Label):
+    _cls_init_ok = False
+
+    @classmethod
+    def _cls_init(cls):
+        st = ttk.Style()
+        st.configure('LinkHover.TLabel', 
+            background="#9A9E9A")
+        st.configure('LinkHover.TLabel', 
+            foreground="#191B18")
+        st.configure('Link.TLabel',
+            background="#C9C8CC")
+        st.configure('Link.TLabel',
+            foreground="#170149")
+        cls._cls_init_ok = True
+
+    def __init__(self, master):
+        if not DocLink._cls_init_ok:
+            DocLink._cls_init() # run only once
+
+        self.txt = tk.StringVar(value='')
+        self.url = tk.StringVar(value='')
+
+        ttk.Label.__init__(self, master, textvariable=self.txt)
+        self.master = master
+
+        self.bind('<Enter>', self.on_enter)
+        self.bind('<Leave>', self.on_leave)
+        self.bind('<Button-1>', self.on_click)
+
+    def set_url(self, text, url):
+        self.txt.set(text)
+        self.url.set(Path(url).absolute())
+
+    def on_enter(self, event):
+        st = 'LinkHover.TLabel' if self.txt.get() else 'TLabel'
+        self.configure(style=st)
+
+    def on_leave(self, event):
+        st = 'Link.TLabel' if self.txt.get() else 'TLabel'
+        self.configure(style=st)
+
+    def on_click(self, event):
+        if self.url.get():
+            webbrowser.open_new(f'file://{self.url.get()}')
+
 
 class TableViewPane(ttk.LabelFrame):
     def __init__(self, master, controller):
@@ -137,7 +222,7 @@ class TableViewPane(ttk.LabelFrame):
         self.rowconfigure(0, weight=1)
         self.columnconfigure(0, weight=1)
 
-        self.tbl = PlacementsTable(self, controller)
+        self.tbl = PlacementsTable(self, controller, master.num_to_place)
         self.tbl.grid(row=0, column=0, sticky='nsew')
 
         # recreate when this variable changes
@@ -146,11 +231,15 @@ class TableViewPane(ttk.LabelFrame):
 
 
 class PlacementsTable(ttk.Treeview):
-    def __init__(self, master, controller):
+    def __init__(self, master, controller, unplaced_var):
         cols = ('Bord', 'Person', 'Avdelning', 'Specialkost')
-        ttk.Treeview.__init__(self, master, columns=cols)
+        ttk.Treeview.__init__(self, master, columns=cols, selectmode='none')
         self.master = master
         self.controller = controller
+        self.unplaced_var = unplaced_var
+
+        # iid to persons idx
+        self.iids = {}
 
         # add headings
         for c in cols:
@@ -160,18 +249,29 @@ class PlacementsTable(ttk.Treeview):
         self.column(cols[2], width=120, minwidth=0, stretch=False)
         self.column('#0', width=20, minwidth=0, stretch=False)
 
+        self.bind(f'<Button-3>', self.right_clicked)
+
         self.recreate()
 
     def recreate(self, *args):
+        regex = re.compile(r'\s*\(.*\)$')
+        opened = [regex.sub('', self.item(c)['values'][0])
+            for i,c in enumerate(self.get_children())
+            if self.item(c)['open']
+        ]
+        scroll = self.yview()
+       
         self.delete(*self.get_children())
+        self.iids = {}
 
-        def ins_person(root, tbl, person):
+        def ins_person(root, idx, tbl, person):
             vlus = (f'   {tbl}',
                 f'{person.fname} {person.lname}',
                 f'{person.dept.id}',
                 f'{person.special_foods}'
             )
-            self.insert(root, tk.END, values=vlus)
+            iid = self.insert(root, tk.END, values=vlus)
+            self.iids[iid] = idx
 
         tables = self.controller.project.tables
         persons = self.controller.project.persons
@@ -179,15 +279,107 @@ class PlacementsTable(ttk.Treeview):
         if to_place > 0:
             tbl = 'Oplacerade'
             root = self.insert('',tk.END, values=(tbl,))
-            for p in persons.persons:
-                if not p.placed_at_tbl:
-                    ins_person(root, tbl, p)
+            for i,p in enumerate(persons.persons):
+                if not p.table():
+                    ins_person(root, i, tbl, p)
 
-        for tbl in tables.tables:
+        for i,tbl in enumerate(tables.tables):
             header = f'{tbl.id} ({tbl.free_seats()} av {tbl.num_seats})'
             root = self.insert('',tk.END, values=(header,))
             for p in tbl.persons:
-                ins_person(root, tbl.id, p)
+                idx = persons.persons.index(p)
+                ins_person(root, idx, tbl.id, p)
+
+        # restore expanded leaves
+        for ch in self.get_children():
+            itm = self.item(ch)
+            if regex.sub('', itm['values'][0]) in opened:
+                self.item(ch, open=1)
+        self.yview(tk.MOVETO, scroll[0])
 
         self.update()
 
+    def person_for_event(self, event):
+        iid = self.identify_row(event.y)
+        col = self.identify_column(event.x)
+
+        # bail out if it it is a table or arrow col
+        if not iid or not iid in self.iids or \
+           not col or col == '#0':
+            return
+
+        idx = self.iids[iid]
+
+        persons = self.controller.project.persons.persons
+        if len(persons) <= idx or idx < 0:
+            return
+        return persons[idx], iid, col
+        
+    def right_clicked(self, event):
+        res = self.person_for_event(event)
+        if not res:
+            return
+        
+        person, iid, col = res
+        menu = tk.Menu(self, tearoff=0)
+
+        # form a closure
+        def closure(per, func, arg):
+            def inner(*args):
+                func(per, arg)
+            return inner
+
+        # build up the menu
+        if person.table():
+            menu.add_command(label='Ta bort placering', 
+                command=closure(person, self.unplace, None))
+            menu.add_separator()
+        
+        # all tables with free places
+        for tbl in self.controller.project.tables.tables:
+            if tbl.free_seats() == 0:
+                continue
+            menu.add_command(label=f'Flytta till {tbl.id}', 
+                command=closure(person, self.move_to, tbl))
+        
+        # popup menu
+        try:
+            menu.tk_popup(event.x_root, event.y_root)
+        finally:
+            menu.grab_release()
+
+    def refresh_unplaced_var(self):
+        prj = self.controller.project
+        self.unplaced_var.set(prj.persons.num_to_place())
+    
+    def unplace(self, person, extra):
+        tbl = person.table()
+        if not tbl:
+            return
+        
+        tbl.unplace_person(person)
+
+        self.controller.rewrap('tables')
+        self.controller.rewrap('persons')
+        self.recreate()
+        self.refresh_unplaced_var()
+
+    def move_to(self, person, new_tbl):
+        tbl = person.table()
+            
+        name = f'{person.fname} {person.lname}'
+        if tbl and not tbl.unplace(person):
+            self.controller.show_message(
+                f'Kunde avplacera {name} från {tbl.id}')
+            return
+
+        if not new_tbl.place_person(person):
+            self.controller.show_message(
+                f'Kunde inte placera {name} vid {new_tbl.id}')
+            tbl.place_person(person)
+            return
+
+        self.controller.rewrap('tables')
+        self.controller.rewrap('persons')
+        self.recreate()
+        self.refresh_unplaced_var()

@@ -4,12 +4,15 @@ from docx.shared import Pt, Cm
 from docx.enum.section import WD_ORIENT
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.table import WD_ALIGN_VERTICAL
+from .helpers import file_version_name
 
 A4_h = Cm(29.7)
 A4_w = Cm(21.0)
 
 def create_namecard_docx(project):
     output_dir = Path(project.settings['output_folder'])
+
+    docname = file_version_name(output_dir, 'namecards.docx')
 
     # Create a new document
     def all_png_files():
@@ -49,4 +52,7 @@ def create_namecard_docx(project):
             cells = tbl.add_row().cells
         
     # Save the document
-    doc.save(output_dir / 'namecards.docx')
+    save_path = output_dir / docname
+    doc.save(save_path)
+
+    return save_path

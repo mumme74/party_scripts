@@ -9,6 +9,9 @@ from menu import PageHeader
 from src.namecard import load_template, \
                          create_img
 
+class FakeTbl:
+    id = 'Bord 10'
+
 class FakeDept:
     name = 'Avd. för tester'
 
@@ -18,8 +21,8 @@ class FakePerson:
     lname = 'Testsson'
     email = 'test@fake.com'
     dept = FakeDept()
-    def table_id(self):
-        return 'Bord 10'
+    def table(self):
+        return FakeTbl()
 
 
 class NameCardPage(ttk.Frame):

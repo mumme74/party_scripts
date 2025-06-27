@@ -6,12 +6,14 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.table import WD_ALIGN_VERTICAL
 from .tables import AllTables
 from .persons import AllPersons
+from .helpers import file_version_name
 
 A4_h = Cm(29.7)
 A4_w = Cm(21.0)
 
 def create_special_foods_report(project):
     output_dir = Path(project.settings['output_folder'])
+    docname = file_version_name(output_dir, 'special_foods.docx')
 
     doc = Document()
 
@@ -57,7 +59,9 @@ def create_special_foods_report(project):
             row.cells[1].paragraphs[0].add_run(f'{p.fname} {p.lname}  ').bold = True
             row.cells[2].paragraphs[0].add_run(f'{p.special_foods}').italic = True
 
-        
         doc.add_paragraph()
 
-    doc.save(output_dir / 'special_foods.docx')
+    save_path = output_dir / docname
+    doc.save(save_path)
+
+    return save_path

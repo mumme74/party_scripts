@@ -21,6 +21,20 @@ def to_int(vlu, default):
         return int(vlu)
     except ValueError:
         return default
+    
+def file_version_name(dir, filename):
+    """Make sure it we get correct version name"""
+    filename = Path(filename)
+    ver, ext = '', filename.suffix
+    filename = filename.stem
+    dir = Path(dir)
+
+    while (dir / f'{filename}{ver}{ext}').exists():
+        if ver == '':
+            ver = 0
+        ver += 1
+    return f'{filename}{ver}{ext}'
+
 
 class File(object):
     def __init__(self, path, *args, **kwargs):

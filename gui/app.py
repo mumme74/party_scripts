@@ -149,8 +149,7 @@ class GuiApp(tk.Tk):
 
         self.last_indata_change = None
 
-    def reload(self, prop=None):
-        self.project.reload(prop)
+    def rewrap(self, prop=None):
         self.undo.set_disabled(True)
         try:
             if not prop:
@@ -166,11 +165,17 @@ class GuiApp(tk.Tk):
 
                 wrap.reload_wrapped(self.prj_wrapped[prop], props[prop])
                 wrap.reload_item(self.prj_wrapped['settings'], prop,
-                                self.project.settings[prop], {})
+                                 self.project.settings[prop], 
+                                 self.project.settings, {})
         except AppException as e:
             self.show_error(str(e))
         self.trace_indata_files()
         self.undo.set_disabled(False)
+
+    def reload(self, prop=None):
+        self.project.reload(prop)
+        self.rewrap(prop)
+
 
     def save_as(self, *args):
         path = self.project.settings['project_file_path']

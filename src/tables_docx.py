@@ -5,6 +5,7 @@ from docx.enum.section import WD_ORIENT
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.table import WD_ALIGN_VERTICAL
 from .tables import AllTables
+from .helpers import file_version_name
 
 A4_h = Cm(29.7)
 A4_w = Cm(21.0)
@@ -14,6 +15,9 @@ prj_dir = Path(__file__).parent.parent
 def create_table_report(project):
     output_dir = Path(project.settings['output_folder'])
     template_path = Path(project.settings['table_sign']['file'])
+
+    # Make sure it we get correct version name
+    docname = file_version_name(output_dir, 'table_placements.docx')
 
      # Create a new document from template
     doc = Document(template_path)
@@ -49,4 +53,7 @@ def create_table_report(project):
         doc.add_paragraph()
         doc.add_paragraph(f'Lediga platser: {tbl.free_seats()} av {tbl.num_seats}')
 
-    doc.save(output_dir / 'table_placements.docx')
+    save_path = output_dir / docname
+    doc.save(save_path)
+
+    return save_path
