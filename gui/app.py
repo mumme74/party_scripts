@@ -14,7 +14,8 @@ from template_page import TemplatePage
 from src.exceptions import AppException
 from menu import main_menu
 import wrap_obj_to_vars as wrap
-from undo_redo import Undo, UndoDisable
+from undo_redo import Undo, UndoDisable, \
+                      UndoTransaction
 
 class FileChangeHandler(FileSystemEventHandler):
     def __init__(self, project, app):
@@ -152,27 +153,35 @@ class GuiApp(tk.Tk):
 
         self.last_indata_change = None
 
-    def rewrap(self, prop=None):
-        with UndoDisable(Undo.ref()):
-            try:
-                if not prop:
-                    wrap.reload_wrapped(self.prj_wrapped, self.project)
-                else:
-                    props = {
-                        'persons':     self.project.persons,
-                        'departments': self.project.departments,
-                        'tables':      self.project.tables
-                    }
-                    if not prop in props.keys():
-                        return
+    def _rewrap(self, prop):
+        try:
+            if not prop:
+                wrap.reload_wrapped(self.prj_wrapped, self.project)
+            else:
+                props = {
+                    'persons':     self.project.persons,
+                    'departments': self.project.departments,
+                    'tables':      self.project.tables
+                }
+                if not prop in props.keys():
+                    return
 
-                    wrap.reload_wrapped(self.prj_wrapped[prop], props[prop])
-                    wrap.reload_item(self.prj_wrapped['settings'], prop,
-                                    self.project.settings[prop], 
-                                    self.project.settings, {})
-            except AppException as e:
-                self.show_error(str(e))
-            self.trace_indata_files()
+                wrap.reload_wrapped(self.prj_wrapped[prop], props[prop])
+                wrap.reload_item(self.prj_wrapped['settings'], prop,
+                                self.project.settings[prop], 
+                                self.project.settings, {})
+        except AppException as e:
+            self.show_error(str(e))
+        self.trace_indata_files()
+
+    def rewrap(self, prop=None, transaction=False):
+        if not transaction:
+            with UndoDisable(Undo.ref()):
+                self._rewrap(prop)
+        else:
+            with UndoTransaction(Undo.ref()):
+                self._rewrap(prop)
+
 
     def reload(self, prop=None):
         self.project.reload(prop)

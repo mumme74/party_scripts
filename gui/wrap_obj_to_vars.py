@@ -5,7 +5,7 @@ from src.helpers import parse_date
 from undo_redo import Undo
 
 def isclass(vlu):
-    return str(type(vlu))[1:6] == 'class'
+    return hasattr(vlu, '__dict__') and vlu is not None
 
 # special case datetime
 def closure_date_write(root, key, var):
@@ -90,7 +90,7 @@ def wrap_instance(inst, wrapped=None):
             dct[k] = create_wrapper(inst.__dict__, k, wrapped)
         elif k == '_data':
             dct['_data'] = v
-
+    dct['_ref'] = inst
     return dct
 
 
@@ -169,4 +169,4 @@ def reload_wrapped(to, from_, wrapped=None):
         else:
             reload_item(to, k, v, src, wrapped)
 
-
+    to['_ref'] = from_

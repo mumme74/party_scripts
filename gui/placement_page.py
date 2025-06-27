@@ -5,13 +5,14 @@ from tkinter import ttk
 from tkinter import messagebox
 from pathlib import Path
 from menu import PageHeader
-from undo_redo import Undo
 from common_widgets import LookupPath
 from src.namecard import create_name_cards
 from src.namecards_docx import create_namecard_docx
 from src.tables_docx import create_table_report
 from src.special_foods import create_special_foods_report
 from src.exceptions import AppException
+from undo_redo import Undo, UndoSnapshot, \
+                      UndoTransaction
 
 class PlacementPage(ttk.Frame):
     name = "Placerings vy"
@@ -36,7 +37,15 @@ class PlacementPage(ttk.Frame):
         TableViewPane(self, controller
         ).grid(row=1, column=1, sticky='nsew', padx=5, pady=5)
 
-        controller.bind('<<IndataReloaded>>', self.on_indata_reloaded)
+        controller.bind('<<IndataReloaded>>', 
+            self.on_indata_reloaded, add='+')
+        self.bind('<<Undo>>', self.on_undo_changed, add='+')
+        self.bind('<<Redo>>', self.on_undo_changed, add='+')
+        
+    def on_undo_changed(self, *args):
+        prj = self.controller.project
+        to_place = prj.persons.num_to_place()
+        self.num_to_place.set(to_place)
 
     def on_indata_reloaded(self, event):
         err_msg = 'Indata har ändrats, placeringar är ogilltiga'
@@ -126,13 +135,18 @@ class SettingsPane(ttk.LabelFrame):
 
     def auto_place(self):
         prj = self.controller.project
-        try:
-            prj.tables.place_persons() 
-        except AppException as e:
-            self.controller.show_error(str(e))
-
-        self.controller.rewrap('persons')
-        self.controller.rewrap('tables')
+        with UndoTransaction(Undo.ref()):
+            tsnap = UndoSnapshot(prj.tables)
+            psnap = UndoSnapshot(prj.persons)
+            prj.tables.clear_placements()
+           
+            try:
+                prj.tables.place_persons() 
+            except AppException as e:
+                self.controller.show_error(str(e))
+    
+            psnap.commit()
+            tsnap.commit()
 
         to_place = prj.persons.num_to_place()
         self.master.num_to_place.set(to_place)
@@ -142,11 +156,14 @@ class SettingsPane(ttk.LabelFrame):
             'Vill du verligen rensa alla placeringar?')
         if not ok:
             return
+        
         prj = self.controller.project
-        prj.tables.clear_placements()
-
-        self.controller.rewrap('tables')
-        self.controller.rewrap('persons')
+        with UndoTransaction(Undo.ref()):
+            tsnap = UndoSnapshot(prj.tables)
+            psnap = UndoSnapshot(prj.persons)
+            prj.tables.clear_placements()
+            psnap.commit()
+            tsnap.commit()
 
         to_place = prj.persons.num_to_place()
         self.master.num_to_place.set(to_place)
@@ -235,6 +252,9 @@ class TableViewPane(ttk.LabelFrame):
         # recreate when this variable changes
         self.master.num_to_place.trace_add(
             'write', self.tbl.recreate)
+        
+        self.master.bind('<<Undo>>', self.tbl.recreate, add='+')
+        self.master.bind('<<Redo>>', self.tbl.recreate, add='+')
 
 
 class PlacementsTable(ttk.Treeview):
@@ -364,29 +384,39 @@ class PlacementsTable(ttk.Treeview):
         if not tbl:
             return
         
-        tbl.unplace_person(person)
+        with UndoTransaction(Undo.ref()):
+            psnap = UndoSnapshot(person)
+            tsnap = UndoSnapshot(tbl)
+            tbl.unplace_person(person)
+            tsnap.commit()
+            psnap.commit()
 
-        self.controller.rewrap('tables')
-        self.controller.rewrap('persons')
         self.recreate()
         self.refresh_unplaced_var()
 
     def move_to(self, person, new_tbl):
         tbl = person.table()
-            
-        name = f'{person.fname} {person.lname}'
-        if tbl and not tbl.unplace(person):
+        res = True
+        
+        while res: # bust out on error
+            with UndoTransaction(Undo.ref()):
+                psnap = UndoSnapshot(person)
+                if tbl:
+                    tsnap = UndoSnapshot(tbl)
+                    res = tbl.unplace_person(person)
+                    if not res: break
+                res = new_tbl.place_person(person)
+                if not res: break
+                if tbl:
+                    tsnap.commit()
+                psnap.commit()
+                break
+
+        if not res:
+            name = f'{person.fname} {person.lname}'
             self.controller.show_message(
-                f'Kunde avplacera {name} från {tbl.id}')
+                f'Kunde flytta {name} från {tbl.id} till {new_tbl.id}')
             return
 
-        if not new_tbl.place_person(person):
-            self.controller.show_message(
-                f'Kunde inte placera {name} vid {new_tbl.id}')
-            tbl.place_person(person)
-            return
-
-        self.controller.rewrap('tables')
-        self.controller.rewrap('persons')
         self.recreate()
         self.refresh_unplaced_var()
