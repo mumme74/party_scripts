@@ -55,4 +55,8 @@ def create_namecard_docx(project):
     save_path = output_dir / docname
     doc.save(save_path)
 
+    # clear all png files
+    for png in all_png_files():
+        (output_dir / png).unlink(True)
+
     return save_path
