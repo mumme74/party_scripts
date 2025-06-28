@@ -6,7 +6,7 @@ from datetime import datetime
 from tkcalendar import Calendar, DateEntry
 from menu import PageHeader
 from undo_redo import Undo
-from common_widgets import LookupPath
+from common_widgets import LookupPath, DialogBase
 
 class ProjectPage(ttk.Frame):
     name = "Projekt vy"
@@ -333,18 +333,9 @@ class TableWidget(ttk.Treeview):
 
         self.update()
 
-class ColumnOrderDlg(tk.Toplevel):
+class ColumnOrderDlg(DialogBase):
     def __init__(self, master, controller, **args):
-
-        # get background from root window
-        s = ttk.Style()
-        bg = s.lookup('TFrame', 'background')
-
-        tk.Toplevel.__init__(
-            self, master, takefocus=True, bg=bg, **args)
-        
-        self.master = master
-        self.controller = controller
+        DialogBase.__init__(self, master, controller, **args)
 
         # header
         ttk.Label(
@@ -377,20 +368,16 @@ class ColumnOrderDlg(tk.Toplevel):
             i += 1
 
         ttk.Button(
-            self, text='Avbryt', command=self.destroy
+            self, text='Avbryt', command=self.reject
         ).grid(row=i, column=0, sticky='w', padx=5, pady=5)
+
         self.ok = ttk.Button(
             self, text='OK', command=self.accept)
         self.ok.grid(row=i, column=1, sticky='e', padx=5, pady=5)
 
         self.ok_btn_state()
-
-        # make this dialog modal
-        self.protocol("WM_DELETE_WINDOW", self.destroy)
-        self.transient(master)
-        self.wait_visibility()
-        self.grab_set()
-        self.wait_window()
+        self.make_modal()
+  
 
     def col_changed(self, var_id, b, method):
         var = next(v for _,v in self.vars.items() 

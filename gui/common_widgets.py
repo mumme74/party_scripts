@@ -295,3 +295,29 @@ class FontSelector(EditProperty):
         vlus[1] = self._var.get()
         self.master.item(self.iid, values=vlus)
         self.destroy()
+
+class DialogBase(tk.Toplevel):
+    def __init__(self, master, controller, **args):
+
+        # get background from root window
+        s = ttk.Style()
+        bg = s.lookup('TFrame', 'background')
+
+        tk.Toplevel.__init__(
+            self, master, takefocus=True, bg=bg, **args)
+        
+        self.master = master
+        self.controller = controller
+
+    def make_modal(self):
+        self.protocol("WM_DELETE_WINDOW", self.destroy)
+        self.transient(self.master)
+        self.wait_visibility()
+        self.grab_set()
+        self.wait_window()
+
+    def reject(self, *event):
+        self.destroy()
+
+    def accept(self, *event):
+        pass
