@@ -85,7 +85,7 @@ class NameCard:
             obj['name_text'], template)
         self.dept_text = TextFont(
             obj['dept_text'], template)
-        png = Path(template).parent / Path(self.template_json).name
+        png = Path(template).parent / Path(self.template_png).name
         if not png.exists():
             raise ReadFileNotFound(str(png), f'Template png file {png} does not exist')
         

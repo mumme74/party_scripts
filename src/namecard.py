@@ -9,14 +9,15 @@ import os, zipfile, re
 prj_dir = Path(__file__).parent.parent
 dir_path = Path(__file__).absolute().parent
 
+default_sz = (600, 400)
+
 # search paths to find fonts
 fontsuffixes = ['','.ttf','.TTF','.otf','.OTF']
 
-fontpaths = [prj_dir / "fonts/", '']
+fontpaths = [prj_dir / "fonts/"]
 if platform == 'darwin': # apple
     fontpaths += ['~/Library/Fonts/', 
-                  '/System/Library/Fonts/Supplemental/',
-                  '/System/Library/Fonts/'
+                  '/System/Library/Fonts/',
                   '/Library/Fonts/']
 elif platform in ('linux', 'linux2'):
     fontpaths += ['~/.local/fonts/', 
@@ -67,23 +68,54 @@ def dl_font(fontname):
 
 
 def load_font(fontfamily, fontsize, font_download = True):
+    # some fonts have space others dont.
+    family = fontfamily.lower()
+    family2 = family.replace(' ', '')
+
     def try_font(font):
         try:
             return ImageFont.truetype(font, fontsize)
         except OSError as e:
             return
+        
+    def find(root, files):
+        for file in files:
+            f = root / file
+            if f.suffix.lower() not in ('','.otf','.ttf','.ttc'):
+                continue
 
-    for path in fontpaths:
-        for suf in fontsuffixes:
-            font = os.path.join(path, f"{fontfamily}{suf}")
-            ft = try_font(font)
+            ft = None
+            #print(root, f.stem)
+            # some fonts have space others dont.
+            stem = f.stem.lower()
+            if stem == family:
+                ft = try_font(Path(root_path) / f.name)
+            elif stem.replace(' ','') == family2:
+                ft = try_font(Path(root_path) / f.name.replace(' ', ''))
             if ft: return ft
-            if re.match('.* [A-Z]{2}$', font[:-len(suf)]):
-                ft = try_font(font[:-(3+len(suf))] + suf)
+
+    def walk_dir(root, dirs):
+        rot = root
+        for d in dirs:
+            rot /= d
+
+        for _,cdirs,files in os.walk(rot, followlinks=True):
+            ft = find(rot, files)
+            if ft: return ft
+
+            for d in cdirs:
+                dr = dirs.copy()
+                dr.append(d)
+                ft = walk_dir(root, dr)
                 if ft: return ft
-        if font_download:
-            dl_font(fontfamily)
-            return load_font(fontfamily, fontsize, False)
+
+    for root_path in fontpaths:
+        ft = walk_dir(Path(root_path), [])
+        if ft: return ft
+
+    if font_download:
+        dl_font(fontfamily)
+        return load_font(fontfamily, fontsize, False)
     raise OSError(f"Could not locate font: {fontfamily}, make sure it is installed in your system or select another font.")
 
 def clear_old_cards():
@@ -95,16 +127,21 @@ def draw_text(font, text, img_draw, new_size):
     if not font.enabled:
         return
     w, h = new_size
-    f = load_font(font.font, font.size)
+    sw, sh = default_sz
+    scale_factor = w / sw
+
+    fnt = load_font(font.font, round(font.size*scale_factor))
  
     match font.align:
         case 'absolute':
-            pos = font.pos
+            pos = (font.pos[0] * scale_factor,
+                   font.pos[1] * scale_factor)
         case 'center' | _ :
-            _, _, w1, h1 = img_draw.textbbox((0,0), text, f)
-            pos = ((w-w1) // 2, font.pos[1])
+            _, _, w1, h1 = img_draw.textbbox((0,0), text, fnt)
+            x = font.pos[0] * scale_factor
+            pos = (x-(w1 // 2), font.pos[1]*scale_factor)
    
-    img_draw.text(pos, text, font=f, fill=font.color)
+    img_draw.text(pos, text, font=fnt, fill=font.color)
 
 def create_name_cards(project, persons):
     img, new_size, out_dir, card = load_template(project)
@@ -113,14 +150,15 @@ def create_name_cards(project, persons):
         card_img = create_img(img, card, new_size, p)
         card_img.save(out_dir / f'{i}.png')
 
-def load_template(prj):
-    card = prj.settings['namecard']
+def load_template(prj, card=None, new_size=None):
+    if not card:
+        card = prj.settings['namecard']
     out_dir = prj.settings['output_folder']
     template = Path(card.template_json).parent / \
                  Path(card.template_png).name
 
     clear_old_cards()
-    new_size = (600, 400)
+    new_size = default_sz if not new_size else new_size
 
     try:
         img = Image.open(template)
