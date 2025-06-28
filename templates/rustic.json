@@ -1,0 +1,36 @@
+{
+    "name": "Rustic",
+    "template_png": "rustic.png",
+    "tbl_id_text": {
+        "font": "Snell Roundhand",
+        "size": 10,
+        "pos": [22,12],
+        "align": "absolute",
+        "color": "#ede6dc",
+        "enabled": true 
+    },
+    "greet_text": {
+        "font": "Snell Roundhand",
+        "size": 60,
+        "pos": [60,45],
+        "align": "absolute",
+        "color": "#e9eeee",
+        "enabled": true 
+    },
+    "name_text": {
+        "font": "Snell Roundhand",
+        "size": 52,
+        "pos": [60,120],
+        "align": "absolute",
+        "color": "#e9eeee",
+        "enabled": true 
+    },
+    "dept_text": {
+        "font": "Snell Roundhand",
+        "size": 42,
+        "pos": [60,180],
+        "align": "absolute",
+        "color": "#e9eeee",
+        "enabled": true 
+    }
+}

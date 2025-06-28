@@ -1,36 +1,36 @@
 {
-    "name": "Default namecard",
-    "template_png": "default_namecard.png",
+    "name": "Office Party",
+    "template_png": "office_party.png",
     "tbl_id_text": {
-        "font": "Lucida Handwriting STD",
+        "font": "Georgia",
         "size": 10,
         "pos": [13,3],
         "align": "absolute",
-        "color": "#999999",
+        "color": "#ede6dc",
         "enabled": true 
     },
     "greet_text": {
-        "font": "Georgia Italic",
+        "font": "Georgia",
         "size": 42,
         "pos": [300,210],
         "align": "center",
-        "color": "#000000",
+        "color": "#ede6dc",
         "enabled": true 
     },
     "name_text": {
-        "font": "Lucida Handwriting STD",
+        "font": "Georgia",
         "size": 32,
         "pos": [300,270],
         "align": "center",
-        "color": "#000000",
+        "color": "#ede6dc",
         "enabled": true 
     },
     "dept_text": {
-        "font": "Lucida Handwriting STD",
+        "font": "Georgia",
         "size": 24,
         "pos": [300,320],
         "align": "center",
-        "color": "#000000",
+        "color": "#ede6dc",
         "enabled": true 
     }
 }

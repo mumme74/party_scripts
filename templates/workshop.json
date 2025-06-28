@@ -1,0 +1,36 @@
+{
+    "name": "Workshop",
+    "template_png": "workshop.png",
+    "tbl_id_text": {
+        "font": "Georgia",
+        "size": 10,
+        "pos": [22,12],
+        "align": "absolute",
+        "color": "#ede6dc",
+        "enabled": true 
+    },
+    "greet_text": {
+        "font": "Georgia",
+        "size": 42,
+        "pos": [130,180],
+        "align": "absolute",
+        "color": "#e9eeee",
+        "enabled": true 
+    },
+    "name_text": {
+        "font": "Georgia",
+        "size": 32,
+        "pos": [130,230],
+        "align": "absolute",
+        "color": "#e9eeee",
+        "enabled": true 
+    },
+    "dept_text": {
+        "font": "Georgia",
+        "size": 24,
+        "pos": [130,280],
+        "align": "absolute",
+        "color": "#e9eeee",
+        "enabled": true 
+    }
+}
