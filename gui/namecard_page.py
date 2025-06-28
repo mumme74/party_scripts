@@ -118,6 +118,9 @@ class NameCardProperties(ttk.LabelFrame):
         obj = self.controller.prj_wrapped['settings']['namecard']
         card(obj, namecard)
 
+        if obj['greet'].get() == NameCard.default_greet:
+            obj['greet'].set(
+                self.controller.prj_wrapped['settings']['project_name'].get())
 
     def select_template(self, *Äevent):
         dlg = SelectTemplateDlg(self, self.controller)
@@ -125,13 +128,11 @@ class NameCardProperties(ttk.LabelFrame):
             self.master.view_pane.set_disable(True)
             with UndoTransaction(Undo.ref()):
                 self.change_card_template(dlg.selected)
-            self.after(200, lambda *a:
-                self.master.view_pane.set_disable(False) or \
-                self.master.view_pane.indata_changed(True) or \
-                self.master.sel_pane.props.recreate()
-            )
-            
-
+        self.after(200, lambda *a:
+            self.master.view_pane.set_disable(False) or \
+            self.master.view_pane.indata_changed(True) or \
+            self.master.sel_pane.props.recreate()
+        )
             
     def undo_events(self, event):
         with UndoDisable(self.master.undo):
@@ -353,10 +354,11 @@ class SelectTemplateDlg(DialogBase):
         if not sel: 
             return None
 
+        greet = self.controller.project.settings['project_name']
         for i,(path,obj) in enumerate(self.templates.items()):
             if i == self.tbl.index(sel):
                 card = {
-                    'greet': obj['name'],
+                    'greet': greet,
                     'template': template_dir / path,
                     'card': obj
                 }

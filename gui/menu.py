@@ -183,7 +183,9 @@ def main_menu(window):
     ctrl = 'Command' if platform == 'darwin' else 'Control'
     file = tk.Menu(menubar, tearoff=0)
     menubar.add_cascade(label ='Arkiv', menu=file)
-    file.add_command(label ='Nytt project', command=None)
+    file.add_command(label ='Nytt project', 
+        command=window.new_project,
+        accelerator=f'{ctrl}+N')
     file.add_command(
         label ='Öppna...', 
         command=window.open,

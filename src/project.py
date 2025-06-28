@@ -54,6 +54,7 @@ class TextFont:
         }
 
 class NameCard:
+    default_greet = 'Party #1'
     def __init__(self, obj):
         self.greet = obj['greet']
         template = self.template_json = Path(obj['template'])
@@ -153,7 +154,7 @@ class Project:
                 'nope_expressions':['-', '--', 'nej', 'nope','no','none','inga']
             },
             'namecard': NameCard({
-                'greet':'Party #1', 
+                'greet': NameCard.default_greet, 
                 'template':app_dir / 'templates' / 'default_namecard.json'
             }),
             'table_sign':{
@@ -162,9 +163,9 @@ class Project:
             'persons_placed_hashes': {}
         }
 
-        self.departments = None
-        self.tables = None
-        self.persons = None
+        self.departments = AllDepartments(self)
+        self.tables = AllTables(self)
+        self.persons = AllPersons(self)
 
         # for Gui, app changes this value to notify
         # that we have changed

@@ -18,17 +18,33 @@ class LookupPath(ttk.Frame):
         entry.columnconfigure(0, weight=1)
         entry.rowconfigure(0, weight=1)
         entry.grid(row=0, column=0, sticky="we")
+        entry.bind('')
 
         button = ttk.Button(self, text="Sök", width=5,
                             command=lambda *a: self.open())
         button.grid(row=0, column=1, sticky="E")
 
     def open(self):
-        initvlu = Path(self.textvariable.get() or \
-                       self.settings['project_file_path'])
+        filetypes = (
+            ('Excell', '*.xlsx'),
+            ('Semikolon sep.', '*.csv'),
+            ('Tabbsepararad', '*.tsv'),
+            ('Json', '*.json')
+        )
+        initvlu = self.textvariable.get()
+        if not initvlu:
+            if 'project_file_path' in self.settings:
+                initvlu = self.settings['project_file_path'].get()
+            else:
+                initvlu = Path(__file__).parent / 'indata'
+
+        initvlu = Path(initvlu)
+
         if initvlu.is_file():
             initfile = initvlu.name
             initvlu = initvlu.parent
+        else:
+            initfile = initvlu.name
 
         match self.type:
             case 'dir':
@@ -41,7 +57,8 @@ class LookupPath(ttk.Frame):
                     vlu = vlu.name
             case 'file_save':
                 vlu = filedialog.askopenfilename(
-                    initialdir=initvlu, initialfile=initfile)
+                    initialdir=initvlu, initialfile=initfile,
+                    filetypes=filetypes)
             case _:
                 return
 

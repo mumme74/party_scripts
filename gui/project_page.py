@@ -1,12 +1,13 @@
 import tkinter as tk
 from tkinter import ttk 
-from tkinter import filedialog
+from tkinter import messagebox
 from pathlib import Path
 from datetime import datetime
 from tkcalendar import Calendar, DateEntry
 from menu import PageHeader
 from undo_redo import Undo
 from common_widgets import LookupPath, DialogBase
+from src.exceptions import AppException
 
 class ProjectPage(ttk.Frame):
     name = "Projekt vy"
@@ -38,6 +39,7 @@ class SettingsFrame(ttk.LabelFrame):
     def __init__(self, master, controller, **kwargs):
         ttk.LabelFrame.__init__(
             self, master, text='Inställningar', **kwargs)
+        self.controller = controller
 
         sett = controller.prj_wrapped['settings']
 
@@ -90,6 +92,49 @@ class SettingsFrame(ttk.LabelFrame):
 
         for wgt in self.winfo_children():
             wgt.grid_configure(padx=5)
+
+        sett['tables']['file'].trace_add('write', lambda *a:
+            self.after_idle(self.on_indata_files_changed))
+        sett['departments']['file'].trace_add('write',lambda *a:
+            self.after_idle(self.on_indata_files_changed))
+        sett['persons']['file'].trace_add('write',lambda *a:
+            self.after_idle(self.on_indata_files_changed))
+
+    def on_indata_files_changed(self, *args):
+        sett = self.controller.prj_wrapped['settings']
+        prj = self.controller.project
+        prjd = prj.__dict__
+        reload = 3 if not prj.persons.have_placements() else 0
+        ok, tbls = None, {'departments':1,'tables':0,'persons':0}
+
+        def try_load(tbl):
+            try:
+                self.controller.project.reload(tbl)
+                self.controller.rewrap_project(tbl)
+            except Exception as e:
+                self.controller.show_error(str(e))
+
+        for tbl,empty in tbls.items():
+            if not sett[tbl]['file'].get():
+                return
+            if len(prjd[tbl].__dict__[tbl]) == empty:
+                try_load(tbl)
+            elif len(prjd[tbl].__dict__[tbl]) > 0:
+                reload -= 1
+
+        if reload == 0:
+            for tbl in tbls:
+                if ok is None:
+                    ok = messagebox.askyesno(
+                        title='Läs om indata?',
+                        message='''
+                            Filen har ändrats vill du läsa om och skriva
+                            över eventuella ändringar?
+                        ''')
+                if ok:
+                    try_load(tbl)
+
+        self.controller.event_generate('<<Reloaded>>')
 
 class DateTime(ttk.Frame):
     def __init__(self, master, variable, settings, **kwargs):
@@ -247,7 +292,7 @@ class ContentFrame(ttk.LabelFrame):
 
     def reload_data(self, *args):
         try:
-            self.controller.reload(
+            self.controller.reload_project(
                 self.indata_key())
             self.tbl.recreate()
         except Exception as e:

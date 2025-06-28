@@ -11,6 +11,7 @@ from namecard_page import NameCardPage
 from project_page import ProjectPage
 from placement_page import PlacementPage
 from src.exceptions import AppException
+from src.project import Project
 from menu import main_menu
 import wrap_obj_to_vars as wrap
 from undo_redo import Undo, UndoDisable, \
@@ -32,6 +33,9 @@ class FileChangeHandler(FileSystemEventHandler):
 class GuiApp(tk.Tk):
     def __init__(self, project, proj_path):
         tk.Tk.__init__(self)
+        self.rebuild_ui(project, proj_path)
+
+    def rebuild_ui(self, project, proj_path):
         self.option_add('*tearOff', False)
         self.project = project
         if proj_path:
@@ -149,7 +153,7 @@ class GuiApp(tk.Tk):
 
     def indata_file_changed(self, prop, path):
         self.last_indata_change = prop
-        self.reload(prop)
+        self.reload_project(prop)
         self.event_generate(
             '<<IndataReloaded>>', data=prop)
 
@@ -176,7 +180,7 @@ class GuiApp(tk.Tk):
             self.show_error(str(e))
         self.trace_indata_files()
 
-    def rewrap(self, prop=None, transaction=False):
+    def rewrap_project(self, prop=None, transaction=False):
         if not transaction:
             with UndoDisable(Undo.ref()):
                 self._rewrap(prop)
@@ -185,9 +189,9 @@ class GuiApp(tk.Tk):
                 self._rewrap(prop)
 
 
-    def reload(self, prop=None):
+    def reload_project(self, prop=None):
         self.project.reload(prop)
-        self.rewrap(prop)
+        self.rewrap_project(prop)
 
 
     def save_as(self, *args):
@@ -200,8 +204,9 @@ class GuiApp(tk.Tk):
             initialdir=str(path.parent))
         if path:
             self.project.save_project_as(path)
-            self.prj_wrapped['settings'] \
-                ['project_file_path'].set(Path(path))
+            with UndoDisable(Undo.ref()):
+                self.prj_wrapped['settings'] \
+                    ['project_file_path'].set(Path(path))
         self.prj_wrapped['_has_changed'].set(False)
 
     def save(self, *args):
@@ -221,7 +226,8 @@ class GuiApp(tk.Tk):
             title='Open project')
         if path:
             self.project.open_project(path)
-            wrap.reload_wrapped(self.prj_wrapped, self.project)
-            self.trace_indata_files()
-            self.event_generate('<<Reloaded>>')
+            self.rebuild_ui(self.project, path)
 
+    def new_project(self, *args):
+        self.project = Project()
+        self.rebuild_ui(self.project, '')

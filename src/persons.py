@@ -47,6 +47,10 @@ class AllPersons:
     def num_to_place(self):
         "Return how many people left to place"
         return len([p for p in self.persons if not p._placed_at_tbl])
+    
+    def have_placements(self):
+        "True if we have any plcements done"
+        return len(self.persons) != self.num_to_place()
 
 class Person:
     def __init__(self, data, project):
