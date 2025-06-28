@@ -166,6 +166,10 @@ class Project:
         self.tables = None
         self.persons = None
 
+        # for Gui, app changes this value to notify
+        # that we have changed
+        self._has_changed = False
+
     def open_project(self, prj_file):
         try:
             with open(prj_file, encoding='utf8') as file:

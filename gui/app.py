@@ -98,6 +98,9 @@ class GuiApp(tk.Tk):
             lambda *a: self.title_changed())
         sett['date'].trace_add('write', 
             lambda *a: self.title_changed())
+        self.prj_wrapped['_has_changed'] \
+            .trace_add('write',
+              lambda *a: self.title_changed())
         
         self.title_changed()
 
@@ -105,8 +108,9 @@ class GuiApp(tk.Tk):
         sett = self.prj_wrapped['settings']
         name = sett['project_name'].get()
         date = sett['date'].get()[:16]
-        self.title(f'Bordsplacering: {name} {date}')
-        self.header_var.set(f'{name} {date}')
+        change = ' [•]' if self.prj_wrapped['_has_changed'].get() else ''
+        self.title(f'Bordsplacering: {name} {date} {change}')
+        self.header_var.set(f'{name} {date} {change}')
 
     def setup_events(self):
         ctrl = 'Command' if platform == 'darwin' else 'Control'
@@ -198,6 +202,7 @@ class GuiApp(tk.Tk):
             self.project.save_project_as(path)
             self.prj_wrapped['settings'] \
                 ['project_file_path'].set(Path(path))
+        self.prj_wrapped['_has_changed'].set(False)
 
     def save(self, *args):
         path = str(self.project.settings['project_file_path'])
@@ -205,6 +210,7 @@ class GuiApp(tk.Tk):
             self.save_as(*args)
         else:
             self.project.save_project()
+        self.prj_wrapped['_has_changed'].set(False)
 
     def open(self, *args):
         path = self.project.settings['project_file_path'] 

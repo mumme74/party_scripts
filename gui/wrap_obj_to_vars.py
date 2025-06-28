@@ -7,12 +7,19 @@ from undo_redo import Undo
 def isclass(vlu):
     return hasattr(vlu, '__dict__') and vlu is not None
 
+prj_wrapped = {}
+def set_changed():
+    global prj_wrapped
+    if not prj_wrapped['_has_changed'].get():
+        prj_wrapped['_has_changed'].set(True)
+
 # special case datetime
 def closure_date_write(root, key, var):
     def callback(*args):
         Undo.ref().store_change(var, 
             root[key].strftime('%Y-%m-%d %H:%M:%S'), var.get())
         root[key] = parse_date(var.get(), '')
+        set_changed()
     return callback
 
 # sepcial case paths
@@ -20,6 +27,7 @@ def closure_path_write(root, key, var):
     def callback(*args):
         Undo.ref().store_change(var, str(root[key]), var.get())
         root[key] = Path(var.get())
+        set_changed()
     return callback
 
 # when updating an item
@@ -27,6 +35,7 @@ def closure_write(root, key, var):
     def callback(*args):
         Undo.ref().store_change(var, root[key], var.get())
         root[key] = var.get()
+        set_changed()
     return callback
 
 # when deleting an item
@@ -77,19 +86,25 @@ def create_wrapper(root, key, wrapper):
 
 def wrap_instance(inst, wrapped=None):
     """Wrapp a class instance"""
+    dct = {}
     if not wrapped:
+        global prj_wrapped
         wrapped = {}
+        prj_wrapped = dct # store global to access in set_changed
+
     assert isclass(inst)
     inst_id = f'_{id(inst)}'
     if inst_id in wrapped:
         return wrapped[inst_id] # prevent cyclic wrap
     
-    wrapped[inst_id] = dct = {}
+    wrapped[inst_id] = dct
     for k,v in inst.__dict__.items():
         if k[0] != '_' and not hasattr(v, '__call__'):
             dct[k] = create_wrapper(inst.__dict__, k, wrapped)
         elif k == '_data':
             dct['_data'] = v
+        elif k == '_has_changed':
+            dct['_has_changed'] = tk.BooleanVar(value=v)
     dct['_ref'] = inst
     return dct
 
@@ -161,6 +176,8 @@ def reload_wrapped(to, from_, wrapped=None):
             to['_data'] = v
         elif k == '_place_at_tbl':
             to['_place_at_tbl'] = v
+        elif k == '_has_changed':
+            to['_has_changed'].set(v)
         elif k[0] == '_':
             continue
         elif to[k] is None:
