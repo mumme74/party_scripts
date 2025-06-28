@@ -98,9 +98,17 @@ class SettingsPane(ttk.LabelFrame):
         LookupPath(self, sett['output_folder'], 'dir', sett
         ).grid(row=4, column=0, stick='wne')
 
+        # tablecard template
+        ttk.Label(self, text='Placeringslista mall'
+        ).grid(row=5, column=0, sticky='w')
+
+        LookupPath(self, sett['table_sign']['file'], 'file_open', sett, 
+            filetypes=(('Wordfiler', '*.docx'),)
+        ).grid(row=6, column=0, stick='wne')
+
         # generate buttons
         btnfrm = ttk.LabelFrame(self, text='Generera')
-        btnfrm.grid(row=5, columnspan=2, sticky='wne')
+        btnfrm.grid(row=7, columnspan=2, sticky='wne')
         
         self.card_btn = ttk.Button(btnfrm, text='Placeringskort',
             command=self.gen_placement_cards)

@@ -42,10 +42,18 @@ class GuiApp(tk.Tk):
             try:
                 self.project.open_project(proj_path)
             except AppException as e:
-                messagebox.showerror(
-                    title='Fel vid laddning',
-                    message=f'{e.__class__.__name__}\n {e}'
-                )
+                msg = f'{e.__class__.__name__}\n {e}'
+                self.after(100, lambda *a:
+                    self.show_error(f'Fel vid laddning: {msg}'))
+            else:
+                unique = set()
+                for unk in self.project.persons.unknown_dept():
+                    if unk not in unique:
+                        def closeure(msg):
+                            return lambda *a: self.show_error(msg)
+                        self.after(100, closeure(f'Avdelning okänd: {unk}'))
+                    unique.add(unk)
+                    msg = None # break ref so self.after works
                 
         self.prj_wrapped = wrap.wrap_instance(project)
         self.geometry('1024x610')

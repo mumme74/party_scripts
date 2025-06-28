@@ -9,6 +9,12 @@ from pathlib import Path
 class LookupPath(ttk.Frame):
     def __init__(self, master, variable, type, 
                  settings, **kwargs):
+        self.filetypes = kwargs.pop('filetypes', (
+            ('Excell', '*.xlsx'),
+            ('Semikolon sep.', '*.csv'),
+            ('Tabbsepararad', '*.tsv'),
+            ('Json', '*.json')
+        ))
         ttk.Frame.__init__(self, master, **kwargs)
         self.textvariable = variable
         self.settings = settings
@@ -25,12 +31,6 @@ class LookupPath(ttk.Frame):
         button.grid(row=0, column=1, sticky="E")
 
     def open(self):
-        filetypes = (
-            ('Excell', '*.xlsx'),
-            ('Semikolon sep.', '*.csv'),
-            ('Tabbsepararad', '*.tsv'),
-            ('Json', '*.json')
-        )
         initvlu = self.textvariable.get()
         if not initvlu:
             if 'project_file_path' in self.settings:
@@ -52,13 +52,14 @@ class LookupPath(ttk.Frame):
                     initialdir=initvlu)
             case 'file_open':
                 vlu = filedialog.askopenfile(
-                    initialdir=initvlu, initialfile=initfile)
+                    initialdir=initvlu, initialfile=initfile,
+                    filetypes=self.filetypes)
                 if vlu:
                     vlu = vlu.name
             case 'file_save':
                 vlu = filedialog.askopenfilename(
                     initialdir=initvlu, initialfile=initfile,
-                    filetypes=filetypes)
+                    filetypes=self.filetypes)
             case _:
                 return
 

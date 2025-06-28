@@ -91,7 +91,7 @@ class Table:
         self.persons = []
         self.prio_dept = []
         if len(row) >= len(keys):
-            for dept in row[keys['prio_dept']].split(' '):
+            for dept in [r for r in row[keys['prio_dept']:] if r is not None]:
                 dep = project.departments.get_department(dept)
                 if dep.id == 'unk':
                     raise DataRetrivalError(f'**** {dept} is not among registered departments')

@@ -51,6 +51,9 @@ class AllPersons:
     def have_placements(self):
         "True if we have any plcements done"
         return len(self.persons) != self.num_to_place()
+    
+    def unknown_dept(self):
+        return [p._dept_str for p in self.persons if p.dept.id == 'unk']
 
 class Person:
     def __init__(self, data, project):
