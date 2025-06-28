@@ -201,6 +201,7 @@ class PathEdit:
         in_dir = indir.absolute() if indir else \
             (Path(__file__).parent.parent / 'templates').absolute()
         file = Path(variable.get()).name
+        self.ok = False
 
         vlu = filedialog.askopenfilename(
                 initialdir=in_dir, initialfile=file,
@@ -218,6 +219,7 @@ class PathEdit:
             vlus = master.item(iid).get('values')
             vlus[1] = vlu
             master.item(iid, values=vlus)
+            self.ok = True
 
 class ComboBoxEdit(EditProperty):
     def __init__(self, master, variable, iid, bbox, **kw):

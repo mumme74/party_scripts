@@ -1,10 +1,15 @@
+import os, json
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
 from PIL import ImageTk
 from pathlib import Path
 from menu import PageHeader
-from undo_redo import Undo, UndoDisable
+from undo_redo import Undo, \
+                      UndoDisable, \
+                      UndoSnapshot, \
+                      UndoTransaction
+from src.project import NameCard
 from src.namecard import load_template, \
                          create_img
 from common_widgets import IntEdit, \
@@ -13,7 +18,10 @@ from common_widgets import IntEdit, \
                            ColorEdit, \
                            PathEdit, \
                            ComboBoxEdit, \
-                           FontSelector
+                           FontSelector, \
+                           DialogBase
+
+template_dir = Path(__file__).parent.parent / 'templates'
 
 class FakeTbl:
     id = 'Bord 10'
@@ -45,15 +53,15 @@ class NameCardPage(ttk.Frame):
 
         self.page_hdr = PageHeader(self, controller)
 
-        sel_pane = NameCardProperties(self, controller, width=300)
-        sel_pane.columnconfigure(0, weight=1)
-        sel_pane.rowconfigure(0, weight=1)
-        sel_pane.grid(row=1, column=0, padx=3, sticky='wnes')
+        self.sel_pane = NameCardProperties(self, controller, width=300)
+        self.sel_pane.columnconfigure(0, weight=1)
+        self.sel_pane.rowconfigure(0, weight=1)
+        self.sel_pane.grid(row=1, column=0, padx=3, sticky='wnes')
 
-        edit_pane = PreviewNameCard(self, controller)
-        edit_pane.columnconfigure(0, weight=1)
-        edit_pane.rowconfigure(0, weight=0)
-        edit_pane.grid(row=1, column=1, padx=3, sticky='nw')
+        self.view_pane = PreviewNameCard(self, controller)
+        self.view_pane.columnconfigure(0, weight=1)
+        self.view_pane.rowconfigure(0, weight=0)
+        self.view_pane.grid(row=1, column=1, padx=3, sticky='nw')
 
 class NameCardProperties(ttk.LabelFrame):
     def __init__(self, master, controller, **kwargs):
@@ -71,9 +79,18 @@ class NameCardProperties(ttk.LabelFrame):
         self.props.configure(yscrollcommand=vscroll.set)
         vscroll.grid(row=0, column=1, sticky='nes')
 
-        ttk.Button(self, text='Spara som ny mall',
+        # buttons at bottom
+        btn_frm = ttk.Frame(self)
+        btn_frm.grid(row=2, column=0, columnspan=2, sticky='wne')
+        btn_frm.columnconfigure(0, weight=1)
+
+        ttk.Button(btn_frm, text='Andra mallar',
+            command=self.select_template
+        ).grid(row=2, column=0, sticky='w')
+
+        ttk.Button(btn_frm, text='Spara som ny mall',
             command=self.save_as_new_template
-        ).grid(row=2, column=0, columnspan=2, sticky='e')
+        ).grid(row=2, column=1, sticky='e')
         
     def save_as_new_template(self):
         template_path = Path(__file__).parent.parent / 'templates'
@@ -83,6 +100,38 @@ class NameCardProperties(ttk.LabelFrame):
         if path:
             self.controller.project.settings['namecard'] \
                 .save_as_new_template(path)
+            
+    def change_card_template(self, namecard):
+        banned = ('greet',)
+        def card(obj, src):
+            if isinstance(obj, (list, tuple)):
+                obj = {i:v for i,v in enumerate(obj)}
+            for k,v in obj.items():
+                ks = str(k)
+                if hasattr(src, '__dict__') and obj[k] is not None:
+                    card(obj, src.__dict__)
+                elif isinstance(obj[k], (dict,list,tuple)):
+                    card(obj[k], src[k])
+                elif not ks.startswith('_') and not ks in banned:
+                    obj[k].set(src[k])
+
+        obj = self.controller.prj_wrapped['settings']['namecard']
+        card(obj, namecard)
+
+
+    def select_template(self, *Äevent):
+        dlg = SelectTemplateDlg(self, self.controller)
+        if dlg.selected:
+            self.master.view_pane.set_disable(True)
+            with UndoTransaction(Undo.ref()):
+                self.change_card_template(dlg.selected)
+            self.after(200, lambda *a:
+                self.master.view_pane.set_disable(False) or \
+                self.master.view_pane.indata_changed(True) or \
+                self.master.sel_pane.props.recreate()
+            )
+            
+
             
     def undo_events(self, event):
         with UndoDisable(self.master.undo):
@@ -94,6 +143,7 @@ class PreviewNameCard(ttk.LabelFrame):
             self, master, text='Förhandgransning', **kwargs)
         self.controller = controller
         self.columnconfigure(0, weight=1)
+        self._disable = False
 
         self.card = controller.prj_wrapped['settings']['namecard']
         self.trace_vars(self.card)
@@ -109,6 +159,9 @@ class PreviewNameCard(ttk.LabelFrame):
             self.indata_changed())
 
     def indata_changed(self, *args):
+        if self._disable: 
+            return
+        
         img, new_size, out_dir, card = load_template(
             self.controller.project)
         img_card = create_img(img, card, new_size, FakePerson())
@@ -133,6 +186,9 @@ class PreviewNameCard(ttk.LabelFrame):
                     self.trace_vars(v)
                 else:
                     v.trace_add('write', cb)
+
+    def set_disable(self, dis):
+        self._disable = dis
 
 
 class PropertyWidget(ttk.Treeview):
@@ -238,3 +294,121 @@ class PropertyWidget(ttk.Treeview):
             if itm['values'][0] in opened:
                 self.item(ch, open=1)
         self.yview(tk.MOVETO, scroll[0])
+
+class SelectTemplateDlg(DialogBase):
+    def __init__(self, master, controller, **args):
+        args['width'] = 300
+        args['height'] = 500
+        DialogBase.__init__(
+            self, master, controller, **args)
+        
+        self.selected = None
+
+         # header
+        ttk.Label(
+            self, text='Välj mall!',
+            font=controller.title_font
+        ).grid(row=0, column=0, columnspan=3,
+            sticky='nwe', pady=5, padx=5)
+        
+        # show available templates
+        self.tbl = ttk.Treeview(self)
+        self.tbl.grid(row=1, column=0, sticky='nws')
+        # scroll from template table
+        vscroll = ttk.Scrollbar(
+            self, orient='vertical', command=self.tbl.yview)
+        self.tbl.configure(yscrollcommand=vscroll.set)
+        vscroll.grid(row=1, column=1, sticky='nes')
+
+        # show preview of selected
+        self.canvas = tk.Canvas(
+            self, width=300, height=200,
+            #background='gray', border=0,
+            #borderwidth=0, highlightbackground=0
+            )
+        self.canvas.grid(row=1, column=2, sticky='nw')
+
+        self.after(100, lambda *a: self.reload())
+
+        # cancel and OK btns
+        ttk.Button(
+            self, text='Avbryt', command=self.reject
+        ).grid(row=2, column=0, sticky='w', padx=5, pady=5)
+
+        self.ok = ttk.Button(
+            self, text='OK', command=self.accept)
+        self.ok.grid(row=2, column=2, sticky='e', padx=5, pady=5)
+
+        self.load_templates()
+        self.build_tbl()
+
+        self.tbl.bind('<<TreeviewSelect>>', self.reload)
+
+        self.make_modal() # must be last in func
+
+
+    def current(self):
+        "Return currently selected"
+        sel = self.tbl.focus()
+        if not sel: 
+            return None
+
+        for i,(path,obj) in enumerate(self.templates.items()):
+            if i == self.tbl.index(sel):
+                card = {
+                    'greet': obj['name'],
+                    'template': template_dir / path,
+                    'card': obj
+                }
+                return NameCard(card)
+
+    def make_img(self, template, image_size):
+        img, new_size, out_dir, card = load_template(
+            self.controller.project, template, image_size)
+        img_card = create_img(img, card, image_size, FakePerson())
+
+        return ImageTk.PhotoImage(img_card)
+
+    def reload(self, *args):
+        template = self.current()
+        if not template: return
+        sz = (int(self.canvas['width']), 
+              int(self.canvas['height']))
+        imgtk = self.make_img(template, sz)
+        self.canvas.delete('all')
+        self.canvas.create_image(
+            0,0, image=imgtk, anchor=tk.NW)     
+ 
+    def load_templates(self):
+        tmplts = []
+        for _, _, files in os.walk(template_dir):
+            tmplts += [Path(f) for f in files if f.endswith('.json')]
+        
+        self.templates = {}
+        for file in tmplts:
+            try:
+                with open(template_dir / file) as fp:
+                    self.templates[f'{file}'] = json.load(fp)
+                    self.templates[f'{file}']['template_json'] = str(file)
+            except (IOError, json.JSONDecodeError):
+                pass
+
+    def build_tbl(self):
+        tbl = self.tbl
+        cols = ('Namn','Grundbild')
+        
+        self.tbl.configure(columns=cols)
+        for c in cols:
+            self.tbl.heading(c, text=c)
+
+        self.tbl.column('#0', width=0, minwidth=0, stretch=False)
+        self.tbl.column(cols[0], width=150, minwidth=0, stretch=False)
+        self.tbl.column(cols[1], width=150, minwidth=0, stretch=False)
+
+        for f,t in self.templates.items():
+            vlus = (t['name'], t['template_png'])
+            tbl.insert('','end', values=vlus)
+
+    def accept(self, *event):
+        self.selected = self.current()
+        self.destroy()

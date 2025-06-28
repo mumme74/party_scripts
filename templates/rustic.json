@@ -3,10 +3,10 @@
     "template_png": "rustic.png",
     "tbl_id_text": {
         "font": "Snell Roundhand",
-        "size": 10,
+        "size": 15,
         "pos": [22,12],
         "align": "absolute",
-        "color": "#ede6dc",
+        "color": "#e9eeee",
         "enabled": true 
     },
     "greet_text": {
