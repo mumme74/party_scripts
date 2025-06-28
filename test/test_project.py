@@ -156,9 +156,9 @@ class TestPreject(unittest.TestCase):
     def test_constructor(self):
         now = datetime.now()
         prj = Project()
-        self.assertEqual(prj.departments, None)
-        self.assertEqual(prj.tables, None)
-        self.assertEqual(prj.persons, None)
+        self.assertEqual(len(prj.departments.departments), 1)
+        self.assertEqual(len(prj.tables.tables), 0)
+        self.assertEqual(len(prj.persons.persons), 0)
         s = prj.settings
         self.assertEqual(s['date'].strftime('%Y-%m-%d %H:%M'), 
                          now.strftime('%Y-%m-%d %H:%M'))
