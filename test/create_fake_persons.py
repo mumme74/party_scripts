@@ -2,25 +2,34 @@
 from pathlib import Path
 from faker import Faker
 from faker.providers import DynamicProvider
+import sys
 fake = Faker(["sv_SE"])
 
+depts = [
+    "prod","Manufacture","Assembly", "Factory worker",
+    "maint","Mechanic","Maintence",
+    "adm","Administration","Economy",
+    "sale","sales","seller"
+]
+
 test_data_dir = Path(__file__).parent / "data"
-test_persons_file = test_data_dir / "test_persons.tsv"
+if len(sys.argv) > 1:
+    test_persons_file = Path(sys.argv[1])
+    if len(sys.argv) > 2:
+        depts.clear()
+        depts.extend(sys.argv[2:])
+else:
+    test_persons_file = test_data_dir / "test_persons.tsv"
 
 special_dept_provider = DynamicProvider(
-    "special_depts",[
-        "prod","Manufacture","Assembly", "Factory worker",
-        "maint","Mechanic","Maintence",
-        "adm","Administration","Economy",
-        "sale","sales","seller"
-    ]
+    "special_depts", depts
 )
 fake.add_provider(special_dept_provider)
 
 special_food_provider = DynamicProvider(
     "special_meals",
     [
-        "","nut","nöt","seafood","lactosfri",
+        "","","","","","","","","nut","nöt","seafood","lactosfri",
         "glutenfri","fisk","pescatarian"
     ]
 )
