@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from src.read_data import read_data
 from src.departments import AllDepartments
 from src.persons import AllPersons
