@@ -65,23 +65,23 @@ class SettingsFrame(ttk.LabelFrame):
         # path to persons input file
         persons_file_lbl = ttk.Label(self, text="Personer indata fil:")
         persons_file_lbl.grid(row=5, column=0, sticky='w')
-        out_folder = LookupPath(
+        self.persons_file = LookupPath(
             self, sett['persons']['file'], 'file_open', sett)
-        out_folder.grid(row=6, column=0, sticky='we')
+        self.persons_file.grid(row=6, column=0, sticky='we')
 
         # path to departments input file
         depts_file_lbl = ttk.Label(self, text="Avdelningar indata fil:")
         depts_file_lbl.grid(row=7, column=0, sticky='w')
-        out_folder = LookupPath(
+        self.depts_file = LookupPath(
             self, sett['departments']['file'], 'file_open', sett)
-        out_folder.grid(row=8, column=0, sticky='we')
+        self.depts_file.grid(row=8, column=0, sticky='we')
 
         # path to departments input file
-        depts_file_lbl = ttk.Label(self, text="Bord indata fil:")
-        depts_file_lbl.grid(row=9, column=0, sticky='w')
-        out_folder = LookupPath(
+        tbls_file_lbl = ttk.Label(self, text="Bord indata fil:")
+        tbls_file_lbl.grid(row=9, column=0, sticky='w')
+        self.tbls_file = LookupPath(
             self, sett['tables']['file'], 'file_open', sett)
-        out_folder.grid(row=10, column=0, sticky='we')
+        self.tbls_file.grid(row=10, column=0, sticky='we')
 
         # path to output folder
         out_folder_lbl = ttk.Label(self, text="Utdata mapp:")
@@ -99,8 +99,13 @@ class SettingsFrame(ttk.LabelFrame):
             self.after_idle(self.on_indata_files_changed))
         sett['persons']['file'].trace_add('write',lambda *a:
             self.after_idle(self.on_indata_files_changed))
+        self._block_evt = False # prevents loop from reload in on_indata_files_changed
 
     def on_indata_files_changed(self, *args):
+        if self._block_evt:
+            self._block_evt = False
+            return
+        
         sett = self.controller.prj_wrapped['settings']
         prj = self.controller.project
         prjd = prj.__dict__
@@ -109,6 +114,7 @@ class SettingsFrame(ttk.LabelFrame):
 
         def try_load(tbl):
             try:
+                self._block_evt = True
                 self.controller.project.reload(tbl)
                 self.controller.rewrap_project(tbl)
             except Exception as e:
@@ -122,10 +128,16 @@ class SettingsFrame(ttk.LabelFrame):
             elif len(prjd[tbl].__dict__[tbl]) > 0:
                 reload -= 1
 
-        if reload == 0:
+        has_focus = True in [
+            self.depts_file.has_focus(),
+            self.tbls_file.has_focus(),
+            self.persons_file.has_focus()
+        ]
+        if reload == 0 and has_focus:
             for tbl in tbls:
                 if ok is None:
                     ok = messagebox.askyesno(
+                        parent=self,
                         title='Läs om indata?',
                         message='''
                             Filen har ändrats vill du läsa om och skriva
@@ -133,8 +145,8 @@ class SettingsFrame(ttk.LabelFrame):
                         ''')
                 if ok:
                     try_load(tbl)
-
-        self.controller.event_generate('<<Reloaded>>')
+            if ok:
+                self.master.event_generate('<<IndataReloaded>>')
 
 class DateTime(ttk.Frame):
     def __init__(self, master, variable, settings, **kwargs):
@@ -242,8 +254,10 @@ class ContentFrame(ttk.LabelFrame):
         self.tbl.configure(xscrollcommand=hscroll.set)
         hscroll.grid(row=2, column=0, columnspan=4, sticky='wne')
 
-        controller.bind('<<Reloaded>>', lambda *a: self.tbl.recreate())
-        controller.bind('<<IndataReloaded>>', self.indata_reloaded)
+        controller.bind('<<Reloaded>>', 
+            self.after_idle(lambda *a: self.tbl.recreate()))
+        controller.bind('<<IndataReloaded>>', 
+            self.after_idle(self.indata_reloaded))
 
     def indata_sources(self):
         prj = self.controller.prj_wrapped

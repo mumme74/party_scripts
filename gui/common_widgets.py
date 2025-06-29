@@ -20,15 +20,15 @@ class LookupPath(ttk.Frame):
         self.settings = settings
         self.type = type
 
-        entry = ttk.Entry(self, textvariable=variable)
-        entry.columnconfigure(0, weight=1)
-        entry.rowconfigure(0, weight=1)
-        entry.grid(row=0, column=0, sticky="we")
-        entry.bind('')
+        self.entry = ttk.Entry(self, textvariable=variable)
+        self.entry.columnconfigure(0, weight=1)
+        self.entry.rowconfigure(0, weight=1)
+        self.entry.grid(row=0, column=0, sticky="we")
+        self.entry.bind('')
 
-        button = ttk.Button(self, text="Sök", width=5,
+        self.button = ttk.Button(self, text="Sök", width=5,
                             command=lambda *a: self.open())
-        button.grid(row=0, column=1, sticky="E")
+        self.button.grid(row=0, column=1, sticky="E")
 
     def open(self):
         initvlu = self.textvariable.get()
@@ -65,6 +65,13 @@ class LookupPath(ttk.Frame):
 
         if vlu:
             self.textvariable.set(vlu)
+
+    def focus(self):
+        self.entry.focus()
+
+    def has_focus(self):
+        itm = self.focus_get()
+        return itm in [self.entry, self.button]
 
 
 class EditProperty(ttk.Frame):
