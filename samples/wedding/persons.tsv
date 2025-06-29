@@ -1,0 +1,235 @@
+date	email	fname	lname	dept	special foods
+2025-06-14 15:20:12	ihelgesson@example.org	Niklas	Johansson	Firman	
+2025-06-02 00:01:29	margareta69@example.org	Tomas	Davidsson	Gummens	fisk
+2025-06-07 21:34:01	karlssonmats@example.com	Gustaf	Persson	Gummens	
+2025-06-21 13:16:40	tage08@example.net	Ella	Karlsson	groom	pescatarian
+2025-06-27 00:49:23	bernhardlindberg@example.net	Hassan	Söderberg	bride	nut
+2025-06-25 22:58:18	erikssonclaes@example.com	Ingeborg	Svensson	Firman	seafood
+2025-06-19 19:39:35	snorberg@example.com	Axel	Axelsson	friendsnear_family	nut
+2025-06-22 16:50:37	qeriksson@example.org	Sven	Håkansson	Firman	seafood
+2025-06-14 11:32:55	hjordis69@example.com	Elisabeth	Eliasson	Firman	nut
+2025-06-22 21:10:59	kjonsson@example.net	Carl	Hellman	Brudens	pescatarian
+2025-06-01 14:27:24	hogbergsusanne@example.com	Bengt	Pålsson	bride	
+2025-06-19 20:57:13	xjonsson@example.net	Ingrid	Larsson	Firman	
+2025-06-26 03:30:57	hugo49@example.com	Krister	Jönsson	Firman	fisk
+2025-06-21 07:02:11	sofieforsell@example.org	Birgitta	Borg	Firman	glutenfri
+2025-05-31 07:08:21	norenellinor@example.net	Amelia	Ekman	Barndomsvän	lactosfri
+2025-06-02 09:02:52	marie53@example.com	Berit	Andersson	Brudens	nöt
+2025-06-11 03:43:14	bblomgren@example.com	Margareta	Hellgren	friendsnear_family	
+2025-06-09 08:32:36	akessonchristina@example.com	Gunnel	Johansson	groom	glutenfri
+2025-06-02 13:42:54	nordstrommarta@example.com	Maria	Andersson	groom	
+2025-06-04 20:38:27	earonsson@example.net	Mikael	Melin	friendsnear_family	nöt
+2025-05-30 15:57:39	stenelofsson@example.net	Roland	Axelsson	Firman	
+2025-06-09 02:55:03	linneasvensson@example.net	Margareta	Eriksson	groom	
+2025-05-31 00:31:53	vsundstrom@example.org	Josefina	Pettersson	friendsnear_family	nut
+2025-06-07 20:57:33	knorgren@example.com	Dagmar	Johansson	Barndomsvän	seafood
+2025-06-20 02:22:31	malmstromjessica@example.net	Maria	Karlsson	Barndomsvän	nöt
+2025-06-13 09:30:51	martinhansen@example.net	Signe	Pettersson	Barndomsvän	seafood
+2025-06-13 21:37:15	johanssonmathias@example.com	Birgitta	Johansson	Firman	
+2025-06-24 21:20:16	johannessonhenrik@example.org	Pontus	Eriksson	Firman	lactosfri
+2025-06-27 20:03:21	alice45@example.com	Regina	Holm	friendsnear_family	
+2025-06-04 00:35:35	valentin85@example.com	Jennie	Söderlund	Gummens	
+2025-06-10 23:27:00	rpettersson@example.net	Nova	Bäckman	Firman	
+2025-06-16 19:52:59	johanssonfrank@example.org	Kristina	Lind	groom	glutenfri
+2025-06-05 23:01:34	llarsson@example.net	Åke	Nyman	friendsnear_family	fisk
+2025-06-20 14:28:35	ehagg@example.org	Lars	Persson	bride	
+2025-06-11 01:56:42	malinsoderberg@example.net	Colin	Bengtsson	Brudens	
+2025-05-30 21:15:22	majken13@example.com	Allan	Olsson	Firman	
+2025-06-22 02:09:01	soderstrommargareta@example.org	Kristian	Karlsson	groom	
+2025-06-15 05:10:42	karlssonalf@example.org	Tova	Alm	Brudens	pescatarian
+2025-06-13 16:09:50	berglundmatilda@example.net	Matilda	Johansson	Brudens	
+2025-06-17 21:52:42	fredrik42@example.com	Charles	Gustafsson	Gummens	
+2025-06-22 05:07:37	fermwilma@example.com	Bertil	Eklund	Gummens	nöt
+2025-06-28 18:30:49	birgittamoller@example.org	Nils	Eriksson	Gummens	seafood
+2025-06-13 09:20:53	larsnaslund@example.net	Yvonne	Dahlqvist	Brudens	
+2025-06-05 22:17:32	qandersson@example.com	Elisabet	Dahlberg	Firman	
+2025-06-23 06:36:57	carolinefredriksson@example.com	David	Bengtsson	Gummens	glutenfri
+2025-06-28 02:21:00	inez01@example.net	Kristina	Mohammadi	Gummens	nut
+2025-06-17 05:56:08	pjohansson@example.com	Margareta	Nordin	Firman	
+2025-05-30 22:55:06	abrahamssonzahra@example.com	André	Ekström	Gummens	
+2025-06-12 08:16:22	opetersen@example.org	Mikael	Rosén	Barndomsvän	fisk
+2025-05-31 01:38:01	gert82@example.com	Elisabet	Larsson	Barndomsvän	pescatarian
+2025-06-04 18:46:49	marie85@example.com	Hanna	Svensson	friendsnear_family	seafood
+2025-06-19 08:08:55	rydberglinnea@example.net	Julia	Alm	Brudens	glutenfri
+2025-06-11 04:52:03	berglundchristina@example.net	Anders	Jonsson	Gummens	nöt
+2025-05-31 21:47:06	petterssonmilan@example.net	Mia	Söderberg	Brudens	nöt
+2025-06-05 02:09:04	lukas28@example.org	Abdul	Johnsson	groom	glutenfri
+2025-06-07 00:19:12	sven78@example.org	Mikael	Berntsson	friendsnear_family	lactosfri
+2025-06-06 07:58:46	madeleine84@example.org	Gustav	Gustafsson	groom	fisk
+2025-06-03 00:34:52	lindadahlberg@example.com	Anders	Hassan	bride	
+2025-06-26 02:57:57	abdullahannika@example.com	Arvid	Karlsson	Barndomsvän	glutenfri
+2025-06-11 20:02:13	anna14@example.org	Gustaf	Abrahamsson	Firman	seafood
+2025-06-06 02:43:32	carolingustafsson@example.net	Maria	Nilsson	groom	seafood
+2025-06-03 11:48:13	sophiemagnusson@example.com	Ester	Emanuelsson	Firman	fisk
+2025-06-28 01:10:39	rsvensson@example.net	Jennifer	Westerlund	Firman	
+2025-06-28 20:08:31	david77@example.org	Maria	Persson	bride	nöt
+2025-06-01 09:20:47	gerdcarlsson@example.org	Viktoria	Nordlander	friendsnear_family	
+2025-06-05 05:39:13	nandersson@example.com	Vera	Karlsson	groom	fisk
+2025-06-15 00:04:55	karlssonniclas@example.org	Florence	Larsson	Gummens	
+2025-06-25 19:38:57	yerlandsson@example.org	Annelie	Lindgren	Barndomsvän	glutenfri
+2025-06-04 02:45:48	kjell78@example.com	Camilla	Lindblad	bride	pescatarian
+2025-06-23 14:24:05	karlssonelvira@example.org	Nils	Johansson	bride	
+2025-06-04 11:13:26	per82@example.org	Ellen	Engman	Barndomsvän	fisk
+2025-06-05 18:15:30	shansen@example.org	Elisabeth	Nilsson	Firman	lactosfri
+2025-06-04 11:18:05	ingela48@example.org	Lovisa	Andersson	Barndomsvän	fisk
+2025-06-21 22:27:01	holmgrengoran@example.org	Leif	Norén	groom	nöt
+2025-06-13 17:33:02	jonathanandersson@example.com	Sabina	Hedberg	bride	
+2025-06-24 10:54:47	njohansson@example.net	Malte	Persson	groom	nöt
+2025-06-16 18:11:54	handersson@example.net	Elin	Persson	bride	
+2025-06-20 10:51:39	ikarlsson@example.net	Marianne	Andersson	groom	fisk
+2025-06-14 04:14:17	dljungqvist@example.net	Sam	Liu	Gummens	
+2025-06-25 02:33:16	linneapersson@example.com	Susanne	Berggren	groom	glutenfri
+2025-06-25 23:23:05	edstromelin@example.net	Margareta	Persson	Brudens	nöt
+2025-06-27 07:38:55	holmolga@example.net	Anna	Johansson	bride	
+2025-06-12 15:58:07	amelie61@example.net	Gustav	Andersson	Barndomsvän	
+2025-06-14 15:24:33	gsjoholm@example.com	Brita	Norberg	Barndomsvän	glutenfri
+2025-06-21 05:31:22	johanssonmargareta@example.net	Sören	Nilsson	friendsnear_family	
+2025-06-17 16:38:12	mollerclaudia@example.com	Lena	Persson	Firman	pescatarian
+2025-06-16 13:25:04	alexander21@example.org	Göran	Ågren	groom	glutenfri
+2025-06-26 06:10:49	kjelljohansson@example.net	Alexander	Liu	friendsnear_family	nöt
+2025-06-11 15:17:40	yandersson@example.com	Nova	Mohammad	Gummens	nut
+2025-06-04 19:08:57	tage64@example.com	Sven	Åberg	friendsnear_family	glutenfri
+2025-06-07 18:22:20	candersson@example.com	Bertil	Nordin	friendsnear_family	pescatarian
+2025-05-30 14:04:32	juliasvensson@example.com	Douglas	Erlandsson	friendsnear_family	
+2025-06-04 22:39:40	anneliejensen@example.com	Roland	Jönsson	Gummens	
+2025-06-19 20:29:26	nberg@example.com	Olle	Nilsson	bride	
+2025-06-26 07:02:14	alexander05@example.com	Alfred	Larsson	Brudens	
+2025-06-26 20:51:11	kfransson@example.net	Göran	Hussein	friendsnear_family	nöt
+2025-06-20 20:53:08	norlinglovisa@example.net	Ted	Wahlgren	Barndomsvän	fisk
+2025-06-18 20:57:33	ericsoncharlotte@example.com	Marie	Karlström	groom	glutenfri
+2025-06-09 03:57:57	patrik25@example.com	Fredric	Larsson	groom	nöt
+2025-06-06 17:30:01	oosman@example.org	Anders	Eriksson	bride	
+2025-06-07 08:26:20	nwennberg@example.net	Carina	Eriksson	groom	
+2025-06-20 09:49:50	molinmarie@example.net	Britt	Östlund	Firman	
+2025-06-17 06:29:47	birgerhenningsson@example.com	Niklas	Åberg	Brudens	
+2025-06-25 02:31:44	varvidsson@example.org	Patrik	Ekholm	Brudens	nöt
+2025-06-19 09:14:54	adolfssonlena@example.org	Daniel	Lundgren	friendsnear_family	
+2025-06-24 09:40:13	ikarlsson@example.org	Petter	Sundström	Barndomsvän	
+2025-06-02 01:35:52	axel60@example.org	Håkan	Storm	groom	pescatarian
+2025-06-19 18:35:13	ewestin@example.net	Victor	Engberg	Gummens	pescatarian
+2025-06-05 04:52:30	roger57@example.org	Annelie	Anderberg	Firman	
+2025-06-06 07:38:26	anderssonyvonne@example.net	Clara	Berg	bride	seafood
+2025-06-15 20:57:53	birgitta02@example.org	Piotr	Eriksson	Barndomsvän	
+2025-06-24 02:13:52	bengtkarlsson@example.org	Anna	Karlsson	groom	pescatarian
+2025-06-12 23:43:16	chaggstrom@example.org	Börje	Östberg	bride	
+2025-06-13 02:09:18	perssonmattias@example.net	Maria	Sundström	Firman	nut
+2025-06-12 02:45:15	claesmattsson@example.net	John	Oskarsson	groom	fisk
+2025-06-26 02:21:28	elarsson@example.org	Jakob	Nyman	Firman	
+2025-06-20 01:02:11	cjonsson@example.net	Vilgot	Malmberg	Barndomsvän	glutenfri
+2025-06-07 13:14:06	karlssonerik@example.com	Ingrid	Ahlberg	Gummens	nöt
+2025-06-10 18:22:57	anderssonchristina@example.org	Henning	Johansson	Gummens	pescatarian
+2025-06-16 21:05:29	bergstrominge@example.com	Maria	Norling	Brudens	glutenfri
+2025-06-17 10:54:06	karolinahakansson@example.org	Markus	Gustafsson	bride	
+2025-05-31 17:06:40	helenastrom@example.org	Erik	Gunnarsson	friendsnear_family	seafood
+2025-06-14 15:58:40	stenbergmaria@example.org	Bengt	Karlsson	bride	
+2025-06-17 00:53:04	emiliajafari@example.net	Olle	Svensson	friendsnear_family	
+2025-06-01 08:23:55	ilovgren@example.net	Edvin	Lundin	Brudens	
+2025-06-14 07:28:22	bertiljonsson@example.org	Tim	Lindström	friendsnear_family	
+2025-06-18 19:29:48	karlssonoscar@example.org	Maria	Andreasson	friendsnear_family	fisk
+2025-06-24 05:44:17	lundstromjonatan@example.com	Patrick	Sandberg	Barndomsvän	lactosfri
+2025-06-27 07:17:27	backlundbritt-marie@example.org	Anders	Danielsson	Gummens	
+2025-06-17 12:46:11	ojohansson@example.com	Gustav	Svensson	bride	
+2025-06-15 07:38:04	lindagustafsson@example.net	Maria	Skoglund	Barndomsvän	
+2025-06-26 14:40:49	antonssonmelissa@example.net	Maj-Britt	Sjöberg	groom	
+2025-06-16 10:47:28	oskar09@example.org	Cecilia	Flink	Brudens	
+2025-06-12 02:08:40	eklundvidar@example.net	Maria	Fredriksson	bride	seafood
+2025-06-12 13:50:45	gmansson@example.com	Kalle	Eriksson	Brudens	
+2025-05-31 20:20:46	monicanilsson@example.com	Rickard	Nilsson	bride	
+2025-06-01 12:33:15	gbergkvist@example.org	Lena	Andersson	friendsnear_family	seafood
+2025-06-04 05:04:39	erikalundin@example.net	Helena	Olsson	Brudens	nut
+2025-06-16 17:06:29	anita99@example.org	Betty	Johansson	Brudens	
+2025-06-08 22:44:49	mariavikstrom@example.net	Simon	Roos	Firman	seafood
+2025-06-24 08:34:37	emma60@example.net	Marita	Nyman	Brudens	glutenfri
+2025-06-20 00:06:09	kknutsson@example.net	Rikard	Dahlström	Barndomsvän	
+2025-05-30 14:05:46	vtornqvist@example.org	Ann	Hassan	bride	nöt
+2025-06-23 13:32:29	qjansson@example.org	Johanna	Nilsson	groom	seafood
+2025-06-24 04:58:54	klundqvist@example.com	Milan	Sandström	Barndomsvän	
+2025-06-14 12:35:48	cecilia26@example.org	Linus	Engberg	Firman	nöt
+2025-06-20 12:27:06	ingrid63@example.com	Agneta	Salomonsson	bride	
+2025-06-13 06:54:46	carlbergkerstin@example.net	Bengt	Ekstrand	groom	glutenfri
+2025-06-14 02:23:20	larsedvardsson@example.net	Elisabeth	Petersson	friendsnear_family	seafood
+2025-06-21 11:08:30	sophiagunnarsson@example.com	Inger	Åberg	groom	nut
+2025-06-22 02:06:24	malin54@example.com	Rebecca	Larsen	Brudens	lactosfri
+2025-05-30 06:12:18	leif67@example.com	Stefan	Johansson	Gummens	lactosfri
+2025-06-19 07:34:53	eljung@example.org	Birgit	Söderström	groom	
+2025-06-04 03:41:29	kgrahn@example.net	George	Jansson	Barndomsvän	pescatarian
+2025-06-03 04:55:42	nhjelm@example.org	Jonatan	Malm	Brudens	nöt
+2025-06-21 11:47:26	jasmine35@example.net	Ingrid	Andersson	friendsnear_family	seafood
+2025-06-02 13:45:24	lofgrenleif@example.org	Kari	Söderström	Barndomsvän	seafood
+2025-06-16 10:05:37	larssongeorg@example.org	Helena	Christensen	Firman	pescatarian
+2025-06-03 15:02:04	vekstrom@example.com	Jonatan	Axelsson	Barndomsvän	
+2025-06-07 07:18:29	birgitta71@example.org	Erik	Falk	friendsnear_family	
+2025-06-08 17:53:04	ragnar87@example.org	Britt-Marie	Said	Gummens	seafood
+2025-06-20 00:55:30	qmoller@example.net	Jonathan	Åström	Gummens	
+2025-06-21 15:24:19	sandersson@example.net	Ulrika	Nguyen	Barndomsvän	
+2025-06-11 08:04:54	awestin@example.com	Josefin	Bengtsson	Brudens	pescatarian
+2025-06-17 07:22:13	mohamedwesterlund@example.org	Tony	Åberg	Gummens	
+2025-06-18 08:08:52	mohammedsven@example.org	Linnéa	Olsson	Barndomsvän	lactosfri
+2025-06-17 11:41:23	maria91@example.com	Linnéa	Jansson	bride	
+2025-06-26 01:27:40	strombergleif@example.net	Tage	Eriksson	Gummens	fisk
+2025-06-12 03:53:41	granbergnils@example.net	Olof	Fransson	Barndomsvän	
+2025-06-17 06:41:23	erikssondag@example.com	Anna	Eriksson	groom	seafood
+2025-06-09 10:25:13	andersbodin@example.org	Pia	Lindberg	Brudens	
+2025-06-07 12:29:47	henrik08@example.net	Åke	Johannesson	Brudens	
+2025-06-11 22:07:23	dante06@example.org	Victoria	Andersson	Gummens	seafood
+2025-06-22 14:14:19	sandbergbirgitta@example.org	Svante	Lindström	Barndomsvän	
+2025-06-27 10:08:34	lisa89@example.net	Clas	Andersson	Firman	
+2025-06-02 04:24:55	dlindkvist@example.org	Sture	Lundberg	bride	
+2025-06-16 04:57:48	mikaelcarlsson@example.org	Hans	Skoglund	groom	fisk
+2025-06-21 01:41:00	nadia20@example.org	Ulf	Lund	Gummens	
+2025-06-05 10:40:56	husseinanna-karin@example.net	Anna	Persson	Gummens	
+2025-06-27 13:49:11	svenssonlinda@example.com	Emanuel	Karlsson	bride	
+2025-06-21 10:39:27	leonabrahamsson@example.com	Maria	Ericsson	Brudens	pescatarian
+2025-06-28 20:08:18	tnilsson@example.com	Birgitta	Nguyen	Barndomsvän	nut
+2025-06-12 17:31:48	mans83@example.com	Torbjörn	Persson	groom	pescatarian
+2025-06-01 03:37:09	runesandell@example.com	Maria	Petersson	Gummens	nut
+2025-06-21 14:53:45	ingemar93@example.org	Charlotta	Jensen	Barndomsvän	
+2025-06-03 22:43:20	olssonleif@example.com	Erna	Ahmadi	Brudens	
+2025-06-17 22:37:11	fredrikamagnusson@example.com	Louise	Johansson	friendsnear_family	
+2025-06-01 16:24:06	alexandereklund@example.net	Anna	Johansson	friendsnear_family	
+2025-06-23 01:47:05	akerlundole@example.net	Rebecka	Davidsson	groom	nut
+2025-06-16 14:31:29	johanssonbarbro@example.org	Barbro	Hansen	Brudens	
+2025-06-09 17:50:20	lars76@example.org	Maria	Johansson	Firman	pescatarian
+2025-06-10 15:32:18	abdi16@example.com	Sandra	Andersson	bride	glutenfri
+2025-06-02 17:01:28	evaolsson@example.com	Elof	Forslund	Firman	nöt
+2025-05-30 00:40:42	joachimkarlsson@example.org	Anders	Svensson	bride	
+2025-06-04 10:23:43	bengt71@example.org	Maria	Holmberg	bride	
+2025-06-18 05:38:42	maria37@example.com	Anders	Lundström	Barndomsvän	
+2025-06-28 16:10:53	arvidjonsson@example.net	Mona	Axelsson	friendsnear_family	
+2025-06-06 19:53:01	david04@example.com	Inger	Hussein	groom	nöt
+2025-05-31 23:55:45	anders50@example.org	Lars	Svensson	Brudens	
+2025-06-15 11:11:53	stenpalmqvist@example.com	Inge	Ahmed	bride	
+2025-06-27 19:08:38	magnussonlinda@example.org	Valter	Mohammed	Barndomsvän	fisk
+2025-06-26 11:52:57	dkarlsson@example.com	Per	Olander	Brudens	
+2025-06-05 05:18:45	lundqvistnathalie@example.net	Oscar	Westlund	groom	nut
+2025-06-03 23:25:15	elisabetharvidsson@example.net	Irma	Larsson	Barndomsvän	
+2025-06-16 21:33:18	johannilsson@example.net	Johan	Karlsson	groom	pescatarian
+2025-06-26 12:55:59	kristina35@example.org	Jens	Bengtsson	groom	
+2025-06-04 04:59:41	englundrobert@example.net	Jörgen	Karlsson	friendsnear_family	
+2025-06-17 17:26:16	fredrik29@example.org	Joakim	Olsson	bride	
+2025-06-15 19:13:49	ajohansson@example.net	Elisabeth	Lindgren	Firman	glutenfri
+2025-06-28 01:13:55	svensjolander@example.org	Malin	Ali	Brudens	seafood
+2025-06-22 12:25:10	israelssonjonas@example.org	Birgitta	Bohlin	groom	
+2025-06-27 21:20:42	vnilsson@example.net	Michael	Carlsson	Firman	pescatarian
+2025-05-31 19:02:52	kristerblom@example.org	Rickard	Karlsson	Brudens	seafood
+2025-06-16 01:50:36	nilssoningvar@example.org	Linnéa	Nilsson	Gummens	
+2025-06-26 15:42:17	lenaeriksson@example.net	Frans	Karlsson	Gummens	
+2025-06-19 14:18:05	mariannecarlsson@example.com	Oskar	Wiklund	Gummens	
+2025-05-31 23:21:01	ivar02@example.org	Kent	Martinsson	groom	
+2025-06-09 03:40:44	elisabet61@example.org	Niklas	Magnusson	groom	pescatarian
+2025-06-06 20:31:56	ljohnsson@example.org	Nils	Persson	Brudens	seafood
+2025-06-25 21:26:44	astrid40@example.net	Johan	Ahlin	Gummens	pescatarian
+2025-06-21 16:08:24	danielssonkristina@example.com	Gerd	Westlund	Gummens	
+2025-06-15 22:04:58	kolsson@example.com	Lilian	Bäckström	Firman	lactosfri
+2025-06-27 11:35:09	petterjohansson@example.org	Elisabeth	Nilsson	bride	
+2025-06-02 11:44:53	uborjesson@example.org	Emelie	Olsson	Firman	
+2025-06-15 10:29:32	peterssonjorgen@example.net	Marco	Dahlqvist	bride	
+2025-06-03 01:27:27	viktor10@example.org	Axel	Jonsson	Barndomsvän	glutenfri
+2025-06-17 18:29:40	abdullahiissa@example.org	Sofie	Svensson	friendsnear_family	nöt
+2025-06-01 05:37:33	rebeccaedstrom@example.net	Thomas	Gustavsson	Gummens	nut
+2025-06-13 10:07:21	joanna64@example.net	Ingvar	Sandström	Gummens	fisk
+2025-05-31 21:11:15	onordstrom@example.net	Melvin	Johansson	Barndomsvän	lactosfri
+2025-06-10 18:34:45	thomas14@example.com	Mariana	Isaksson	Firman	seafood
+2025-06-05 22:11:19	olofalm@example.org	Jonas	Roos	groom	
+2025-06-18 09:19:22	erikhansson@example.com	Carina	Karlsson	Brudens	lactosfri
+2025-06-07 22:11:35	jonssonolivia@example.com	David	Eriksson	Barndomsvän	pescatarian
