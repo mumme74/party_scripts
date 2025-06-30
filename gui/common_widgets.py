@@ -7,7 +7,7 @@ from tkinter import filedialog
 from pathlib import Path
 
 class LookupPath(ttk.Frame):
-    def __init__(self, master, variable, type, 
+    def __init__(self, master, variable, type,
                  settings, **kwargs):
         self.filetypes = kwargs.pop('filetypes', (
             ('Excell', '*.xlsx'),
@@ -81,7 +81,7 @@ class EditProperty(ttk.Frame):
         if isinstance(variable, tk.Variable):
             self._var = type(variable)(value=variable.get())
         elif isinstance(variable, (list, tuple)):
-            self._var = [type(v)(value=v.get()) 
+            self._var = [type(v)(value=v.get())
                          for v in variable]
         elif isinstance(variable, dict):
             self._var = {k:type(v)(value=v.get())
@@ -97,8 +97,16 @@ class EditProperty(ttk.Frame):
                    w=bbox[2], h=bbox[3])
 
         self.bind('<Escape>', self.reject)
-        self.bind('<FocusOut>', self.accept)
+        self.bind('<FocusOut>', self._on_focus_out)
         self.bind('<Return>', self.accept)
+
+    def has_focus(self):
+        itm = self.focus_get()
+        return itm in self.children
+
+    def _on_focus_out(self, event):
+        if not self.has_focus():
+            self.accept(event)
 
     def reject(self, *event):
         self.destroy()
@@ -110,7 +118,7 @@ class IntEdit(EditProperty):
     def __init__(self, master, variable, iid, bbox):
         EditProperty.__init__(
             self, master, variable, iid, bbox)
-        
+
         self.spin = ttk.Spinbox(
             self, textvariable=self._var,
             from_=-100000, to=100000)
@@ -164,7 +172,7 @@ class PosEdit(EditProperty):
 
         self.edit = ttk.Entry(self, textvariable=self._var)
         self.edit.state(['disabled'])
-        self.edit.grid(row=0, column=0, 
+        self.edit.grid(row=0, column=0,
                   columnspan=4, sticky='wne')
 
         # X coordinate
@@ -194,7 +202,7 @@ class PosEdit(EditProperty):
             self.variable[0].set(x)
         if y != y1:
             self.variable[1].set(y)
-        
+
         vlus = self.master.item(self.iid).get('values')
         vlus[1] = f'({x}, {y})'
         self.master.item(self.iid, values=vlus)
@@ -213,7 +221,7 @@ class PosEdit(EditProperty):
 class ColorEdit:
     def __init__(self, master, variable, iid, bbox):
         color = colorchooser.askcolor(
-            title='Välj färg', color=variable.get(), 
+            title='Välj färg', color=variable.get(),
             master=master)
         if color and color[1]:
             variable.set(color[1])
@@ -239,8 +247,8 @@ class PathEdit:
                         f'Filen måste finnas i mappen: {indir}')
                     return
                 vlu = Path(vlu).name
-            
-            variable.set(vlu) 
+
+            variable.set(vlu)
             vlus = master.item(iid).get('values')
             vlus[1] = vlu
             master.item(iid, values=vlus)
@@ -254,12 +262,12 @@ class ComboBoxEdit(EditProperty):
         vlus = kw.pop('values', [])
 
         EditProperty.__init__(
-            self, master, variable, 
+            self, master, variable,
             iid, bbox, width=width, **kw)
-        
+
         self._var = tk.StringVar(
             value=self.convert_to_str(self._var.get()))
-        
+
         self.combo = ttk.Combobox(
             self, textvariable=self._var,
             values=vlus, **kw)
@@ -332,7 +340,7 @@ class DialogBase(tk.Toplevel):
 
         tk.Toplevel.__init__(
             self, master, takefocus=True, bg=bg, **args)
-        
+
         self.master = master
         self.controller = controller
 

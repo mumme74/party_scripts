@@ -1,43 +1,57 @@
 #!/usr/bin/env bash
-pycmds=('py' 'python3' 'python')
-pycmd=""
-for cmd in "${pycmds[@]}"; do
-    res=`$cmd --version 2> /dev/null`
-    if [ "${res:0:7}" == "Python " ]; then
-        pycmd="$cmd"
-        break
-    fi
-done
+#set -x  # echo on
+#set -o errexit
 
-if [ -z "$pycmd" ]; then
-    echo "python hittades inte, installera det först"
+function test_tool() {
+    cmd="$1"
+    cmds="$2"
+    revVlu=
+
+    for testcmd in "${cmds[@]}"; do
+        res=$($testcmd --version  2> /dev/null)
+        if [ "${res:0:${#cmd}}" == "$cmd" ]; then
+            echo "$testcmd" # capture output from function in caller
+            exit 0
+        fi
+    done
+
+    echo "$cmd hittades inte, installera det först" >&2
+    exit 1
+}
+
+# find python version
+cmds=("py" "python3" "python")
+cmd="Python "
+pycmd=$(test_tool "$cmd" "${cmds[@]}")
+if [ "$?" -ne "0" ]; then
     exit 1
 fi
 
-pipcmds=("pip" "pip3")
-pipcmd=""
-for cmd in "${pipcmds[@]}"; do
-    res=`$cmd --version 2> /dev/null`
-    if [ "${res:0:3}" == "${cmd:0:3}" ]; then
-        pipcmd="$cmd"
-        break
-    fi
-done
 
-if [ -z "$pipcmd" ]; then
-    echo "pip hittades inte, installara pip först"
+# find pip version
+cmds=("pip3" "pip")
+cmd="pip"
+pipcmd=$(test_tool "$cmd" "${cmds[@]}")
+if [ "$?" -ne "0" ]; then
     exit 1
 fi
+
+
+# select ativate virtualenv to run the application
+case "$pycmd" in
+    "py") venvcmd="venv\\Scripts\\activate " ;;
+    *)    venvcmd="source venv/bin/activate " ;;
+esac
 
 # install requirements
 if [ ! -d "venv" ]; then
-    res=`$pipcmd install -r requirements.txt`
-    res=`$pycmd -m venv venv`
+    echo "Setting up virtual environment"
+    res="$($pycmd -m venv venv 1>&1)"
+    echo "Installing requirements"
+    res="$($venvcmd && $pipcmd install -r requirements.txt  1>&1)"
+    echo "$res"
 fi
 
 # ativate virtualenv and run the application
-if [ "$pycmd" == "py" ]; then
-    res=`venv\\Scripts\\activate && §pycmd main.py $1`
-else
-    res=`source venv/bin/activate && $pycmd main.py $1`
-fi
+res="$($venvcmd && $pycmd main.py $1 1>&1 2>&2)"
+echo "$res"
