@@ -74,7 +74,7 @@ class NameCardProperties(ttk.LabelFrame):
         master.bind('<<Undo>>', self.undo_events, add='+')
         master.bind('<<Redo>>', self.undo_events, add='+')
 
-        vscroll = ttk.Scrollbar(self, orient='vertical', 
+        vscroll = ttk.Scrollbar(self, orient='vertical',
                 command=self.props.yview)
         self.props.configure(yscrollcommand=vscroll.set)
         vscroll.grid(row=0, column=1, sticky='nes')
@@ -91,7 +91,7 @@ class NameCardProperties(ttk.LabelFrame):
         ttk.Button(btn_frm, text='Spara som ny mall',
             command=self.save_as_new_template
         ).grid(row=2, column=1, sticky='e')
-        
+
     def save_as_new_template(self):
         template_path = Path(__file__).parent.parent / 'templates'
         path = filedialog.asksaveasfilename(
@@ -100,7 +100,7 @@ class NameCardProperties(ttk.LabelFrame):
         if path:
             self.controller.project.settings['namecard'] \
                 .save_as_new_template(path)
-            
+
     def change_card_template(self, namecard):
         banned = ('greet',)
         def card(obj, src):
@@ -133,7 +133,7 @@ class NameCardProperties(ttk.LabelFrame):
             self.master.view_pane.indata_changed(True) or \
             self.master.sel_pane.props.recreate()
         )
-            
+
     def undo_events(self, event):
         with UndoDisable(self.master.undo):
             self.props.recreate()
@@ -148,10 +148,10 @@ class PreviewNameCard(ttk.LabelFrame):
 
         self.card = controller.prj_wrapped['settings']['namecard']
         self.trace_vars(self.card)
-        
+
         self.canvas = tk.Canvas(
-            self, width=600, height=400, 
-            background='gray', border=0, 
+            self, width=600, height=400,
+            background='gray', border=0,
             borderwidth=0, highlightthickness=0)
         self.canvas.grid(row=1, column=1, sticky='nw')
         ttk.Label(self).grid(row=1, padx=5, pady=5, column=0)
@@ -160,21 +160,23 @@ class PreviewNameCard(ttk.LabelFrame):
             self.indata_changed())
 
     def indata_changed(self, *args):
-        if self._disable: 
+        if self._disable:
             return
-        
-        img, new_size, out_dir, card = load_template(
+        try:
+            img, new_size, out_dir, card = load_template(
             self.controller.project)
-        img_card = create_img(img, card, new_size, FakePerson())
-
-        imgtk = ImageTk.PhotoImage(img_card)
-        self.canvas.delete('all')
-        self.canvas.create_image(0,0, image=imgtk, anchor=tk.NW)
+            img_card = create_img(img, card, new_size, FakePerson())
+        except Exception as e:
+            self.controller.show_error(str(e))
+        else:
+            imgtk = ImageTk.PhotoImage(img_card)
+            self.canvas.delete('all')
+            self.canvas.create_image(0,0, image=imgtk, anchor=tk.NW)
 
     def trace_vars(self, obj):
         def cb(*args):
             self.after(1, self.indata_changed)
-            
+
         if isinstance(obj, dict):
             for k,v in obj.items():
                 if not isinstance(v, tk.Variable):
@@ -196,7 +198,7 @@ class PropertyWidget(ttk.Treeview):
     def __init__(self, master, controller, **kwargs):
         cols=('Egenskap', 'värde')
         ttk.Treeview.__init__(self, master, columns=cols, **kwargs)
-        
+
         self.controller = controller
         self.namecard = controller.project.settings['namecard']
         namecard_wrapped = controller.prj_wrapped['settings']['namecard']
@@ -227,12 +229,12 @@ class PropertyWidget(ttk.Treeview):
         col = self.identify_column(event.x)
         if not iid or not col or col == '#0':
             return
-        
+
         vlus = self.item(iid)
         values = vlus.get('values')
         if len(values) < 2:
             return # not a value item, it's a root for subitems
-        
+
         bbox = self.bbox(iid, '#2')
         key, variable = self.variable_for(iid)
 
@@ -249,18 +251,18 @@ class PropertyWidget(ttk.Treeview):
                 FontSelector(self, variable, iid, bbox)
             case _ :
                 if key == 'template_json':
-                    pth = PathEdit(self, variable, iid, bbox, 
+                    pth = PathEdit(self, variable, iid, bbox,
                                    None, (('Template files', '*.json'),))
                     if pth.ok:
                         print('reload namecard')
                 elif key == 'template_png':
                     p = self.controller.project.settings['namecard'].template_json
-                    PathEdit(self, variable, iid, bbox, 
+                    PathEdit(self, variable, iid, bbox,
                              Path(p).parent, (('PNG file', '*.png'),))
                 elif isinstance(variable.get(), bool):
                     vlus=('True', 'False')
-                    ComboBoxEdit(self, variable, iid, bbox, 
-                                 values=vlus, 
+                    ComboBoxEdit(self, variable, iid, bbox,
+                                 values=vlus,
                                  convert_to_str=lambda v: 'True' if v else 'False',
                                  convert_back=lambda v: v == 'True')
                 elif isinstance(variable.get(), int):
@@ -275,7 +277,7 @@ class PropertyWidget(ttk.Treeview):
             if self.item(c)['open']
         ]
         scroll = self.yview()
-                
+
         self.delete(*self.get_children())
 
         for k,v in self.namecard.__dict__.items():
@@ -288,7 +290,7 @@ class PropertyWidget(ttk.Treeview):
                     self.insert(root,'end',values=(f'  {k1}',v1))
             else:
                 self.insert('','end',k, values=(k,v))
-        
+
         # restore expanded leaves
         for ch in self.get_children():
             itm = self.item(ch)
@@ -302,7 +304,7 @@ class SelectTemplateDlg(DialogBase):
         args['height'] = 500
         DialogBase.__init__(
             self, master, controller, **args)
-        
+
         self.selected = None
 
          # header
@@ -311,7 +313,7 @@ class SelectTemplateDlg(DialogBase):
             font=controller.title_font
         ).grid(row=0, column=0, columnspan=3,
             sticky='nwe', pady=5, padx=5)
-        
+
         # show available templates
         self.tbl = ttk.Treeview(self)
         self.tbl.grid(row=1, column=0, sticky='nws')
@@ -351,7 +353,7 @@ class SelectTemplateDlg(DialogBase):
     def current(self):
         "Return currently selected"
         sel = self.tbl.focus()
-        if not sel: 
+        if not sel:
             return None
 
         greet = self.controller.project.settings['project_name']
@@ -365,27 +367,31 @@ class SelectTemplateDlg(DialogBase):
                 return NameCard(card)
 
     def make_img(self, template, image_size):
-        img, new_size, out_dir, card = load_template(
-            self.controller.project, template, image_size)
-        img_card = create_img(img, card, image_size, FakePerson())
-
-        return ImageTk.PhotoImage(img_card)
+        try:
+            img, new_size, out_dir, card = load_template(
+                self.controller.project, template, image_size)
+            img_card = create_img(img, card, image_size, FakePerson())
+        except Exception as e:
+            self.controller.show_error(str(e))
+            return None
+        else:
+            return ImageTk.PhotoImage(img_card)
 
     def reload(self, *args):
         template = self.current()
         if not template: return
-        sz = (int(self.canvas['width']), 
+        sz = (int(self.canvas['width']),
               int(self.canvas['height']))
         imgtk = self.make_img(template, sz)
         self.canvas.delete('all')
         self.canvas.create_image(
-            0,0, image=imgtk, anchor=tk.NW)     
- 
+            0,0, image=imgtk, anchor=tk.NW)
+
     def load_templates(self):
         tmplts = []
         for _, _, files in os.walk(template_dir):
             tmplts += [Path(f) for f in files if f.endswith('.json')]
-        
+
         self.templates = {}
         for file in tmplts:
             try:
@@ -398,7 +404,7 @@ class SelectTemplateDlg(DialogBase):
     def build_tbl(self):
         tbl = self.tbl
         cols = ('Namn','Grundbild')
-        
+
         self.tbl.configure(columns=cols)
         for c in cols:
             self.tbl.heading(c, text=c)
