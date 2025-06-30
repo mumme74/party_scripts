@@ -29,7 +29,7 @@ class TestTable(unittest.TestCase):
             DataRow(self.data, ('tbl2','20','sale')),
             DataRow(self.data, ('tbl3','30','prod adm'))
         ]
-    
+
     def test_constructor(self):
         tbl = Table(self.data.rows[0], self.project)
         self.assertEqual(tbl.id, 'tbl1')

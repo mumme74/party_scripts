@@ -29,7 +29,7 @@ def create_special_foods_report(project):
     doc.add_heading('Specialkost', 0)
     doc_tbl = doc.add_table(0, 3)
 
-    persons = [p for p in sorted(project.persons.persons) 
+    persons = [p for p in sorted(project.persons.persons)
                if p.special_foods]
 
     for i, p in enumerate(persons):

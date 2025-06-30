@@ -54,7 +54,7 @@ class GuiApp(tk.Tk):
                         self.after(100, closeure(f'Avdelning okänd: {unk}'))
                     unique.add(unk)
                     msg = None # break ref so self.after works
-                
+
         self.prj_wrapped = wrap.wrap_instance(project)
         self.geometry('1024x610')
         self.pages = (ProjectPage, NameCardPage, PlacementPage)
@@ -67,11 +67,11 @@ class GuiApp(tk.Tk):
         self.trace_indata_files()
         self._file_observer.start()
         self.last_indata_change = None # workaround as events can't pass values
-        
+
         self.setup_events()
 
         self.header_var = tk.StringVar()
-        
+
         self.title_font = tkfont.Font(
             family='Helvetica', size=18, weight="bold", slant="italic")
         self.menu = main_menu(self)
@@ -89,31 +89,31 @@ class GuiApp(tk.Tk):
         # add tabs and pages
         for i, frm in enumerate(self.pages):
             tab = ttk.Frame(self.tab_ctrl)
-            self.tab_ctrl.add(tab, text=frm.name, sticky='nsew') 
-            
+            self.tab_ctrl.add(tab, text=frm.name, sticky='nsew')
+
             tab.rowconfigure(0, weight=1)
             tab.columnconfigure(0, weight=1)
 
             frame = frm(master=tab, controller=self)
             frame.grid(row=0,column=0, ipadx=3, sticky='nsew')
-        
+
         # switch undo when changing pages
-        self.tab_ctrl.bind('<<NotebookTabChanged>>', 
+        self.tab_ctrl.bind('<<NotebookTabChanged>>',
             lambda e: Undo.set_current(self.current_page().undo))
         Undo.set_current(self.current_page().undo)
-        
+
         # default to project page
         self.tab_ctrl.select(0)
 
-        sett = self.prj_wrapped['settings']  
-        sett['project_name'].trace_add('write', 
+        sett = self.prj_wrapped['settings']
+        sett['project_name'].trace_add('write',
             lambda *a: self.title_changed())
-        sett['date'].trace_add('write', 
+        sett['date'].trace_add('write',
             lambda *a: self.title_changed())
         self.prj_wrapped['_has_changed'] \
             .trace_add('write',
               lambda *a: self.title_changed())
-        
+
         self.title_changed()
 
     def title_changed(self):
@@ -142,8 +142,8 @@ class GuiApp(tk.Tk):
     def show_message(self, text):
         self.current_page().page_hdr \
             .msgs.add_message(text)
-        
-    def show_error(self, text): 
+
+    def show_error(self, text):
         self.current_page().page_hdr \
             .msgs.add_error(text)
 
@@ -154,7 +154,7 @@ class GuiApp(tk.Tk):
         dirs = set() # get unique
         for prop in ('persons', 'departments','tables'):
             dirs.add(str(sett[prop]['file'].parent.absolute()))
- 
+
         for dir in dirs:
             self._file_observer.schedule(
                 self._file_evt, dir, recursive=True)
@@ -182,7 +182,7 @@ class GuiApp(tk.Tk):
 
                 wrap.reload_wrapped(self.prj_wrapped[prop], props[prop])
                 wrap.reload_item(self.prj_wrapped['settings'], prop,
-                                self.project.settings[prop], 
+                                self.project.settings[prop],
                                 self.project.settings, {})
         except AppException as e:
             self.show_error(str(e))
@@ -226,7 +226,7 @@ class GuiApp(tk.Tk):
         self.prj_wrapped['_has_changed'].set(False)
 
     def open(self, *args):
-        path = self.project.settings['project_file_path'] 
+        path = self.project.settings['project_file_path']
         path = path if str(path) else Path('')
         path = filedialog.askopenfilename(
             defaultextension='*.json',

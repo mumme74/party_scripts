@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk 
+from tkinter import ttk
 from tkinter import messagebox
 from pathlib import Path
 from datetime import datetime
@@ -56,7 +56,7 @@ class SettingsFrame(ttk.LabelFrame):
         # project file path
         ttk.Label(self, text='Projekt fil sökväg:')\
             .grid(row=3, column=0, sticky='w')
-        prj_path = ttk.Entry(self, 
+        prj_path = ttk.Entry(self,
             textvariable=sett['project_file_path'],
             validate='all',
             validatecommand=lambda *a:False)
@@ -105,7 +105,7 @@ class SettingsFrame(ttk.LabelFrame):
         if self._block_evt:
             self._block_evt = False
             return
-        
+
         sett = self.controller.prj_wrapped['settings']
         prj = self.controller.project
         prjd = prj.__dict__
@@ -166,23 +166,23 @@ class DateTime(ttk.Frame):
         self.date_var.trace_add('write', lambda *a: self.datetime_changed())
         self.hour_var.trace_add('write', lambda *a: self.datetime_changed())
         self.min_var.trace_add('write', lambda *a: self.datetime_changed())
-        
+
         self.cal = Calendar(self, selectmode='day',
             textvariable=self.date_var, locale='sv_SE')
         self.cal.grid(row=1, column=0, columnspan=3)
-        
+
         self.cal.strptime(var[:10], '%Y-%m-%d')
-        self.cal.bind('<<CalendarSelected>>', 
+        self.cal.bind('<<CalendarSelected>>',
                       lambda *a: self.datetime_changed())
-      
+
         ttk.Label(self, text='Tid: ').grid(row=0, column=0, sticky='wn')
         ttk.Spinbox(
-            self, textvariable=self.hour_var, 
+            self, textvariable=self.hour_var,
             from_=0, to=23, width=2) \
         .grid(
-            row=0, column=1, sticky='w')   
+            row=0, column=1, sticky='w')
         ttk.Spinbox(
-            self, textvariable=self.min_var, 
+            self, textvariable=self.min_var,
             from_=0, to=59, width=2) \
         .grid(
             row=0, column=2, sticky='w')
@@ -232,19 +232,19 @@ class ContentFrame(ttk.LabelFrame):
 
         # change column order
         ttk.Button(
-            self, text='Ändra kolumn ordning', 
+            self, text='Ändra kolumn ordning',
             command=self.change_col_order
         ).grid(row=0, column=2, sticky='ne')
-        
-        # update when file externally 
+
+        # update when file externally
         ttk.Button(
-            self, text='Läs om', 
+            self, text='Läs om',
             command=self.reload_data
         ).grid(row=0, column=3, sticky='ne')
 
         self.tbl = TableWidget(self, self.indata)
         self.tbl.grid(row=1, column=0, columnspan=4, sticky='wnes')
-        
+
         # scrollbars
         vscroll = ttk.Scrollbar(self, orient='vertical', command=self.tbl.yview)
         self.tbl.configure(yscrollcommand=vscroll.set)
@@ -254,9 +254,9 @@ class ContentFrame(ttk.LabelFrame):
         self.tbl.configure(xscrollcommand=hscroll.set)
         hscroll.grid(row=2, column=0, columnspan=4, sticky='wne')
 
-        controller.bind('<<Reloaded>>', 
+        controller.bind('<<Reloaded>>',
             self.after_idle(lambda *a: self.tbl.recreate()))
-        controller.bind('<<IndataReloaded>>', 
+        controller.bind('<<IndataReloaded>>',
             self.after_idle(self.indata_reloaded))
 
     def indata_sources(self):
@@ -264,7 +264,7 @@ class ContentFrame(ttk.LabelFrame):
         sett = self.settings
         return  {
             'persons': {
-                'name':'Personer', 
+                'name':'Personer',
                 'obj':prj['persons'],
                 'hdrs':sett['persons']['hdrs'],
                 'specialcols':{
@@ -273,7 +273,7 @@ class ContentFrame(ttk.LabelFrame):
                 }
             },
             'departments': {
-                'name':'Avdelningar', 
+                'name':'Avdelningar',
                 'obj':prj['departments'],
                 'hdrs':sett['departments']['hdrs'],
                 'specialcols':{
@@ -289,7 +289,7 @@ class ContentFrame(ttk.LabelFrame):
                 }
             }
         }
-    
+
     def indata_key(self):
         sel = self.indata.get()
         key = next(k for k,v in self.indata_sources().items()
@@ -299,7 +299,7 @@ class ContentFrame(ttk.LabelFrame):
     def indata_changed(self, *args):
         source = self.indata.get()
         print(source)
-    
+
     def change_col_order(self, *args):
         ColumnOrderDlg(self, self.controller)
         self.reload_data()
@@ -312,7 +312,7 @@ class ContentFrame(ttk.LabelFrame):
         except Exception as e:
             self.controller.show_error(str(e))
 
-    def indata_reloaded(self, event):
+    def indata_reloaded(self, *event):
         key = self.indata_key()
         if self.controller.last_indata_change == key:
             self.tbl.recreate()
@@ -333,7 +333,7 @@ class TableWidget(ttk.Treeview):
         for k,v in indata_sources.items():
             if v['name'] == name:
                 return self._recreate(v['obj'], k, v['hdrs'], v['specialcols'])
-            
+
         k,v = 'persons', indata_sources['persons']
         self._recreate(v['obj'], k, v['hdrs'], v['specialcols'])
 
@@ -350,7 +350,7 @@ class TableWidget(ttk.Treeview):
         def get_col(idx, row):
             key = hdrs_vlus[idx] if len(hdrs) > idx else row.keys()[idx]
             if key in specialcols:
-                return specialcols[key](row) 
+                return specialcols[key](row)
             elif isinstance(row[key], list):
                 return [v.get() for v in row[key] if v is not None]
             else:
@@ -372,7 +372,7 @@ class TableWidget(ttk.Treeview):
             col_max = max(col_max, len(vlus))
             insert_rows.append(vlus)
 
-        # columns 
+        # columns
         # a row can be a list, extend to added columns
         self['columns'] = [i for i in range(col_max)]
 
@@ -436,22 +436,22 @@ class ColumnOrderDlg(DialogBase):
 
         self.ok_btn_state()
         self.make_modal()
-  
+
 
     def col_changed(self, var_id, b, method):
-        var = next(v for _,v in self.vars.items() 
+        var = next(v for _,v in self.vars.items()
                    if str(v) == var_id)
         new_vlu = var.get()
         if not new_vlu:
             self.ok_btn_state()
             return # ignore empty selection
-        
+
         for _,v in self.vars.items():
             if v is var:
                 continue # ignore as this is me
             if v.get() == new_vlu:
                 v.set('')
-        
+
         self.ok_btn_state()
 
     def is_all_selected(self):
@@ -459,7 +459,7 @@ class ColumnOrderDlg(DialogBase):
             if not v.get():
                 return False
         return True
-    
+
     def ok_btn_state(self):
         str = 'normal' if self.is_all_selected() else 'disabled'
         self.ok.configure(state=str)
@@ -475,5 +475,5 @@ class ColumnOrderDlg(DialogBase):
             old_vlu = hdrs[col].get()
             if new_vlu != old_vlu:
                 hdrs[col].set(new_vlu)
-        
+
         self.destroy()

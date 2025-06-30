@@ -67,13 +67,13 @@ class TestAllPersons(unittest.TestCase):
         p = per.persons[0]
         data = [
             p.registered_date.strftime('%Y-%m-%d %H:%M:%S'),
-            p.email, p.fname, p.lname, 
+            p.email, p.fname, p.lname,
             p.dept.id, p.special_foods
         ]
         self.assertRaises(
             DuplicatePersonException,
             lambda: per.add(data))
-        
+
     def test_departments(self):
         per = AllPersons(self.project)
         d = per.departments()

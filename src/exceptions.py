@@ -5,7 +5,7 @@ class AppException(Exception):
 
 class ReadFileException(AppException):
     """When an error occurs reading a file
-    
+
     Attributes
     ----------
     file: str

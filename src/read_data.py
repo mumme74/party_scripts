@@ -26,18 +26,18 @@ class DataRow:
             raise DataRetrivalError(f'col: {col} does not exist')
         except IndexError:
             return None
-        
+
     def __iter__(self):
         for vlu in self.data:
             yield vlu
 
     def __len__(self):
         return len(self.data)
-    
+
     def keys(self):
         for key in self.owner.headers:
             yield key
-    
+
     def values(self):
         for vlu in self.owner.values:
             yield vlu
@@ -50,25 +50,25 @@ class Data:
     def __init__(self):
         self.headers:str = ()
         self.rows:DataRow = []
-    
+
     def has_headers(self):
         return len(self.headers) > 0
-    
+
     def keys(self):
         for key in self.headers:
             yield key
-    
+
     def values(self):
         for row in self.rows:
             yield row
-    
+
     def __getitem__(self, row):
         try:
             return self.rows[row]
 
         except IndexError:
             raise DataRetrivalError(f'row:{row} is invalid')
-        
+
     def __iter__(self):
         for row in self.rows:
             yield row
@@ -76,10 +76,10 @@ class Data:
     def __len__(self):
         return len(self.rows)
 
-def read_data(path: Path, 
+def read_data(path: Path,
               search=[app_dir]) -> list:
     """The root function to read files
-    
+
     Parameter
     ---------
     path: Path
@@ -94,7 +94,7 @@ def read_data(path: Path,
     ReadFileException
     """
     try:
-        with File(path, newline='', 
+        with File(path, newline='',
                   encoding='utf8', search=search) as file:
             return _route_to_reader(path, file)
     except (FileNotFoundError):
@@ -112,10 +112,10 @@ def _route_to_reader(path: Path, file):
 def _read_csv(path, file, delimiter):
     try:
         data = Data()
-        reader = csv.reader(file, delimiter=delimiter, 
+        reader = csv.reader(file, delimiter=delimiter,
                             quoting=csv.QUOTE_NONE, strict=True)
         hdrs = [h for h in next(reader)]
-        
+
         # read in all the rows
         for row in reader:
             r = DataRow(data)
@@ -140,7 +140,7 @@ def _read_json(path, file):
         for row in obj:
             r = DataRow(data)
             d = []
-            lsts = sorted(row.items(), 
+            lsts = sorted(row.items(),
                               key=lambda x:hdrs.index(x[0]) if x[0] in hdrs else len(hdrs))
             for k,v in lsts:
                 if k not in hdrs:
@@ -154,13 +154,13 @@ def _read_json(path, file):
         return data
     except json.JSONDecodeError as e:
         raise ReadFileException(path, f'{e}')
-    
+
 def _read_xlsx(path, file):
     try:
         frm = openpyxl.load_workbook(path)
         book = frm.active
         data = Data()
-        hdrs = [c.internal_value for r in book.iter_rows(1,1) 
+        hdrs = [c.internal_value for r in book.iter_rows(1,1)
                     for c in r if c.internal_value]
 
         # read in all the rows
@@ -176,6 +176,6 @@ def _read_xlsx(path, file):
             data.rows.append(r)
         data.headers = tuple(hdrs)
         return data
-    
+
     except openpyxl.utils.exceptions.InvalidFileException as e:
         raise ReadFileException(path, f'{e}')

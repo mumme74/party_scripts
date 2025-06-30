@@ -11,7 +11,7 @@ from .exceptions import ReadFileNotFound, \
                         WriteFileExists, \
                         OutdataDirDoesNotExist, \
                         AppException
-                        
+
 from datetime import datetime
 from pathlib import Path
 import json
@@ -45,7 +45,7 @@ class TextFont:
 
     def __json__(self):
         return {
-            'font':    self.font, 
+            'font':    self.font,
             'size':    self.size,
             'pos':     self.pos,
             'align':   self.align,
@@ -62,7 +62,7 @@ class NameCard:
         if 'card' in obj:
             self.read_object(obj['card'], template)
             return
-        
+
         # else read from template
         try:
             with File(template, encoding='utf8',
@@ -89,11 +89,11 @@ class NameCard:
         png = Path(template).parent / Path(self.template_png).name
         if not png.exists():
             raise ReadFileNotFound(str(png), f'Template png file {png} does not exist')
-        
+
     def save_as_new_template(self, save_path):
         save_path = Path(save_path)
         if save_path.exists():
-            raise WriteFileExists(save_path, 
+            raise WriteFileExists(save_path,
                 f'File {save_path} already exists')
         try:
             with open(save_path, encoding='utf8',
@@ -154,7 +154,7 @@ class Project:
                 'nope_expressions':['-', '--', 'nej', 'nope','no','none','inga']
             },
             'namecard': NameCard({
-                'greet': NameCard.default_greet, 
+                'greet': NameCard.default_greet,
                 'template':app_dir / 'templates' / 'default_namecard.json'
             }),
             'table_sign':{
@@ -179,7 +179,7 @@ class Project:
             raise ReadFileNotFound(prj_file, f'File: {prj_file} not found')
         except json.JSONDecodeError as e:
             raise ReadFileException(prj_file, f'{e}')
-        
+
         def recurse(setting, obj):
             def do(k): # change value or recurse
                 if isinstance(setting[k], (list, dict)):
@@ -202,7 +202,7 @@ class Project:
                 for i, v in enumerate(setting):
                     if len(obj) > i and type(v) == type(obj[i]):
                         do(i)
-        
+
         # re-load the data with the new settings
         recurse(self.settings, obj)
         self.settings['project_file_path'] = Path(prj_file)
@@ -238,7 +238,7 @@ class Project:
                 self.__dict__[prop] = cls(self)
                 self.settings[prop]['file'] = file
                 raise e # notify upstream of the error
-            
+
         # rewire placements
         placements = self.settings['persons_placed_hashes']
         for per in self.persons.persons:
@@ -261,7 +261,7 @@ class Project:
 
         # dump settings to json file
         with open(save_path, mode='w') as file:
-            json.dump(self.settings, file, 
+            json.dump(self.settings, file,
                       ensure_ascii=False, indent=2,
                       cls=EncodeJson)
 

@@ -18,7 +18,7 @@ rootdir = Path(__file__).parent
 
 # input arguments
 parser = ArgumentParser(prog='Skapa bordsplacerings brickor')
-parser.add_argument('--tsv', type=str, help='Path to the source data file for persons', 
+parser.add_argument('--tsv', type=str, help='Path to the source data file for persons',
                     default=rootdir / 'indata/party.tsv', nargs='?')
 parser.add_argument('--party-greet', type=str, help='The greeting printed to namecard',
                     default='Party !', nargs='?')
@@ -71,7 +71,7 @@ def switches(project):
     s = project.settings
     s['persons']['file'] = args.tsv
     obj = {
-        'greet':args.party_greet, 
+        'greet':args.party_greet,
         'template':args.namecard_template
     }
     s['namecard'] = NameCard(obj)
@@ -81,7 +81,7 @@ def switches(project):
 
 def main():
     project = Project()
-    try:  
+    try:
         if args.no_gui:
             if args.project:
                 project.open_project(args.project)

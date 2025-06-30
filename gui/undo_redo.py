@@ -4,13 +4,13 @@ class UndoTransaction:
     """
     Start a scopeguard undo transaction
     with a with statment
-     like: 
+     like:
        with UndoTransaction(undo):
           ... do stuff
 
           # to revert:
-          ... undo.commit_transaction 
-     
+          ... undo.commit_transaction
+
       Transaction is automatically commited if not reverted
     """
     def __init__(self, undo):
@@ -26,10 +26,10 @@ class UndoDisable:
     """
     Temporarily disable a undo
     with a with statment
-     like: 
+     like:
        with UndoDisable(undo):
           ... do stuff
-     
+
       undo enabled again
     """
     def __init__(self, undo):
@@ -49,7 +49,7 @@ class UndoSnapshot:
     Not for wrap objects. Only real backend py objects
     Take a snapshot before any changes, to be able to replay later
 
-    NOTE: It only works on reference objects, 
+    NOTE: It only works on reference objects,
           not scalars such as int, str, etc
     """
     def __init__(self, snap_obj):
@@ -75,7 +75,7 @@ class UndoSnapshot:
                 sobj.clear()
                 sobj.extend(src)
                 return
-            
+
             if hasattr(src, '__dict__'):
                 src = src.__dict__
                 sobj = sobj.__dict__
@@ -89,14 +89,14 @@ class UndoSnapshot:
                     do(sobj[k], src[k], lvl+1)
                 else:
                     sobj[k] = src[k]
-                if k in keys_s: 
+                if k in keys_s:
                     keys_s.pop(keys_s.index(k))
 
             # remove old keys
             for k in keys_s:
                 del sobj[k]
         do(self._snap_obj, src, 0)
-        
+
 
 class Undo:
     _instances = []
@@ -111,26 +111,26 @@ class Undo:
         self._disabled = False
         self._transactions = 0
         self._transaction_list = []
-    
+
     @classmethod
     def ref(cls):
         return cls._current
-    
+
     @classmethod
     def set_current(cls, undo):
         if isinstance(undo, int):
             cls._current = Undo._instances[undo]
         else:
             cls._current = undo
-    
+
     def start_transaction(self):
-        self._transactions += 1 
+        self._transactions += 1
 
     def commit_transaction(self):
         self._transactions -= 1
         if self._transactions > 0:
             return False
-        
+
         self._pos += 1
         self.clear(self._pos+1)
 
@@ -145,23 +145,23 @@ class Undo:
         self._transactions -= 1
         if self._transactions > 0:
             return False
-        
+
         self._transaction_list.clear()
 
         return True
-    
+
     def store_snapshot(self, snap):
         assert isinstance(snap, UndoSnapshot)
 
         if self._disabled:
             return
-        
+
         snap._on_store()
 
         if self._transactions > 0:
             self._transaction_list.append(snap)
             return
-        
+
         self.clear(self._pos+1)
         self._pos += 1
 
@@ -171,23 +171,23 @@ class Undo:
     def store_change(self, var, old_vlu, new_vlu):
         if self._disabled:
             return
-        
+
         store_obj = {
-            'var': var, 
-            'new_vlu': new_vlu, 
+            'var': var,
+            'new_vlu': new_vlu,
             'old_vlu': old_vlu
         }
-        
+
         if self._transactions > 0:
             self._transaction_list.append(store_obj)
             return
 
         self.clear(self._pos+1)
         self._pos += 1
-        
+
         self._stack.append(store_obj)
         self.master.event_generate('<<UndoChanged>>')
-        
+
     def clear(self, to_pos=0):
         while to_pos < len(self._stack):
             self._stack.pop()
@@ -195,22 +195,22 @@ class Undo:
 
     def undo_cnt(self):
         return self._pos+1
-    
+
     def redo_cnt(self):
         return len(self._stack) - self._pos-1
-    
+
     def _do_undo(self, itm):
         if isinstance(itm, UndoSnapshot):
             itm.back()
         else:
             itm['var'].set(itm['old_vlu'])
-    
+
     def _do_redo(self, itm):
         if isinstance(itm, UndoSnapshot):
             itm.forward()
         else:
             itm['var'].set(itm['new_vlu'])
-    
+
     def undo(self):
         if self._pos >= 0:
             with UndoDisable(self):

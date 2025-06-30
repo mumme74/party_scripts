@@ -16,7 +16,7 @@ def create_namecard_docx(project):
 
     # Create a new document
     def all_png_files():
-        return [Path(fn.name) for fn in output_dir.iterdir() 
+        return [Path(fn.name) for fn in output_dir.iterdir()
                     if fn.suffix == '.png']
     doc = Document()
 
@@ -50,7 +50,7 @@ def create_namecard_docx(project):
         pic = p.add_run().add_picture(str(output_dir / png), width=Pt(300))
         if (i+1) % 2 == 0: # add new row each 2nd cell
             cells = tbl.add_row().cells
-        
+
     # Save the document
     save_path = output_dir / docname
     doc.save(save_path)

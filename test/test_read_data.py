@@ -20,7 +20,7 @@ class TestUnhandledFormat(unittest.TestCase):
 
 class TestNonExistant(unittest.TestCase):
     def test_fail_nonexisting(self):
-        self.assertRaises(ReadFileNotFound, 
+        self.assertRaises(ReadFileNotFound,
                           lambda: read_data('nonexistant'))
 
 # ------------------------------------
@@ -30,7 +30,7 @@ class TestCSV(unittest.TestCase):
         path = file_dir / "test_wrong_format.csv"
         self.assertRaises(ReadFileException,
                           lambda: read_data(path))
-        
+
     def test_open_csv(self):
         path = file_dir / "test.csv"
         data = read_data(path)
@@ -44,11 +44,11 @@ class TestCSV(unittest.TestCase):
             for k,v in row.items():
                 self.assertEqual(data[i][k], v)
 
-        
+
 # ------------------------------------
 
 class TestTSV(unittest.TestCase):
-        
+
     def test_open_tsv(self):
         path = file_dir / "test.tsv"
         data = read_data(path)
@@ -80,7 +80,7 @@ class TestJSON(unittest.TestCase):
             for k,v in row.items():
                 self.assertEqual(data[i][k], v)
 
-            
+
 
 # ----------------------------------
 class TestXLSX(unittest.TestCase):

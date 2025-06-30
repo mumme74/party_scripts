@@ -16,7 +16,7 @@ def set_changed():
 # special case datetime
 def closure_date_write(root, key, var):
     def callback(*args):
-        Undo.ref().store_change(var, 
+        Undo.ref().store_change(var,
             root[key].strftime('%Y-%m-%d %H:%M:%S'), var.get())
         root[key] = parse_date(var.get(), '')
         set_changed()
@@ -78,7 +78,7 @@ def create_wrapper(root, key, wrapper):
         return wrap_instance(root[key], wrapper)
     else:
         return # unhandled
-            
+
     var.trace_add('write', closure_write(root, key, var))
     var.trace_add('unset', closure_unset(root, key, var))
     return var
@@ -96,7 +96,7 @@ def wrap_instance(inst, wrapped=None):
     inst_id = f'_{id(inst)}'
     if inst_id in wrapped:
         return wrapped[inst_id] # prevent cyclic wrap
-    
+
     wrapped[inst_id] = dct
     for k,v in inst.__dict__.items():
         if k[0] != '_' and not hasattr(v, '__call__'):
@@ -168,7 +168,7 @@ def reload_wrapped(to, from_, wrapped=None):
     inst_id = f'_{id(from_)}'
     if inst_id in wrapped:
         return wrapped[inst_id] # prevent cyclic wrap
-    
+
     wrapped[inst_id] = {}
     src = from_.__dict__
     for k,v in src.items():

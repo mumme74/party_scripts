@@ -30,7 +30,7 @@ class MockAllDepartments:
                dept in d.synonyms:
                 return d
         return self.departments[0] # unk
-    
+
 class MockProject:
     def __init__(self):
         self.departments = None
@@ -51,7 +51,7 @@ class MockProject:
                 # indata file
                 'file': file_dir / 'test_persons.tsv',
                 'nope_expressions':['-', '--', 'nej', 'nope','no','none','inga']
-            
+
             }
         }
 
@@ -75,10 +75,10 @@ class MockPerson:
         if self.placed_at_table:
             return self.placed_at_table.id
         return ""
-    
+
     def table(self):
         return self._placed_at_tbl
-    
+
 class MockTable:
     _tbl_cnt = 1
     def __init__(self, project):
@@ -87,7 +87,7 @@ class MockTable:
         self.num_seats = randint(4,12)
         self.persons = []
         self.prio_dept = []
-    
+
 class MockAllTables:
     def __init__(self, project):
         self.tables = []

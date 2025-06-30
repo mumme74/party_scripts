@@ -14,13 +14,13 @@ class TestDept(unittest.TestCase):
         self.project = MockProject()
         self.project.departments = \
             self.dep = Dept("keY","DeSc",["SynOnymS","syn"])
-    
+
     def test_constructor(self):
         self.assertEqual(self.dep.id,"key")
         self.assertEqual(self.dep.name, "DeSc")
         self.assertCountEqual(self.dep.synonyms,
                               ["synonyms","syn"])
-        
+
     def test_match(self):
         self.assertTrue(self.dep.match("KEy"))
         self.assertTrue(self.dep.match("DeSc"))
@@ -36,7 +36,7 @@ class TestDept(unittest.TestCase):
         self.assertFalse(self.dep == Dept("n","no",[]))
         self.assertTrue(self.dep == "key")
         self.assertFalse(self.dep == "n")
-    
+
     def test_lt(self):
         o = Dept("k","d",["1","2"])
         self.assertTrue(self.dep < o)

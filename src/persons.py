@@ -29,29 +29,29 @@ class AllPersons:
             raise DuplicatePersonException(p, f'Duplicate entry of person {p.fname} {p.lname}  {p.email}')
         self.unique_check.add( (p.fname, p.lname, p.email))
         self.persons.append(p)
-    
+
     def departments(self):
         "Return count of all departments"
         deps = Counter()
         for p in self.persons:
             deps.update((p.dept.id,))
         return deps
-    
+
     def special_foods(self):
         "Return all special foods"
         foods = Counter()
         for p in self.persons:
             foods.update((p.special_foods,))
         return foods
-    
+
     def num_to_place(self):
         "Return how many people left to place"
         return len([p for p in self.persons if not p._placed_at_tbl])
-    
+
     def have_placements(self):
         "True if we have any plcements done"
         return len(self.persons) != self.num_to_place()
-    
+
     def unknown_dept(self):
         return [p._dept_str for p in self.persons if p.dept.id == 'unk']
 
@@ -80,7 +80,7 @@ class Person:
         return self.dept == o.dept and \
                self.fname == o.fname and \
                self.lname == o.lname
-    
+
     def __le__(self, o):
         if self.dept > o.dept:
             return True
@@ -89,7 +89,7 @@ class Person:
                 return self.lname < o.lname
             return self.fname < o.fname
         return False
-    
+
     def __gt__(self, o):
         if self.dept > o.dept:
             return True

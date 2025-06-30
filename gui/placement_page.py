@@ -1,7 +1,7 @@
 import re
 import webbrowser
 import tkinter as tk
-from tkinter import ttk 
+from tkinter import ttk
 from tkinter import messagebox
 from pathlib import Path
 from menu import PageHeader
@@ -37,11 +37,11 @@ class PlacementPage(ttk.Frame):
         TableViewPane(self, controller
         ).grid(row=1, column=1, sticky='nsew', padx=5, pady=5)
 
-        controller.bind('<<IndataReloaded>>', 
+        controller.bind('<<IndataReloaded>>',
             self.on_indata_reloaded, add='+')
         self.bind('<<Undo>>', self.on_undo_changed, add='+')
         self.bind('<<Redo>>', self.on_undo_changed, add='+')
-        
+
     def on_undo_changed(self, *args):
         prj = self.controller.project
         to_place = prj.persons.num_to_place()
@@ -61,7 +61,7 @@ class PlacementPage(ttk.Frame):
                 self.controller.show_err(err_msg)
         else:
             self.controller.show_err(err_msg)
-        
+
 class SettingsPane(ttk.LabelFrame):
     def __init__(self, master, controller):
         ttk.LabelFrame.__init__(
@@ -102,25 +102,25 @@ class SettingsPane(ttk.LabelFrame):
         ttk.Label(self, text='Placeringslista mall'
         ).grid(row=5, column=0, sticky='w')
 
-        LookupPath(self, sett['table_sign']['file'], 'file_open', sett, 
+        LookupPath(self, sett['table_sign']['file'], 'file_open', sett,
             filetypes=(('Wordfiler', '*.docx'),)
         ).grid(row=6, column=0, stick='wne')
 
         # generate buttons
         btnfrm = ttk.LabelFrame(self, text='Generera')
         btnfrm.grid(row=7, columnspan=2, sticky='wne')
-        
+
         self.card_btn = ttk.Button(btnfrm, text='Placeringskort',
             command=self.gen_placement_cards)
         self.card_btn.grid(row=0, column=0, sticky='wne', pady=5, padx=5)
 
         self.card_link = DocLink(btnfrm)
         self.card_link.grid(row=0, column=1, sticky='nes', pady=5, padx=5)
-        
+
         self.list_btn = ttk.Button(btnfrm, text='Placeringslist',
             command=self.gen_placement_list)
         self.list_btn.grid(row=1, column=0, sticky='wne', pady=5, padx=5)
-        
+
         self.list_link = DocLink(btnfrm)
         self.list_link.grid(row=1, column=1, sticky='nes', pady=5, padx=5)
 
@@ -147,24 +147,24 @@ class SettingsPane(ttk.LabelFrame):
             tsnap = UndoSnapshot(prj.tables)
             psnap = UndoSnapshot(prj.persons)
             prj.tables.clear_placements()
-           
+
             try:
-                prj.tables.place_persons() 
+                prj.tables.place_persons()
             except AppException as e:
                 self.controller.show_error(str(e))
-    
+
             psnap.commit()
             tsnap.commit()
 
         to_place = prj.persons.num_to_place()
         self.master.num_to_place.set(to_place)
-   
+
     def clear_placements(self):
         ok = messagebox.askokcancel('Är du säker?',
             'Vill du verligen rensa alla placeringar?')
         if not ok:
             return
-        
+
         prj = self.controller.project
         with UndoTransaction(Undo.ref()):
             tsnap = UndoSnapshot(prj.tables)
@@ -198,9 +198,9 @@ class DocLink(ttk.Label):
     @classmethod
     def _cls_init(cls):
         st = ttk.Style()
-        st.configure('LinkHover.TLabel', 
+        st.configure('LinkHover.TLabel',
             background="#9A9E9A")
-        st.configure('LinkHover.TLabel', 
+        st.configure('LinkHover.TLabel',
             foreground="#191B18")
         st.configure('Link.TLabel',
             background="#C9C8CC")
@@ -260,7 +260,7 @@ class TableViewPane(ttk.LabelFrame):
         # recreate when this variable changes
         self.master.num_to_place.trace_add(
             'write', self.tbl.recreate)
-        
+
         self.master.bind('<<Undo>>', self.tbl.recreate, add='+')
         self.master.bind('<<Redo>>', self.tbl.recreate, add='+')
 
@@ -295,7 +295,7 @@ class PlacementsTable(ttk.Treeview):
             if self.item(c)['open']
         ]
         scroll = self.yview()
-       
+
         self.delete(*self.get_children())
         self.iids = {}
 
@@ -349,12 +349,12 @@ class PlacementsTable(ttk.Treeview):
         if len(persons) <= idx or idx < 0:
             return
         return persons[idx], iid, col
-        
+
     def right_clicked(self, event):
         res = self.person_for_event(event)
         if not res:
             return
-        
+
         person, iid, col = res
         menu = tk.Menu(self, tearoff=0)
 
@@ -366,17 +366,17 @@ class PlacementsTable(ttk.Treeview):
 
         # build up the menu
         if person.table():
-            menu.add_command(label='Ta bort placering', 
+            menu.add_command(label='Ta bort placering',
                 command=closure(person, self.unplace, None))
             menu.add_separator()
-        
+
         # all tables with free places
         for tbl in self.controller.project.tables.tables:
             if tbl.free_seats() == 0:
                 continue
-            menu.add_command(label=f'Flytta till {tbl.id}', 
+            menu.add_command(label=f'Flytta till {tbl.id}',
                 command=closure(person, self.move_to, tbl))
-        
+
         # popup menu
         try:
             menu.tk_popup(event.x_root, event.y_root)
@@ -386,12 +386,12 @@ class PlacementsTable(ttk.Treeview):
     def refresh_unplaced_var(self):
         prj = self.controller.project
         self.unplaced_var.set(prj.persons.num_to_place())
-    
+
     def unplace(self, person, extra):
         tbl = person.table()
         if not tbl:
             return
-        
+
         with UndoTransaction(Undo.ref()):
             psnap = UndoSnapshot(person)
             tsnap = UndoSnapshot(tbl)
@@ -405,7 +405,7 @@ class PlacementsTable(ttk.Treeview):
     def move_to(self, person, new_tbl):
         tbl = person.table()
         res = True
-        
+
         while res: # bust out on error
             with UndoTransaction(Undo.ref()):
                 psnap = UndoSnapshot(person)

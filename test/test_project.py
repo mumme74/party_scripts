@@ -43,7 +43,7 @@ class TestTextFont(unittest.TestCase):
             InputDataBadFormat,
             lambda: TextFont(self.obj, self.file)
         )
-    
+
     def test_construct_fail2(self):
         del self.obj['font']
         self.assertRaises(
@@ -86,7 +86,7 @@ class TestNameCard(unittest.TestCase):
             "pos": [13,3],
             "align": "absolute",
             "color": "#999999",
-            "enabled": True 
+            "enabled": True
         })
         self.assertEqual(card.greet_text.__json__(),
         {
@@ -95,7 +95,7 @@ class TestNameCard(unittest.TestCase):
             "pos": [400,210],
             "align": "center",
             "color": "#000000",
-            "enabled": True 
+            "enabled": True
         })
         self.assertEqual(card.name_text.__json__(),
         {
@@ -104,7 +104,7 @@ class TestNameCard(unittest.TestCase):
             "pos": [400,270],
             "align": "center",
             "color": "#000000",
-            "enabled": True 
+            "enabled": True
         })
         self.assertEqual(card.dept_text.__json__(),
         {
@@ -113,7 +113,7 @@ class TestNameCard(unittest.TestCase):
             "pos": [400,320],
             "align": "center",
             "color": "#000000",
-            "enabled": True 
+            "enabled": True
         })
 
     def test_fail_construct(self):
@@ -160,7 +160,7 @@ class TestPreject(unittest.TestCase):
         self.assertEqual(len(prj.tables.tables), 0)
         self.assertEqual(len(prj.persons.persons), 0)
         s = prj.settings
-        self.assertEqual(s['date'].strftime('%Y-%m-%d %H:%M'), 
+        self.assertEqual(s['date'].strftime('%Y-%m-%d %H:%M'),
                          now.strftime('%Y-%m-%d %H:%M'))
         self.assertEqual(s['project_name'][:6], 'Party ')
         self.assertEqual(s['project_file_path'], Path(''))

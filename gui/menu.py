@@ -1,5 +1,5 @@
 
-import tkinter as tk 
+import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
 import platform
@@ -19,13 +19,13 @@ class PageHeader(ttk.Frame):
         self.u_btn = ttk.Button(self, text='<', width=1,
             command=lambda *a: Undo.ref().undo())
         self.u_btn.grid(row=0, column=0, pady=5, padx=2, sticky='wn')
-        
+
         self.r_btn = ttk.Button(self, text='>', width=1,
             command=lambda *a: Undo.ref().redo())
         self.r_btn.grid(row=0, column=1, pady=5, padx=2, sticky='wn')
-        
+
          # page header
-        lbl = ttk.Label(self, textvariable=controller.header_var, 
+        lbl = ttk.Label(self, textvariable=controller.header_var,
                         font=controller.title_font)
         lbl.grid(row=0, column=2, pady=10, padx=3, sticky='wne')
 
@@ -43,28 +43,28 @@ class PageHeader(ttk.Frame):
     def btn_state_changed(self, event):
         def state(fn):
             return 'normal' if fn() > 0 else 'disabled'
-       
+
         undo = self.page.undo
         self.u_btn['state'] = state(undo.undo_cnt)
         self.r_btn['state'] = state(undo.redo_cnt)
-    
 
-# we use a canvas as warapper here to 
+
+# we use a canvas as warapper here to
 # make a scrollable area
 class MessagesView(tk.Canvas):
     def __init__(self, master, controller):
         style = ttk.Style()
         bg = style.lookup('TFrame','background')
-        tk.Canvas.__init__(self, master, 
-            width=400, height=50, bg=bg, 
+        tk.Canvas.__init__(self, master,
+            width=400, height=50, bg=bg,
             highlightthickness=0)
         self.master = master
         self.controller = controller
 
         self.grid(row=0, column=3, sticky='en', padx=5)
-        
+
         # the content frame
-        self.frm = ttk.Frame(self, width=self.winfo_width(), height=0) 
+        self.frm = ttk.Frame(self, width=self.winfo_width(), height=0)
         self.frm.columnconfigure(0, weight=1)
         self.create_window((0,0), window=self.frm, anchor='nw')
 
@@ -75,9 +75,9 @@ class MessagesView(tk.Canvas):
             if frm_h < my_h:
                 if self.scroll:
                     self.scroll.destroy()
-                    self.scroll = None                
+                    self.scroll = None
                     self.configure(yscrollcommand=lambda *a: None)
-                    self.after(100, 
+                    self.after(100,
                         lambda *a:self.yview_moveto(0))
             elif not self.scroll:
                 self.scroll = ttk.Scrollbar(master, orient='vertical', command=self.yview)
@@ -86,10 +86,10 @@ class MessagesView(tk.Canvas):
 
             if self.scroll:
                 self.configure(scrollregion=self.bbox('all'))
-        
+
         # add scoll when a widget is added
         self.scroll = None
-        self.frm.bind('<Configure>', frm_changed) 
+        self.frm.bind('<Configure>', frm_changed)
 
         # style messages
         style = ttk.Style()
@@ -113,7 +113,7 @@ class Message(ttk.Frame):
 
         id = 'sMsgError' if is_error else 'sMsg'
 
-        # messagebox, wrap in a Frame to be able to specify 
+        # messagebox, wrap in a Frame to be able to specify
         # width height explicitly
         master_w, frm_h = master.winfo_width(), 20
         frm = ttk.Frame(self, width=master_w, height=frm_h)
@@ -132,7 +132,7 @@ class Message(ttk.Frame):
         frm.grid(row=0, column=0, sticky='we')
         frm.grid_propagate(False)
 
-        self.after(100, 
+        self.after(100,
             lambda *a:self.master.yview_moveto(1))
 
     def close(self, *args):
@@ -168,9 +168,9 @@ class CloseBtn(ttk.Label):
         self.sCloseHover.configure('sCloseHover.TLabel', foreground='#958989')
         self.sCloseHover.configure('sCloseHover.TLabel', bordercolor='#CCCCCC')
         self.sCloseHover.configure('sCloseHover.TLabel', borderwidth=1)
-        self.bind('<Enter>', 
+        self.bind('<Enter>',
             lambda e: self.configure(style='sCloseHover.TLabel'))
-        self.bind('<Leave>', 
+        self.bind('<Leave>',
             lambda e: self.configure(style='sClose.TLabel'))
 
         if command:
@@ -183,19 +183,19 @@ def main_menu(window):
     ctrl = 'Command' if platform == 'darwin' else 'Control'
     file = tk.Menu(menubar, tearoff=0)
     menubar.add_cascade(label ='Arkiv', menu=file)
-    file.add_command(label ='Nytt project', 
+    file.add_command(label ='Nytt project',
         command=window.new_project,
         accelerator=f'{ctrl}+N')
     file.add_command(
-        label ='Öppna...', 
+        label ='Öppna...',
         command=window.open,
         accelerator=f'{ctrl}+O')
     file.add_command(
-        label ='Spara', 
+        label ='Spara',
         command=window.save,
         accelerator=f'{ctrl}+S')
     file.add_command(
-        label ='Spara som', 
+        label ='Spara som',
         command=window.save_as,
         accelerator=f'{ctrl}+Shift+S')
     file.add_separator()
@@ -205,11 +205,11 @@ def main_menu(window):
     edit = tk.Menu(menubar, tearoff=0)
     menubar.add_cascade(label ='Redigera', menu=edit)
     edit.add_command(
-        label='Undo', 
+        label='Undo',
         command=lambda: Undo.ref().undo(),
         accelerator=f'{ctrl}+Z')
     edit.add_command(
-        label='Redo', 
+        label='Redo',
         command=lambda: Undo.ref().redo(),
         accelerator=f'{ctrl}+Shift+Z')
     edit.add_separator()
@@ -233,14 +233,14 @@ def main_menu(window):
 
 def about(*args):
     msg = '''
-    Denna app är till för att enkelt kunna skapa brodsplaceringar 
+    Denna app är till för att enkelt kunna skapa brodsplaceringar
     i stora sällskap. Som personalfester, bröllop, och andra träffar.
 
     Det skapar bordsplaceringar där folk får sitta tillsammans
     med sin avdelning (sitt arbetslag) i möjligaste mån.
 
-    Den har sin grund i ett snabbt ihopsatt program som 
-    jag skapade då mitt arbetslag skulle organisera 
+    Den har sin grund i ett snabbt ihopsatt program som
+    jag skapade då mitt arbetslag skulle organisera
     personalfesten sommaren 2025 för 156 personer
     '''
     messagebox.showinfo('Om appen', msg)
@@ -249,12 +249,12 @@ def helpdialog(*args):
     msg = '''
     En mer lättläslig info finns på projektets README sida:
       https://github.com/mumme74/party_scripts
- 
+
     Som indata användas vanliga filer som:
-      * excell kalkylark (xlsx), 
-      * tabbseparerad (tsv), 
-      * Semikolon separerad (csv) 
-      * samt json (dataexporterings format). 
+      * excell kalkylark (xlsx),
+      * tabbseparerad (tsv),
+      * Semikolon separerad (csv)
+      * samt json (dataexporterings format).
 
     Tanken är att man i första hand samlar in indata på annat vis.
     T.ex. via tex ett webbformulär. sparar ned data i rätt format.
@@ -269,17 +269,17 @@ def helpdialog(*args):
 
     Därefter skapa en bordsfil med antal platser per bord.
 
-    Sedan skapar man en fil med vilka avdelningar som finns och 
-    synonymer som folk kan ha skrivit. 
-    Om insamlingsformuläret har haft fritext kan man ange 
+    Sedan skapar man en fil med vilka avdelningar som finns och
+    synonymer som folk kan ha skrivit.
+    Om insamlingsformuläret har haft fritext kan man ange
     godtycklig antal synonymer för att matcha rätt.
     Skall ha kolumner:
       * förkortning
       * namn
-      * synonymer 
+      * synonymer
       *  (en kolumn per ytterligare synonym) ...
 
-    När persondata läses in matchas den mot ovan. 
+    När persondata läses in matchas den mot ovan.
     VERSALER och gemener spelar ingen roll.
     '''
     messagebox.showinfo('Hjälp', msg)

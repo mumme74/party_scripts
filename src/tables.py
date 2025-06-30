@@ -20,18 +20,18 @@ class AllTables:
 
         for row in self._data:
             self.tables.append(Table(row, self._project))
-    
+
     def find_table_to(self, num_pers):
-        tbls = sorted([(t, t.free_seats()) for t in self.tables], 
+        tbls = sorted([(t, t.free_seats()) for t in self.tables],
                        key=lambda tp: tp[1])
         for t, num in tbls:
             if num >= num_pers:
                 return t
         return None
-    
+
     def total_num_seats(self):
         return sum([s.num_seats for s in self.tables])
-    
+
     def place_persons(self):
         "Try to seat all persons at tables with their department"
         all_pers = self._project.persons
@@ -50,9 +50,9 @@ class AllTables:
         # find a table for this
         table, pla = None, 1
         while pla: # continue to iterate until all are placed
-            pla = 0 
+            pla = 0
             # loop from department level trying to keep them together
-            for dep, num in deps: 
+            for dep, num in deps:
                 placed = 0
                 for p in filter((lambda p: p.dept.id == dep and \
                                  not p.table()), persons):
@@ -66,7 +66,7 @@ class AllTables:
                         placed += 1
                         pla += 1
                 table = None
-            
+
         # sanity check
         for p in persons:
             assert p.table()
@@ -103,11 +103,11 @@ class Table:
         for p in self.persons:
             cnt.update((p.dept.name,))
         return cnt
-    
+
     def free_seats(self):
         "Return how many free seats there are left at this table"
         return self.num_seats - len(self.persons)
-    
+
     def place_person(self, person) -> bool:
         "Try to place person at this table, will fail if full"
         assert person.table() == None
@@ -116,12 +116,12 @@ class Table:
             person._placed_at_tbl = self
             return True
         return False
-    
+
     def unplace_person(self, person) -> bool:
         "Remove person from placement at this table"
         if person.table() != self:
             return False
-        
+
         self.persons.pop(self.persons.index(person))
 
         person._placed_at_tbl = None
