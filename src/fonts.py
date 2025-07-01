@@ -30,7 +30,7 @@ elif platform in ('linux', 'linux2'):
                   '/usr/local/share/fonts/',
                   '/usr/share/fonts/truetype/']
 elif platform == 'win32':
-    fontpaths += [f'C:\\Users\\{os.getusername()}\\AppData\\Local\\Microsoft\\Windows\\Fonts\\',
+    fontpaths += [f'C:\\Users\\{os.getlogin()}\\AppData\\Local\\Microsoft\\Windows\\Fonts\\',
                   'C:\\Windows\\Fonts\\']
 else:
     print(f'Unsupported os: {platform}, may not work correctly')
