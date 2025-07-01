@@ -122,7 +122,7 @@ class NameCardProperties(ttk.LabelFrame):
             obj['greet'].set(
                 self.controller.prj_wrapped['settings']['project_name'].get())
 
-    def select_template(self, *Äevent):
+    def select_template(self, *event):
         dlg = SelectTemplateDlg(self, self.controller)
         if dlg.selected:
             self.master.view_pane.set_disable(True)
@@ -156,7 +156,7 @@ class PreviewNameCard(ttk.LabelFrame):
         self.canvas.grid(row=1, column=1, sticky='nw')
         ttk.Label(self).grid(row=1, padx=5, pady=5, column=0)
 
-        self.after(100, lambda *a:
+        self.after(200, lambda *a:
             self.indata_changed())
 
     def indata_changed(self, *args):
@@ -164,7 +164,7 @@ class PreviewNameCard(ttk.LabelFrame):
             return
         try:
             img, new_size, out_dir, card = load_template(
-            self.controller.project)
+                self.controller.project)
             img_card = create_img(img, card, new_size, FakePerson())
         except Exception as e:
             self.controller.show_error(str(e))
