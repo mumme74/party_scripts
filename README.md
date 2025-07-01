@@ -9,8 +9,8 @@ You cant do that via Gui or though command line.
 Both interfaces are supported.
 
 ## i18n Language:
-As the app currently is mostly oriented to Swedish people, it does not have any internationalisation build in. Most strings in the GUI are written in Swedish.  
-  
+As the app currently is mostly oriented to Swedish people, it does not have any internationalisation build in. Most strings in the GUI are written in Swedish.
+
 Patches to support other i18n are of course welcome!
 
 From here on I will use Swedish in this Readme.
@@ -26,22 +26,32 @@ Nu är app mer förfinad och den har nu en GUI där man enklare kan se indata, g
 Som indata kräver den tre filer (kolumner inom parantes):
  - Personer (anm.datum, email, förnamn, efternamn, avdelning, specialkost)
  - Avdelningar (ID och namn)
- - Bord (ID och antal platser)  
+ - Bord (ID och antal platser)
 
 >Tanken är man hämtar in persondata via ett webbformulär, tex Google forms eller liknande, och exporterar datan till en fil.
 
 ### Filformat som stöds
 Indata kan komma dessa format:
- - Excell *.xlsx. 
+ - Excell *.xlsx.
    * Senaste aktiva flik läses in
- - Tabb separerad *.tsv 
+ - Tabb separerad *.tsv
  - Semikolon separerad *.csv
  - Json (data exchage format)
    * Kräver rätt schema och kanske inte direkt är särkelit enkel att få till...
 
-Se nedan för mer info om hur indatan skall struktureras.  
+Se nedan för mer info om hur indatan skall struktureras.
 
 >Tips! Se till att lägga in textfält i den ordningen i inbjudnings webbformuläret, så blir det i rätt ordning.
+
+### Starta appen (Enkelt, icke nördigt)
+**Windows**
+Dubbelklicka på filen startme_unix.bat i appens mapp.
+
+**Unix (macos, linux mfl)**
+Dubbelklicka på filen startme_unix.sh i append mapp.
+
+#### Det datatekniska sättet.
+Sätt upp en virtual environment och installera via *pip install -r requirements.txt*
 
 ## GUI Appen
 När man startar appen ser det ut så här. ![Gui](resources/new_project.png)
@@ -49,9 +59,9 @@ När man startar appen ser det ut så här. ![Gui](resources/new_project.png)
 Vill man öppna ett tidigare projekt, gör så via arkiv menyn. Spara ändringar med Ctrl+S precis som vanligt.
 
 ### Projekt
-För att få appen att hålla reda på ändringar och kunna öppna, spara stänga och öppna igen så används projekt. Så när du sparar i appen så sparar du bara de inställningar som du ändrat i projektet.  
+För att få appen att hålla reda på ändringar och kunna öppna, spara stänga och öppna igen så används projekt. Så när du sparar i appen så sparar du bara de inställningar som du ändrat i projektet.
 
->I dagsläget har appen ingen möjlighet att ändra i indata filerna. För att ändra i dem, använd excell, eller annan avsedd editor.  
+>I dagsläget har appen ingen möjlighet att ändra i indata filerna. För att ändra i dem, använd excell, eller annan avsedd editor.
 Appen skall bevaka ändraringar i indata filerna och ladda om dem ifall det behövs.
 
 ## Gör så här för nytt projekt:
@@ -86,11 +96,11 @@ Avdelningar (Departments)
 När det blir något fel vid laddning av data så visas det i felmeddelande kontrollen:
 ![alt text](resources/data_load_error.png)
 
-I detta fallet så har personfilen avdelningar som inte går att matcha med datan från avdelnings filen. Dessa visas som *unk* i persontabell vyn. (unk = unknown) 
+I detta fallet så har personfilen avdelningar som inte går att matcha med datan från avdelnings filen. Dessa visas som *unk* i persontabell vyn. (unk = unknown)
 ![alt text](resources/person_table_unk.png)
 
 För att lösa detta problem så lägger du till dessa som synonymer i avdelningsfilen.
-Tex: 
+Tex:
 ![alt text](resources/dept_synonyms.png)
 
 När du laddat om så skall det visas rätt i persontabellen.
@@ -103,7 +113,7 @@ Nu kan du välja mall för hur bordskorten skall se ut. Välj fliken för Namnbr
 Du kommer troligne vilja ha en annan mall, eller göra en egen. Klicka på knappen *Andra mallar*
 ![alt text](resources/namecard_templates.png)
 
-Här har vi valt att använda mallen *Rustic*. 
+Här har vi valt att använda mallen *Rustic*.
 Klick på *OK*
 
 Nu skall denna mallen användas istället.
@@ -169,8 +179,8 @@ För att generera bordsplaceringslistor klicka knappen för det, hos mig blev de
 Detta är defaultmallen. Du vill förmodligen ändra detta. För att få fina placeringslistor att lägga vid borden kan man skapa en word-fil med sidhuvud och sidfot som du vill ha dem. För att att lägga till din egna wordfil som mall väljer du du rätt fil:
 ![alt text](resources/placementlist_template.png)
 
->Jag gjorde en en ny mall där jag också ändrade formatmallen till att använda ett annat typsnitt inuti word.  
-  
+>Jag gjorde en en ny mall där jag också ändrade formatmallen till att använda ett annat typsnitt inuti word.
+
 Klickar på *Placeringslista mall* och väljer:
 ![alt text](resources/select_placement_template.png)
 
@@ -188,7 +198,7 @@ Men här finns det ingen speciell mall att välja. En lista med specialkost har 
 Vill man flytta på en person så måste det finnas plats vid bordet. I det här fallet finns det ju vid bord 11 och 15. ![alt text](resources/move_person.png)
 
 
-# Indata 
+# Indata
 Alla data filer behöver ha en viss struktur.
  - Översta raden används som kolumner
    * Inte som indata.
@@ -200,13 +210,13 @@ Alla data filer behöver ha en viss struktur.
 | 2025-06-28 | name@example.com | Kjell | Andersson | Firman | gluten |
 | ...  |
 
-Specialkost är frivillig kolumn 
+Specialkost är frivillig kolumn
 
 
 ## Kolumnstruktur i avdelningar
 | ID | namn | *Synonym 1 | *Synonym 2 | ... |
 |----|------|-----------|-----------|-----|
-| ft | Fordon och transport | Bil | Körkort | 
+| ft | Fordon och transport | Bil | Körkort |
 | ...  |
 
 Synonym kolumnerna används för att matcha indata från personfilen till rätt avdelning. Det är inget krav att de finns. Har man tagit in datan via listval istället för fritext, så behövs det förmodligen inte.
@@ -214,7 +224,7 @@ Synonym kolumnerna används för att matcha indata från personfilen till rätt 
 ## Kolumnstruktur i avdelningar
 | Bordnamn | Antal platser | *Prioritera till avdelning |
 |----------|---------------|---------------------|
-| Bord 1 | 22 | ft |  
+| Bord 1 | 22 | ft |
 | ...  |
 
 Här är kolumn 3, prioritera till avdelning, frivillig. Om det finns värde i denna kolumn så kommer peroner från den avdelningen prioriteras dit.
@@ -222,7 +232,7 @@ Här är kolumn 3, prioritera till avdelning, frivillig. Om det finns värde i d
 # Installera
 Denna app är skriven i python, testad på macos med py3.13. Den bör fungera från och med py3.10
 
-Om du har en windows dator är det troligt att du själv måste installera python via Microsoft store. 
+Om du har en windows dator är det troligt att du själv måste installera python via Microsoft store.
 
 >Det skall vara ofarligt att installera där ifrån, till skillnad från nedladdat från webben.
 
@@ -241,11 +251,11 @@ Alternativt:
 >Det krävs dock att scriptet har execute (körbarhets) behörighet.
 
 ### Manuell installation (det som scriptet gör)
-Linux, macos med flera unix baserade: 
+Linux, macos med flera unix baserade:
 ```bash
 python -m venv venv
 source venv/bin/activate
-pip install -r requirements.txt 
+pip install -r requirements.txt
 python main.py
 ```
 alternativt on den är döpt till python3:
@@ -266,7 +276,7 @@ py main.py
 
 # Avancerat
 
-## Filtera specialkost 
+## Filtera specialkost
 Ibland kommer det meningslösa svar i rutan specialkost, som: nej, nope, inga, --, nada osv.
 
 Några av dessa filteras bort baserat.
@@ -280,7 +290,7 @@ Det finns i dagsläget inget sätt att ändra dessa filter ord via GUI, men det 
       ...
    }
 ```
-Det kan vara en bra ide att ta en bakupkopia på projektfilen innan man ändrar i denna.  
+Det kan vara en bra ide att ta en bakupkopia på projektfilen innan man ändrar i denna.
 **OBS!!** Måste göras i en text editor, inte i word, wordpad eller liknande.
 
 ## Command line
@@ -294,5 +304,5 @@ Kommandoläge kan köras både med och utan en projektfil.
 För mer info om vilka ingångs switchar som finns kör vanlig *--help* på kommandoraden.
 
 # Bugrapporter
-Som alla mjukvaror har denna också buggar.  
+Som alla mjukvaror har denna också buggar.
 Du får gärna rapportera dem via githubs bugrapportsystem.
