@@ -22,25 +22,27 @@ def create_namecard_docx(project):
 
     # set margins
     for sec in doc.sections:
+        sec.orientation = WD_ORIENT.LANDSCAPE
+        sec.page_height = A4_w
+        sec.page_width = A4_h
         sec.top_margin    = Cm(1.5)
         sec.left_margin   = Cm(1.5)
         sec.bottom_margin = Cm(1.5)
         sec.right_margin  = Cm(1.5)
-        sec.orientation = WD_ORIENT.LANDSCAPE
-        sec.page_height = A4_w
-        sec.page_width = A4_h
 
     #place images in a table for formating 4 on each page
     tbl = doc.add_table(1, 2)
-    tbl.columns[0].width = Cm(4.0)
-    tbl.columns[1].width = Cm(4.0)
+    tbl.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    tbl.allow_autofit = False
+    tbl.columns[0].width = Cm(10.58)
+    tbl.columns[1].width = Cm(10.58)
     cells = tbl.rows[0].cells
     for i, png in enumerate(sorted(all_png_files(), key=lambda f: int(f.stem))):
         # format the cell and its paragraph
         cell = cells[i % 2]
         cell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
-        cell.height = Cm(4.0)
-        cell.width = Cm(4.0)
+        cell.height = Cm(10.58)
+        cell.width = Cm(10.58)
         p = cell.paragraphs[0]
         p.alignment = WD_ALIGN_PARAGRAPH.CENTER
         format = p.paragraph_format

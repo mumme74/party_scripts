@@ -23,7 +23,7 @@ def create_table_report(project):
     doc = Document(template_path)
 
     # set margins
-    for sec in doc.sections:
+    for sec in doc.sections[1:]:
         sec.top_margin    = Cm(1.5)
         sec.left_margin   = Cm(2.5)
         sec.bottom_margin = Cm(1.5)
