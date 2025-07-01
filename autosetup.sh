@@ -19,6 +19,14 @@ function test_tool() {
     exit 1
 }
 
+function lookup_venv() {
+    if [ -d "venv/Scripts" ]; then
+	echo "venv/Scripts/activate"
+    else
+        echo "source venv/bin/activate"
+    fi
+}
+
 # find python version
 cmds=("py" "python3" "python")
 cmd="Python "
@@ -47,9 +55,14 @@ esac
 if [ ! -d "venv" ]; then
     echo "Setting up virtual environment"
     res="$($pycmd -m venv venv 1>&1)"
+    venvcmd=lookup_venv
+    
     echo "Installing requirements"
     res="$($venvcmd && $pipcmd install -r requirements.txt  1>&1)"
     echo "$res"
+else
+    venvcmd=lookup_venv
+    
 fi
 
 # ativate virtualenv and run the application
